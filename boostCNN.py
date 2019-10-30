@@ -248,9 +248,9 @@ def main_worker(gpu, ngpus_per_node, args):
         weight_sampler = torch.utils.data.SequentialSampler(weight_dataset )
 
     train_loader_random = torch.utils.data.DataLoader(
-        train_dataset, batch_size=args.batch_size, sampler=train_sampler_random)
+        train_dataset, batch_size=args.batch_size, sampler=train_sampler_random, num_workers=0)
     train_loader_seq = torch.utils.data.DataLoader(
-        train_dataset, batch_size=args.batch_size, sampler=train_sampler_seq)
+        train_dataset, batch_size=args.batch_size, sampler=train_sampler_seq, num_workers=0)
     weight_loader = torch.utils.data.DataLoader(
          weight_dataset, batch_size=args.batch_size, sampler=weight_sampler)
     val_loader = torch.utils.data.DataLoader(datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
