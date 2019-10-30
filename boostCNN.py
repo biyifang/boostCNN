@@ -336,8 +336,8 @@ def train(train_loader_random, train_loader_seq, weight_loader, weight_dataset, 
             data_time.update(time.time() - end)
 
             if args.gpu is not None:
-                images = images.cuda(args.gpu, non_blocking=True)
-                weight = weight.cuda(args.gpu, non_blocking=True)
+                images = images.cuda()
+                weight = weight.cuda()
             #target = target.cuda(args.gpu, non_blocking=True)
 
 
@@ -394,8 +394,8 @@ def validate(val_loader, model, criterion, args, k):
         end = time.time()
         for i, (images, target) in enumerate(val_loader):
             if args.gpu is not None:
-                images = images.cuda(args.gpu, non_blocking=True)
-            target = target.cuda(args.gpu, non_blocking=True)
+                images = images.cuda()
+            target = target.cuda()
 
             # compute output
             output = model.predict(images, k)
