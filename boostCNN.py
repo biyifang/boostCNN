@@ -35,7 +35,7 @@ parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                         ' (default: resnet18)')
 parser.add_argument('--data', metavar='DIR', default='/Users/biyifang/Desktop/research/AllState/experiment', type=str,
                     help='path to dataset')
-parser.add_argument('-j', '--workers', default=4, type=int, metavar='NoW',
+parser.add_argument('-j', '--workers', default=2, type=int, metavar='NoW',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('--epochs', default=50, type=int, metavar='NoE',
                     help='number of total epochs to run')
@@ -124,7 +124,7 @@ def main():
 
 
 def main_worker(gpu, ngpus_per_node, args):
-    output_file = open('out.txt','w+')
+    output_file = open('out.txt','w')
     global best_acc1
     args.gpu = gpu
 
