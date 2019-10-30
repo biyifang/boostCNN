@@ -289,7 +289,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
         # evaluate on validation set
         acc1 = validate(val_loader, model, criterion, args, k)
-        output_file.write('Iteration {} * Acc@1 {0:.3f} '
+        output_file.write('Iteration {} * Acc@1 {:5.5f} '
               .format(k, acc1))
 
         # remember best acc@1 and save checkpoint
