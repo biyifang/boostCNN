@@ -54,7 +54,7 @@ parser.add_argument('--lr', '--learning-rate', default=0.0001, type=float,
                     metavar='LR', help='initial learning rate', dest='lr')
 parser.add_argument('--momentum', default=0.0, type=float, metavar='M',
                     help='momentum')
-parser.add_argument('--boost_shrink', default=0.8, type=float, metavar='S',
+parser.add_argument('--boost_shrink', default=0.3, type=float, metavar='S',
                     help='boosting shrinkage parameter')
 parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)',
