@@ -88,7 +88,7 @@ class GBM(nn.Module):
 		pred = pred.new_zeros(x.size(0), self.num_classes)
 		for i,net in enumerate(self.weak_learners):
 			if i <= k:
-				pred += net.forward(x) * self.alpha[i]
+				pred += net.forward(x) * self.alpha[i]*self.gamma
 		#_, index = torch.max(pred, 0)
 		return pred
 
