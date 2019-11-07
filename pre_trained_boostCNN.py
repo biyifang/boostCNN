@@ -323,8 +323,6 @@ def main_worker(gpu, ngpus_per_node, args):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if i % args.print_freq == 0:
-                progress.display(i)
     print('oneCNN optimization done')
 
     # boosted CNN
