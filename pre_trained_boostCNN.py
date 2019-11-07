@@ -436,7 +436,7 @@ def validate(val_loader, model, criterion, args, Flag = False):
 
             # compute output
             output = model(images)
-            print(output)
+            print(output.size(0))
             if Flag:
                 new_label.append(output.data.cpu())
             loss = criterion(output, target)
