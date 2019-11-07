@@ -306,6 +306,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
     # one-layer CNN training
     model_2 = oneCNN()
+    model_2.cuda()
     model_2.train()
     optimizer = torch.optim.SGD(model_2.parameters(), args.lr,
                                 momentum=args.momentum,
@@ -381,8 +382,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
         # measure data loading time
         data_time.update(time.time() - end)
 
-        if args.gpu is not None:
-            images = images.cuda(args.gpu, non_blocking=True)
+        images = images.cuda()
         #target = target.cuda(args.gpu, non_blocking=True)
 
         # compute output
@@ -426,9 +426,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in enumerate(val_loader):
-            if args.gpu is not None:
-                images = images.cuda(args.gpu, non_blocking=True)
-            target = target.cuda(args.gpu, non_blocking=True)
+            images = images.cuda()
+            target = target.cuda()
 
             # compute output
             output = model(images)
@@ -485,9 +484,8 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
             # measure data loading time
             data_time.update(time.time() - end)
 
-            if args.gpu is not None:
-                images = images.cuda()
-                weight = weight.cuda()
+            images = images.cuda()
+            weight = weight.cuda()
             #target = target.cuda(args.gpu, non_blocking=True)
 
 
@@ -514,9 +512,8 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
     g = []
     model.eval()
     for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
-        if args.gpu is not None:
-            images = images.cuda()
-            weight = weight.cuda()
+        images = images.cuda()
+        weight = weight.cuda()
         with torch.no_grad():
             g.append(model(images, weight, k, False).detach())
     g = torch.cat(g, 0).cpu()
@@ -543,8 +540,7 @@ def validate_boost(val_loader, model, criterion, args, k):
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in enumerate(val_loader):
-            if args.gpu is not None:
-                images = images.cuda()
+            images = images.cuda()
             target = target.cuda()
 
             # compute output
