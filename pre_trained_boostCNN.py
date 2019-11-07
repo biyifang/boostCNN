@@ -385,7 +385,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
         data_time.update(time.time() - end)
 
         images = images.cuda()
-        #target = target.cuda(args.gpu, non_blocking=True)
+        target = target.cuda()
 
         # compute output
         output = model(images)
