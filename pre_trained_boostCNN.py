@@ -37,12 +37,14 @@ parser.add_argument('--data', metavar='DIR', default='/Users/biyifang/Desktop/re
                     help='path to dataset')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=90, type=int, metavar='N',
+parser.add_argument('--epochs', default=1, type=int, metavar='N',
                     help='number of total epochs to run')
+#90
 parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
                     help='number of class')
-parser.add_argument('--num_boost_iter', default=50, type=int, metavar='N',
+parser.add_argument('--num_boost_iter', default=1, type=int, metavar='N',
                     help='number of boosting iterations')
+#50
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
 parser.add_argument('-b', '--batch-size', default=256, type=int,
