@@ -454,7 +454,7 @@ def validate(val_loader, model, criterion, args, Flag = False):
         print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
               .format(top1=top1, top5=top5))
 
-    if FLag:
+    if Flag:
         return top1.avg,new_label
     else:
         return top1.avg
