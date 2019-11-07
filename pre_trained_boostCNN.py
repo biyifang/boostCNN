@@ -39,6 +39,8 @@ parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('--epochs', default=90, type=int, metavar='N',
                     help='number of total epochs to run')
+parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
+                    help='number of class')
 parser.add_argument('--num_boost_iter', default=50, type=int, metavar='N',
                     help='number of boosting iterations')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
