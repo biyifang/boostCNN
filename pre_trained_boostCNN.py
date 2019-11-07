@@ -316,7 +316,7 @@ def main_worker(gpu, ngpus_per_node, args):
     for epoch in range(args.epochs):
         for i, ( (images, _), label) in enumerate( zip(train_loader_seq , predict_loader) ):
             images = images.cuda()
-            label - label.cuda()
+            label = label.cuda()
             loss = model_2(images, label)
             # compute gradient and do SGD step
             optimizer.zero_grad()
@@ -324,6 +324,7 @@ def main_worker(gpu, ngpus_per_node, args):
             optimizer.step()
             if i % args.print_freq == 0:
                 progress.display(i)
+    print('oneCNN optimization done')
 
     # boosted CNN
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
