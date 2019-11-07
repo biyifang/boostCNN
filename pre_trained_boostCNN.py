@@ -299,7 +299,7 @@ def main_worker(gpu, ngpus_per_node, args):
                 'best_acc1': best_acc1,
                 'optimizer' : optimizer.state_dict(),
             }, is_best)
-    _, new_predict = validate(train_loader, model, criterion, optimizer, epoch, args, True)
+    _, new_predict = validate(train_loader, model, criterion, args, True)
     new_predict = torch.cat(new_predict)
     predict_dataset = torch.utils.data.TensorDataset(new_predict)
     predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
