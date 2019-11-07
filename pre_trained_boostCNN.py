@@ -304,7 +304,7 @@ def main_worker(gpu, ngpus_per_node, args):
     predict_dataset = torch.utils.data.TensorDataset(new_predict)
     predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
     predict_loader = torch.utils.data.DataLoader(
-         weight_dataset, batch_size=args.batch_size, sampler=predict_sampler)
+         predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 
     # one-layer CNN training
     model_2 = oneCNN()
@@ -314,7 +314,7 @@ def main_worker(gpu, ngpus_per_node, args):
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
     for epoch in range(args.epochs):
-        for i, ( (images, _), label) in enumerate( zip(train_loader_seq , predict_loader) ):
+        for i, ( (images, _), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
             images = images.cuda()
             label = label.cuda()
             loss = model_2(images, label)
