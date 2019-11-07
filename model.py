@@ -18,16 +18,23 @@ class oneCNN(nn.Module):
 			#nn.ReLU(inplace=True),
 			#nn.Linear(4096, num_classes),
 		)
-	def forward(self, x):
+		self.mse = nn.MSELoss()
+	def forward(self, x, label=None):
 		x = self.features(x)
 		x = torch.flatten(x, 1)
 		x = self.classifier(x)
-		return x
+		if label:
+			return self.mse(x, label)
+		else:
+			return x
 
 class GBM(nn.Module):
-	def __init__(self, num_iter, shrink_param):
+	def __init__(self, num_iter, shrink_param, model_list=None):
 		super(GBM, self).__init__()
-		self.weak_learners = nn.ModuleList([oneCNN() for _ in range(num_iter)]) 
+		if not model_list:
+			self.weak_learners = nn.ModuleList([oneCNN() for _ in range(num_iter)]) 
+		else:
+			self.weak_learners = nn.ModuleList(model_list)
 		self.num_classes = 10
 		self.mse = nn.MSELoss()
 		self.alpha = []
