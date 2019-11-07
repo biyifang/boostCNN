@@ -313,6 +313,8 @@ def main_worker(gpu, ngpus_per_node, args):
                                 weight_decay=args.weight_decay)
     for epoch in range(args.epochs):
         for i, ( (images, _), label) in enumerate( zip(train_loader_seq , predict_loader) ):
+            images = images.cuda()
+            label - label.cuda()
             loss = model_2(images, label)
             # compute gradient and do SGD step
             optimizer.zero_grad()
