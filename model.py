@@ -23,7 +23,7 @@ class oneCNN(nn.Module):
 		x = self.features(x)
 		x = torch.flatten(x, 1)
 		x = self.classifier(x)
-		if label:
+		if label is not None:
 			loss = torch.sum(x*torch.log(label), dim=1).mean()
 			return loss
 		else:
