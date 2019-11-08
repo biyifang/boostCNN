@@ -62,6 +62,9 @@ class GBM(nn.Module):
 	def forward(self, x, w, iteration, loss=True):
 		g = self.weak_learners[iteration](x)
 		if loss:
+			print(g)
+			print(w)
+			l = input('l')
 			return self.mse(g, w)
 		else:
 			return g
