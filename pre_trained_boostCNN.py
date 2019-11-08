@@ -321,6 +321,7 @@ def main_worker(gpu, ngpus_per_node, args):
             images = images.cuda()
             label = label.cuda()
             loss = model_2(images, label)
+            print(loss.data)
             # compute gradient and do SGD step
             optimizer.zero_grad()
             loss.backward()
