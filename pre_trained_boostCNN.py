@@ -37,7 +37,7 @@ parser.add_argument('--data', metavar='DIR', default='/Users/biyifang/Desktop/re
                     help='path to dataset')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=1, type=int, metavar='N',
+parser.add_argument('--epochs', default=2, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
                     help='number of class')
@@ -52,7 +52,7 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
                          'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate', dest='lr')
-parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.000010, type=float,
+parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.0001, type=float,
                     metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
                     metavar='LRboost', help='learning rate for distillation', dest='lr_boost')
