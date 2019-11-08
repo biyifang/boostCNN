@@ -52,6 +52,10 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
                          'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate', dest='lr')
+parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
+                    metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
+parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.0001, type=float,
+                    metavar='LRboost', help='learning rate for distillation', dest='lr_boost')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
 parser.add_argument('--boost_shrink', default=0.9, type=float, metavar='S',
@@ -309,7 +313,7 @@ def main_worker(gpu, ngpus_per_node, args):
     model_2 = oneCNN()
     model_2.cuda()
     model_2.train()
-    optimizer = torch.optim.SGD(model_2.parameters(), args.lr,
+    optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
     for epoch in range(args.epochs):
@@ -324,7 +328,7 @@ def main_worker(gpu, ngpus_per_node, args):
     print('oneCNN optimization done')
 
     # boosted CNN
-    optimizer = torch.optim.SGD(model.parameters(), args.lr,
+    optimizer = torch.optim.SGD(model.parameters(), args.lr_boost,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
     output_file = open('out.txt','w')
