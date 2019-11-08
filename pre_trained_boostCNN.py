@@ -56,6 +56,8 @@ parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.00001, type=flo
                     metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
                     metavar='LRboost', help='learning rate for distillation', dest='lr_boost')
+parser.add_argument('--temperature', '--temperature', default=3.0, type=float,
+                    metavar='temperature', help='temperature for softmax', dest='temperature')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
 parser.add_argument('--boost_shrink', default=0.9, type=float, metavar='S',
@@ -397,6 +399,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 
         # compute output
         output = model(images)
+        print(output/agrs.temperature)
+        l=input('l')
         loss = criterion(output, target)
 
         # measure accuracy and record loss
