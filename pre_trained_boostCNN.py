@@ -52,7 +52,7 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
                          'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate', dest='lr')
-parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.000001, type=float,
+parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.0000001, type=float,
                     metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
                     metavar='LRboost', help='learning rate for distillation', dest='lr_boost')
@@ -316,16 +316,19 @@ def main_worker(gpu, ngpus_per_node, args):
     optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-    for epoch in range(args.epochs):
+    #for epoch in range(args.epochs):
+    for epoch in range(50):
+        lo = 0.0
         for i, ( (images, _), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
             images = images.cuda()
             label = label.cuda()
             loss = model_2(images, label)
-            print(loss.data)
+            lo += loss.data
             # compute gradient and do SGD step
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+        print(lo)
     print('oneCNN optimization done')
 
     # boosted CNN
