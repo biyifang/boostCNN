@@ -312,10 +312,10 @@ def main_worker(gpu, ngpus_per_node, args):
     # one-layer CNN training
     model_2 = oneCNN()
     model_2.cuda()
-    model_2.train()
     optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
+    model_2.train()
     #for epoch in range(args.epochs):
     for epoch in range(50):
         lo = 0.0
@@ -332,13 +332,14 @@ def main_worker(gpu, ngpus_per_node, args):
     print('oneCNN optimization done')
 
     # boosted CNN
-    optimizer = torch.optim.SGD(model.parameters(), args.lr_boost,
-                                momentum=args.momentum,
-                                weight_decay=args.weight_decay)
     output_file = open('out.txt','w')
     model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
     model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
     model_3.cuda()
+    model_3.train()
+    optimizer = torch.optim.SGD(model_3.parameters(), args.lr_boost,
+                                momentum=args.momentum,
+                                weight_decay=args.weight_decay)
     g = None
     f = torch.zeros(len(train_dataset), args.num_class)
 
