@@ -312,9 +312,8 @@ def main_worker(gpu, ngpus_per_node, args):
     # one-layer CNN training
     model_2 = oneCNN()
     model_2.cuda()
-    optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis,
-                                momentum=args.momentum,
-                                weight_decay=args.weight_decay)
+    #optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
     model_2.train()
     #for epoch in range(args.epochs):
     for epoch in range(50):
