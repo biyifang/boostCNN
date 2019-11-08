@@ -399,7 +399,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 
         # compute output
         output = model(images)
-        print(output/agrs.temperature)
+        print(output/args.temperature)
         l=input('l')
         loss = criterion(output, target)
 
