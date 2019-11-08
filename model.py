@@ -19,12 +19,12 @@ class oneCNN(nn.Module):
 			#nn.Linear(4096, num_classes),
 		)
 		self.mse = nn.MSELoss()
-	def forward(self, x, label=None):
+	def forward(self, x, label=None, temperature=None):
 		x = self.features(x)
 		x = torch.flatten(x, 1)
 		x = self.classifier(x)
 		if label is not None:
-			loss = torch.sum(label*nn.functional.log_softmax(x,-1), dim=1).mean()
+			loss = torch.sum(label*nn.functional.log_softmax(x/temperature,-1), dim=1).mean()
 			return -1.0*loss
 		else:
 			return x

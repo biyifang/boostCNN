@@ -323,7 +323,7 @@ def main_worker(gpu, ngpus_per_node, args):
         for i, ( (images, _), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
             images = images.cuda()
             label = label.cuda()
-            loss = model_2(images, label)
+            loss = model_2(images, label, args.temperature)
             lo += loss.data
             # compute gradient and do SGD step
             optimizer.zero_grad()
@@ -399,8 +399,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 
         # compute output
         output = model(images)
-        print(output/args.temperature)
-        l=input('l')
+        output = output/args.temperature
         loss = criterion(output, target)
 
         # measure accuracy and record loss
@@ -445,6 +444,7 @@ def validate(val_loader, model, criterion, args, Flag = False):
 
             # compute output
             output = model(images)
+            output = output/args.temperature
             if Flag:
                 new_label.append(output.data.cpu())
             loss = criterion(output, target)
