@@ -350,7 +350,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
         # train for one epoch
         f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer, k, f, g, args)
-
+        print(f)
+        print(g)
         # evaluate on validation set
         acc1 = validate_boost(val_loader, model_3, criterion, args, k)
         output_file.write('Iteration {} * Acc@1 {:5.5f} '
@@ -503,9 +504,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 
             # compute output
-            loss = model(images, weight, k) 
-            print(loss)
-            l = input('l')         
+            loss = model(images, weight, k)        
 
             # measure accuracy and record loss
             #acc1, acc5 = accuracy(output, target, topk=(1, 5))
