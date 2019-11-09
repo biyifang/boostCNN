@@ -504,7 +504,8 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 
             # compute output
-            loss = model(images, weight, k)        
+            loss = model(images, weight, k) 
+            print(loss)       
 
             # measure accuracy and record loss
             #acc1, acc5 = accuracy(output, target, topk=(1, 5))
