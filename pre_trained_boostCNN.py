@@ -499,12 +499,13 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
             images = images.cuda()
             weight = weight.cuda()
-            print(weight)
             #target = target.cuda(args.gpu, non_blocking=True)
 
 
             # compute output
-            loss = model(images, weight, k)          
+            loss = model(images, weight, k) 
+            print(loss)
+            l = input('l')         
 
             # measure accuracy and record loss
             #acc1, acc5 = accuracy(output, target, topk=(1, 5))
