@@ -37,7 +37,7 @@ parser.add_argument('--data', metavar='DIR', default='/Users/biyifang/Desktop/re
                     help='path to dataset')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=1, type=int, metavar='N',
+parser.add_argument('--epochs', default=50, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
                     help='number of class')
@@ -317,8 +317,7 @@ def main_worker(gpu, ngpus_per_node, args):
     #optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
     optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
     model_2.train()
-    #for epoch in range(args.epochs):
-    for epoch in range(50):
+    for epoch in range(args.epochs):
         lo = 0.0
         for i, ( (images, _), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
             images = images.cuda()
@@ -329,7 +328,7 @@ def main_worker(gpu, ngpus_per_node, args):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        print(lo)
+        print('iteration ' + str(epoch) + ': ' + str(lo.data))
     print('oneCNN optimization done')
 
     # boosted CNN
