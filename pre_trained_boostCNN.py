@@ -505,7 +505,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
             # compute output
             loss = model(images, weight, k)
-            output = model.predict(images, k) 
+            output = model.predict(images, k-1) 
             print(loss)       
 
             # measure accuracy and record loss
