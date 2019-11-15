@@ -320,7 +320,7 @@ def main_worker(gpu, ngpus_per_node, args):
     model_2.train()
     for epoch in range(args.epochs):
         lo = 0.0
-        for i, ( (images, _), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
+        for i, ( (images, target), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
             images = images.cuda()
             label = label.cuda()
             loss = model_2(images, label, args.temperature)
@@ -336,7 +336,7 @@ def main_worker(gpu, ngpus_per_node, args):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        print('iteration ' + str(epoch) + ': ' + str(lo.data))
+        print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1))
     print('oneCNN optimization done')
 
     # boosted CNN
