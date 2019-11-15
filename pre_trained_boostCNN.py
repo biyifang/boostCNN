@@ -56,7 +56,7 @@ parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float
                     metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
                     metavar='LRboost', help='learning rate for distillation', dest='lr_boost')
-parser.add_argument('--temperature', '--temperature', default=3.0, type=float,
+parser.add_argument('--temperature', '--temperature', default=1.0, type=float,
                     metavar='temperature', help='temperature for softmax', dest='temperature')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
