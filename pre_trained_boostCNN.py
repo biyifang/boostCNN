@@ -323,13 +323,12 @@ def main_worker(gpu, ngpus_per_node, args):
         for i, ( (images, target), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
             images = images.cuda()
             label = label.cuda()
+            target = target.cuda()
             loss = model_2(images, label, args.temperature)
 
             output = model_2(images)
-            acc1, acc5 = accuracy(output, target, topk=(1, 5))
+            acc1, _ = accuracy(output, target, topk=(1, 5))
             top1.update(acc1[0], images.size(0))
-            if i == args.b - 1:
-                print(top1)
 
             lo += loss.data
             # compute gradient and do SGD step
@@ -566,7 +565,7 @@ def validate_boost(val_loader, model, criterion, args, k):
 
             # compute output
             output = model.predict(images, k)
-            output = output/args.temperature
+            #output = output/args.temperature
             loss = criterion(output, target)
 
             # measure accuracy and record loss
