@@ -37,7 +37,7 @@ parser.add_argument('--data', metavar='DIR', default='/Users/biyifang/Desktop/re
                     help='path to dataset')
 parser.add_argument('-j', '--workers', default=1, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=50, type=int, metavar='N',
+parser.add_argument('--epochs', default=1, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
                     help='number of class')
@@ -314,6 +314,7 @@ def main_worker(gpu, ngpus_per_node, args):
     # one-layer CNN training
     model_2 = oneCNN()
     model_2.cuda()
+    top1 = AverageMeter('Acc@1', ':6.2f')
     #optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
     optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
     model_2.train()
@@ -323,6 +324,13 @@ def main_worker(gpu, ngpus_per_node, args):
             images = images.cuda()
             label = label.cuda()
             loss = model_2(images, label, args.temperature)
+
+            output = model_2(images)
+            acc1, acc5 = accuracy(output, target, topk=(1, 5))
+            top1.update(acc1[0], images.size(0))
+            if i == args.b - 1:
+                print(top1)
+
             lo += loss.data
             # compute gradient and do SGD step
             optimizer.zero_grad()
