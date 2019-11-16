@@ -34,10 +34,10 @@ class oneCNN(nn.Module):
 		x_1 = torch.flatten(x_1, 1)
 		x_1 = self.classifier(x_1 + x_res)
 		if label is not None:
-			loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x/temperature,-1), dim=1).mean()
+			loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x_1/temperature,-1), dim=1).mean()
 			return -1.0*loss
 		else:
-			return nn.functional.softmax(x,-1)
+			return nn.functional.softmax(x_1,-1)
 
 class GBM(nn.Module):
 	def __init__(self, num_iter, shrink_param, model_list=None):
