@@ -310,6 +310,7 @@ def main_worker(gpu, ngpus_per_node, args):
     predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
     predict_loader = torch.utils.data.DataLoader(
          predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
+    acc_one = acc1
 
     # one-layer CNN training
     model_2 = oneCNN()
@@ -337,6 +338,8 @@ def main_worker(gpu, ngpus_per_node, args):
             optimizer.step()
         print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1))
     print('oneCNN optimization done')
+    print(acc_one)
+    l = input('l')
 
     # boosted CNN
     output_file = open('out.txt','w')
