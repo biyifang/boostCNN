@@ -27,7 +27,7 @@ class oneCNN(nn.Module):
 			loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x/temperature,-1), dim=1).mean()
 			return -1.0*loss
 		else:
-			return x
+			return nn.functional.log_softmax(x,-1)
 
 class GBM(nn.Module):
 	def __init__(self, num_iter, shrink_param, model_list=None):
