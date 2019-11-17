@@ -294,6 +294,14 @@ def main_worker(gpu, ngpus_per_node, args):
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
         best_acc1 = max(acc1, best_acc1)
+        if acc1 == best_acc1:
+            _, new_predict = validate(train_loader, model, criterion, args, True)
+            new_predict = torch.cat(new_predict)
+            predict_dataset = torch.utils.data.TensorDataset(new_predict)
+            predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
+            predict_loader = torch.utils.data.DataLoader(
+                predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
+
 
         if not args.multiprocessing_distributed or (args.multiprocessing_distributed
                 and args.rank % ngpus_per_node == 0):
@@ -304,12 +312,12 @@ def main_worker(gpu, ngpus_per_node, args):
                 'best_acc1': best_acc1,
                 'optimizer' : optimizer.state_dict(),
             }, is_best)
-    _, new_predict = validate(train_loader, model, criterion, args, True)
-    new_predict = torch.cat(new_predict)
-    predict_dataset = torch.utils.data.TensorDataset(new_predict)
-    predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
-    predict_loader = torch.utils.data.DataLoader(
-         predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
+    #_, new_predict = validate(train_loader, model, criterion, args, True)
+    #new_predict = torch.cat(new_predict)
+    #predict_dataset = torch.utils.data.TensorDataset(new_predict)
+    #predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
+    #predict_loader = torch.utils.data.DataLoader(
+    #     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
     acc_one = acc1
 
     # one-layer CNN training
