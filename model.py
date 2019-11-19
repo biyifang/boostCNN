@@ -6,18 +6,31 @@ class oneCNN(nn.Module):
 	def __init__(self, num_classes=10):
 		super(oneCNN, self).__init__()
 		self.features_1 = nn.Sequential(
-			nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
+		#2/1-layer kernel=32 stride=4
+			nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			nn.BatchNorm2d(16),
 			nn.ReLU(inplace=True),
-			nn.MaxPool2d(kernel_size=3, stride=4))
+			nn.MaxPool2d(kernel_size=3, stride=2))
+		#self.features_2 = nn.Sequential(
+		#	nn.Conv2d(16, 4, kernel_size=8, stride=2, padding=2),
+		#	nn.BatchNorm2d(4),
+		#	nn.ReLU(inplace=True),
+		#	nn.MaxPool2d(kernel_size=2, stride=2))
 		self.features_2 = nn.Sequential(
-			nn.Conv2d(16, 4, kernel_size=8, stride=2, padding=2),
+			nn.Conv2d(16, 4, kernel_size=4, stride=2, padding=2),
 			nn.BatchNorm2d(4),
 			nn.ReLU(inplace=True),
-			nn.MaxPool2d(kernel_size=2, stride=2))
+			nn.MaxPool2d(kernel_size=2, stride=2),
+			nn.Conv2d(4, 2, kernel_size=2, stride=2, padding=2),
+			nn.BatchNorm2d(2),
+			nn.ReLU(inplace=True),
+			nn.MaxPool2d(kernel_size=2, stride=1))
 		self.classifier = nn.Sequential(
 			#nn.Dropout(),
-			nn.Linear(4*2*2, num_classes),
+			#2-layers
+			#nn.Linear(4*2*2, num_classes),
+			#3-layers
+			nn.Linear(2*3*3, num_classes),
 			#nn.ReLU(inplace=True),
 			#nn.Dropout(),
 			#nn.Linear(4096, 4096),
