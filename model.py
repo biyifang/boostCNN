@@ -37,7 +37,8 @@ class oneCNN(nn.Module):
 			#nn.ReLU(inplace=True),
 			#nn.Linear(4096, num_classes),
 		)
-		self.res = nn.Linear(16*12*12, 4*2*2)
+		#self.res = nn.Linear(16*12*12, 4*2*2)
+		self.res = nn.Linear(16*26*26, 2*3*3)
 		self.mse = nn.MSELoss()
 	def forward(self, x, label=None, temperature=None):
 		x_1 = self.features_1(x)
