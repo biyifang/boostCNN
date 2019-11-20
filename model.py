@@ -11,20 +11,20 @@ class oneCNN(nn.Module):
 			nn.BatchNorm2d(16),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=3, stride=2))
-		#self.features_2 = nn.Sequential(
-		#	nn.Conv2d(16, 4, kernel_size=8, stride=2, padding=2),
-		#	nn.BatchNorm2d(4),
-		#	nn.ReLU(inplace=True),
-		#	nn.MaxPool2d(kernel_size=2, stride=2))
 		self.features_2 = nn.Sequential(
-			nn.Conv2d(16, 4, kernel_size=4, stride=2, padding=2),
+			nn.Conv2d(16, 4, kernel_size=8, stride=2, padding=2),
 			nn.BatchNorm2d(4),
 			nn.ReLU(inplace=True),
-			nn.MaxPool2d(kernel_size=2, stride=2),
-			nn.Conv2d(4, 2, kernel_size=2, stride=2, padding=2),
-			nn.BatchNorm2d(2),
-			nn.ReLU(inplace=True),
-			nn.MaxPool2d(kernel_size=2, stride=1))
+			nn.MaxPool2d(kernel_size=2, stride=2))
+		#self.features_2 = nn.Sequential(
+		#	nn.Conv2d(16, 4, kernel_size=4, stride=2, padding=2),
+		#	nn.BatchNorm2d(4),
+		#	nn.ReLU(inplace=True),
+		#	nn.MaxPool2d(kernel_size=2, stride=2),
+		#	nn.Conv2d(4, 2, kernel_size=2, stride=2, padding=2),
+		#	nn.BatchNorm2d(2),
+		#	nn.ReLU(inplace=True),
+		#	nn.MaxPool2d(kernel_size=2, stride=1))
 		self.classifier = nn.Sequential(
 			#nn.Dropout(),
 			#2-layers
@@ -37,8 +37,8 @@ class oneCNN(nn.Module):
 			#nn.ReLU(inplace=True),
 			#nn.Linear(4096, num_classes),
 		)
-		#self.res = nn.Linear(16*12*12, 4*2*2)
-		self.res = nn.Linear(16*26*26, 2*4*4)
+		self.res = nn.Linear(16*12*12, 4*2*2)
+		#self.res = nn.Linear(16*26*26, 2*4*4)
 		self.mse = nn.MSELoss()
 	def forward(self, x, label=None, temperature=None):
 		x_1 = self.features_1(x)
