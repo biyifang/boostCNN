@@ -40,8 +40,7 @@ class oneCNN(nn.Module):
 			#nn.Linear(4096, num_classes),
 		)
 		#2-layers
-		self.res = nn.Linear(16*24*24, 4*3*3)
-		#self.res = nn.Linear(16*24*24, 4*5*5)
+		self.res = nn.Linear(16*24*24, 4*5*5)
 		#3-layers
 		#self.res = nn.Linear(16*26*26, 2*4*4)
 		self.mse = nn.MSELoss()
@@ -52,6 +51,7 @@ class oneCNN(nn.Module):
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
 		print(x_1.size())
+		print(x_res.size())
 		x_1 = self.classifier(x_1 + x_res)
 		if label is not None:
 			loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x_1/temperature,-1), dim=1).mean()
