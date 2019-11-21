@@ -7,7 +7,8 @@ class oneCNN(nn.Module):
 		super(oneCNN, self).__init__()
 		self.features_1 = nn.Sequential(
 		#2/1-layer kernel=32 stride=4
-			nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
+			nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
+			#nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			nn.BatchNorm2d(16),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=3, stride=2))
