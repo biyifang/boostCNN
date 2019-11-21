@@ -13,7 +13,7 @@ class oneCNN(nn.Module):
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=3, stride=2))
 		self.features_2 = nn.Sequential(
-			nn.Conv2d(16, 4, kernel_size=8, stride=2, padding=2),
+			nn.Conv2d(16, 4, kernel_size=8, stride=4, padding=2),
 			nn.BatchNorm2d(4),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=2))
@@ -46,6 +46,7 @@ class oneCNN(nn.Module):
 	def forward(self, x, label=None, temperature=None):
 		x_1 = self.features_1(x)
 		x_f = torch.flatten(x_1, 1)
+		print(x_f.size())
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
