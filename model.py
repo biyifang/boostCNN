@@ -29,7 +29,8 @@ class oneCNN(nn.Module):
 		self.classifier = nn.Sequential(
 			#nn.Dropout(),
 			#2-layers
-			nn.Linear(4*5*5, num_classes),
+			nn.Linear(4*3*3, num_classes),
+			#nn.Linear(4*5*5, num_classes),
 			#3-layers
 			#nn.Linear(2*4*4, num_classes),
 			#nn.ReLU(inplace=True),
@@ -39,7 +40,8 @@ class oneCNN(nn.Module):
 			#nn.Linear(4096, num_classes),
 		)
 		#2-layers
-		self.res = nn.Linear(16*24*24, 4*5*5)
+		self.res = nn.Linear(16*24*24, 4*3*3)
+		#self.res = nn.Linear(16*24*24, 4*5*5)
 		#3-layers
 		#self.res = nn.Linear(16*26*26, 2*4*4)
 		self.mse = nn.MSELoss()
