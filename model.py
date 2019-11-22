@@ -7,8 +7,8 @@ class oneCNN(nn.Module):
 		super(oneCNN, self).__init__()
 		self.features_1 = nn.Sequential(
 		#2/1-layer kernel=32 stride=4
-			nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
-			#nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
+			#nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
+			nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			nn.BatchNorm2d(16),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=3, stride=2))
@@ -29,8 +29,8 @@ class oneCNN(nn.Module):
 		self.classifier = nn.Sequential(
 			#nn.Dropout(),
 			#2-layers
-			nn.Linear(4*3*3, num_classes),
-			#nn.Linear(4*5*5, num_classes),
+			#nn.Linear(4*3*3, num_classes),
+			nn.Linear(4*5*5, num_classes),
 			#3-layers
 			#nn.Linear(2*4*4, num_classes),
 			#nn.ReLU(inplace=True),
@@ -40,7 +40,7 @@ class oneCNN(nn.Module):
 			#nn.Linear(4096, num_classes),
 		)
 		#2-layers
-		self.res = nn.Linear(16*24*24, 4*3*3)
+		self.res = nn.Linear(16*24*24, 4*5*5)
 		#3-layers
 		#self.res = nn.Linear(16*26*26, 2*4*4)
 		self.mse = nn.MSELoss()
@@ -50,7 +50,7 @@ class oneCNN(nn.Module):
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
-		#x_1 = self.classifier(x_1 + x_res)
+		x_1 = self.classifier(x_1 + x_res)
 		x_1 = self.classifier(x_1)
 		if label is not None:
 			loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x_1/temperature,-1), dim=1).mean()
