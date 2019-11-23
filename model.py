@@ -53,7 +53,7 @@ class oneCNN(nn.Module):
 		print(x_1.size())
 		print(x_res.size())
 		x_1 = self.classifier(x_1 + x_res)
-		x_1 = self.classifier(x_1)
+		#x_1 = self.classifier(x_1)
 		if label is not None:
 			loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x_1/temperature,-1), dim=1).mean()
 			return -1.0*loss
