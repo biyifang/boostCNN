@@ -37,7 +37,7 @@ parser.add_argument('--data', metavar='DIR', default='/Users/biyifang/Desktop/re
                     help='path to dataset')
 parser.add_argument('-j', '--workers', default=1, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=90, type=int, metavar='N',
+parser.add_argument('--epochs', default=1, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
                     help='number of class')
