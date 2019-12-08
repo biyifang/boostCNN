@@ -418,7 +418,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
         target = target.cuda()
 
         # compute output
-        output = model(images)
+        output = model(images,if_student=False)
         output = output/args.temperature
         loss = criterion(output, target)
         print(loss)
@@ -464,7 +464,7 @@ def validate(val_loader, model, criterion, args, Flag = False):
             target = target.cuda()
 
             # compute output
-            output = model(images)
+            output = model(images, if_student=False)
             #output = output/args.temperature
             if Flag:
                 new_label.append(output.data.cpu())

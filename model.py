@@ -89,11 +89,13 @@ class oneCNN(nn.Module):
 			nn.Linear(4096, num_classes),
 		)
 
-	def forward(self, x, label=None, temperature=None):
+	def forward(self, x, label=None, temperature=None, if_student = True):
 		x = self.features(x)
 		x = self.avgpool(x)
 		x = torch.flatten(x, 1)
 		x_1 = self.classifier(x)
+		if not if_student:
+			return x_1
 		if label is not None:
 			loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x_1/temperature,-1), dim=1).mean()
 			return -1.0*loss
