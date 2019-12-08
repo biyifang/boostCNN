@@ -353,6 +353,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
     # boosted CNN
     output_file = open('out.txt','w')
+    model_2.cpu()
     model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
     model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
     model_3.cpu()
