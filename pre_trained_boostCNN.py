@@ -421,6 +421,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
         output = model(images)
         output = output/args.temperature
         loss = criterion(output, target)
+        print(loss)
 
         # measure accuracy and record loss
         acc1, acc5 = accuracy(output, target, topk=(1, 5))
