@@ -418,7 +418,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
         target = target.cuda()
 
         # compute output
-        output = model(images,if_student=False)
+        #output = model(images,if_student=False)
+        output = model(images)
         output = output/args.temperature
         loss = criterion(output, target)
 
