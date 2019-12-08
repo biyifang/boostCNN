@@ -353,11 +353,11 @@ def main_worker(gpu, ngpus_per_node, args):
     output_file = open('out.txt','w')
     model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
     model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
-    model_3.cuda()
+    model_3.cpu()
     model_3.train()
-    optimizer = torch.optim.SGD(model_3.parameters(), args.lr_boost,
+    optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
                                 momentum=args.momentum,
-                                weight_decay=args.weight_decay)
+                                weight_decay=args.weight_decay) for it in model_3.weak_learners]
     g = None
     f = torch.zeros(len(train_dataset), args.num_class)
 
@@ -367,7 +367,7 @@ def main_worker(gpu, ngpus_per_node, args):
         #adjust_learning_rate(optimizer, epoch, args)
 
         # train for one epoch
-        f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer, k, f, g, args)
+        f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
         # evaluate on validation set
         acc1 = validate_boost(val_loader, model_3, criterion, args, k)
         output_file.write('Iteration {} * Acc@1 {:5.5f} '
@@ -487,12 +487,14 @@ def validate(val_loader, model, criterion, args, Flag = False):
     else:
         return top1.avg
 
-def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset, model, optimizer, k, f, g, args):
+def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset, model, optimizer_list, k, f, g, args):
     batch_time = AverageMeter('Time', ':6.3f')
     data_time = AverageMeter('Data', ':6.3f')
     losses = AverageMeter('Loss', ':.4e')
     top1 = AverageMeter('Acc@1', ':6.2f')
     top5 = AverageMeter('Acc@5', ':6.2f')
+    optimizer = optimizer_list[k]
+    model.weak_learners[k].cuda()
     #progress = ProgressMeter(
     #    len(train_loader),
     #    [batch_time, data_time, losses, top1, top5],
@@ -521,7 +523,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
             # compute output
             loss = model(images, weight, k)
-            output = model.predict(images, k-1)       
+            #output = model.predict(images, k-1)       
 
             # measure accuracy and record loss
             #acc1, acc5 = accuracy(output, target, topk=(1, 5))
@@ -550,6 +552,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
     g = torch.cat(g, 0).cpu()
     model.line_search(f, g, train_dataset)
     f = f + model.gamma*model.alpha[-1] * g
+    model.weak_learners[k].cpu()
     return f, g
 
 

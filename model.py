@@ -165,10 +165,12 @@ class GBM(nn.Module):
 		self.alpha.append((temp1 + temp2)/2)
 	def predict(self, x, k):
 		pred = next(self.weak_learners.parameters())
-		pred = pred.new_zeros(x.size(0), self.num_classes)
+		pred = pred.new_zeros(x.size(0), self.num_classes).cuda()
 		for i,net in enumerate(self.weak_learners):
+			net.cuda()
 			if i <= k:
 				pred += net.forward(x) * self.alpha[i]*self.gamma
+			net.cpu()
 		#_, index = torch.max(pred, 0)
 		return pred
 
