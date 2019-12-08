@@ -348,6 +348,8 @@ def main_worker(gpu, ngpus_per_node, args):
     print('oneCNN optimization done')
     print(acc_one)
     l = input('l')
+    model.cpu()
+    model = None
 
     # boosted CNN
     output_file = open('out.txt','w')
