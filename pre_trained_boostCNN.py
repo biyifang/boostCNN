@@ -65,7 +65,7 @@ parser.add_argument('--boost_shrink', default=0.9, type=float, metavar='S',
 parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)',
                     dest='weight_decay')
-parser.add_argument('-p', '--print-freq', default=10, type=int,
+parser.add_argument('-p', '--print-freq', default=100, type=int,
                     metavar='N', help='print frequency (default: 10)')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
@@ -464,7 +464,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
             target = target.cuda()
 
             # compute output
-            output = model(images, if_student=False)
+            #output = model(images, if_student=False)
+            output = model(images)
             #output = output/args.temperature
             if Flag:
                 new_label.append(output.data.cpu()/args.temperature)
