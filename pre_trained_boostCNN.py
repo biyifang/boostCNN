@@ -152,8 +152,8 @@ def main_worker(gpu, ngpus_per_node, args):
     else:
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch]()
-        #model = models.resnet18(num_classes=10)
-        model = oneCNN()
+        model = models.resnet18(num_classes=10)
+        #model = oneCNN()
         model.cuda()
 
     """
@@ -421,7 +421,6 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
         output = model(images,if_student=False)
         output = output/args.temperature
         loss = criterion(output, target)
-        print(loss)
 
         # measure accuracy and record loss
         acc1, acc5 = accuracy(output, target, topk=(1, 5))
@@ -467,7 +466,7 @@ def validate(val_loader, model, criterion, args, Flag = False):
             output = model(images, if_student=False)
             #output = output/args.temperature
             if Flag:
-                new_label.append(output.data.cpu())
+                new_label.append(output.data.cpu()/args.temperature)
             loss = criterion(output, target)
 
             # measure accuracy and record loss
