@@ -45,7 +45,7 @@ class oneCNN(nn.Module):
 		#3-layers
 		#self.res = nn.Linear(16*26*26, 2*4*4)
 		self.mse = nn.MSELoss()
-	def forward(self, x, label=None, temperature=None):
+	def forward(self, x, label=None, temperature=None, if_student = True):
 		x_1 = self.features_1(x)
 		x_f = torch.flatten(x_1, 1)
 		x_res = self.res(x_f)
