@@ -152,8 +152,8 @@ def main_worker(gpu, ngpus_per_node, args):
     else:
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch]()
-        model = models.resnet18(num_classes=10)
-        #model = oneCNN()
+        #model = models.resnet18(num_classes=10)
+        model = oneCNN()
         model.cuda()
 
     """
@@ -225,12 +225,20 @@ def main_worker(gpu, ngpus_per_node, args):
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
+    '''
     train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
             transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             normalize,
         ]), target_transform=None, download=True)
+    '''
+    train_dataset = datasets.mnist(args.data, train=True, transform=transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize,
+    ]), target_transform=None, download=True)
     weight = torch.zeros(len(train_dataset), args.num_class)
     weight_dataset = torch.utils.data.TensorDataset(weight)
     """
@@ -320,6 +328,7 @@ def main_worker(gpu, ngpus_per_node, args):
     #predict_loader = torch.utils.data.DataLoader(
     #     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
     acc_one = acc1
+    l = input('l')
 
     # one-layer CNN training
     model_2 = oneCNN()
@@ -418,8 +427,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
         target = target.cuda()
 
         # compute output
-        #output = model(images,if_student=False)
-        output = model(images)
+        output = model(images,if_student=False)
+        #output = model(images)
         output = output/args.temperature
         loss = criterion(output, target)
 
@@ -464,8 +473,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
             target = target.cuda()
 
             # compute output
-            #output = model(images, if_student=False)
-            output = model(images)
+            output = model(images, if_student=False)
+            #output = model(images)
             #output = output/args.temperature
             if Flag:
                 new_label.append(output.data.cpu())
