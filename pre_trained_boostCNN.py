@@ -233,7 +233,7 @@ def main_worker(gpu, ngpus_per_node, args):
             normalize,
         ]), target_transform=None, download=True)
     '''
-    train_dataset = datasets.mnist(args.data, train=True, transform=transforms.Compose([
+    train_dataset = datasets.MNIST(args.data, train=True, transform=transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
