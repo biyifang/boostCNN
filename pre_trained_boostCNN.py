@@ -222,10 +222,10 @@ def main_worker(gpu, ngpus_per_node, args):
     # Data loading code
     traindir = os.path.join(args.data, 'train')
     valdir = os.path.join(args.data, 'val')
-    #normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    normalize = transforms.Normalize(mean=[0.485], std=[0.229])
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    #normalize = transforms.Normalize(mean=[0.485], std=[0.229])
 
-    '''
+    
     train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
             transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
@@ -239,6 +239,7 @@ def main_worker(gpu, ngpus_per_node, args):
         transforms.ToTensor(),
         normalize,
     ]), target_transform=None, download=True)
+    '''
     weight = torch.zeros(len(train_dataset), args.num_class)
     weight_dataset = torch.utils.data.TensorDataset(weight)
     """
@@ -266,7 +267,7 @@ def main_worker(gpu, ngpus_per_node, args):
     weight_loader = torch.utils.data.DataLoader(
          weight_dataset, batch_size=args.batch_size, sampler=weight_sampler)
 
-    '''
+    
     val_loader = torch.utils.data.DataLoader(datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
             transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
@@ -282,6 +283,7 @@ def main_worker(gpu, ngpus_per_node, args):
             normalize,
         ]), target_transform=None, download=False), batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
+    '''
 
     """
     val_loader = torch.utils.data.DataLoader(
