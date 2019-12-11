@@ -30,6 +30,7 @@ class oneCNN(nn.Module):
 		self.classifier = nn.Sequential(
 			#nn.Dropout(),
 			#2-layers
+			nn.Dropout(0.2),
 			nn.Linear(4*3*3, num_classes),
 			#nn.Linear(4*5*5, num_classes),
 			#3-layers
