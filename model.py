@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-
+'''
 class oneCNN(nn.Module):
 	def __init__(self, num_classes=10):
 		super(oneCNN, self).__init__()
@@ -61,9 +61,10 @@ class oneCNN(nn.Module):
 			return -1.0*loss
 		else:
 			return nn.functional.softmax(x_1,-1)
-
-
 '''
+
+
+
 class oneCNN(nn.Module):
 	def __init__(self, num_classes=10):
 		super(oneCNN, self).__init__()
@@ -105,7 +106,7 @@ class oneCNN(nn.Module):
 			return -1.0*loss
 		else:
 			return nn.functional.softmax(x_1,-1)
-'''
+
 
 
 class GBM(nn.Module):

@@ -408,7 +408,7 @@ def main_worker(gpu, ngpus_per_node, args):
             save_checkpoint({
                 'iteration': k + 1,
                 'arch': args.arch,
-                'state_dict': model.state_dict(),
+                'state_dict': model_3.state_dict(),
                 'best_acc1': best_acc1,
                 'optimizer' : optimizer.state_dict(),
             }, is_best)
