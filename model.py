@@ -146,7 +146,8 @@ class GBM(nn.Module):
 		else:
 			return g
 		#data already with correct w/label
-	def line_search(self, f, g, data):
+	#def line_search(self, f, g, data): plane
+	def line_search(self, f, g, data, gamma):
 		#data = TensorDataset(f,g,label) sequntial data
 		lower = 0.0
 		upper = 1.0
@@ -170,7 +171,8 @@ class GBM(nn.Module):
 			else:
 				lower = temp1
 			error = torch.abs(loss_temp1 - loss_temp2)
-		self.alpha.append((temp1 + temp2)/2)
+		#self.alpha.append((temp1 + temp2)/2) plane
+		self.alpha.append((temp1 + temp2)/(2*gamma))
 	def predict(self, x, k):
 		pred = next(self.weak_learners.parameters())
 		pred = pred.new_zeros(x.size(0), self.num_classes).cuda()
