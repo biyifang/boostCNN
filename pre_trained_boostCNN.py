@@ -339,19 +339,19 @@ def main_worker(gpu, ngpus_per_node, args):
     #predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
     #predict_loader = torch.utils.data.DataLoader(
     #     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
-    acc_one = acc1
     print(best_acc1)
     #l = input('l')
 
     # one-layer CNN training
     model_2 = oneCNN()
     model_2.cuda()
-    top1 = AverageMeter('Acc@1', ':6.2f')
     #optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
     optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
     model_2.train()
+    acc2 = 0.0
     for epoch in range(args.epochs):
         lo = 0.0
+        top1 = AverageMeter('Acc@1', ':6.2f')
         for i, ( (images, target), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
             images = images.cuda()
             label = label.cuda()
@@ -367,10 +367,12 @@ def main_worker(gpu, ngpus_per_node, args):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        print(top1)
-        print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1))
+        if top1.average > acc2:
+            acc2 = top1.average
+            torch.save(model_2, 'initial_model')
+        print(top1.average)
+        print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.average))
     print('oneCNN optimization done')
-    print(acc_one)
     l = input('l')
     model.cpu()
     model = None
@@ -378,6 +380,7 @@ def main_worker(gpu, ngpus_per_node, args):
     # boosted CNN
     output_file = open('out.txt','w')
     model_2.cpu()
+    model_2 = torch.load('initial_model')
     model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
     model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
     model_3.cpu()
