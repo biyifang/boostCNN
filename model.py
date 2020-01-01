@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-'''
+
 class oneCNN(nn.Module):
 	def __init__(self, num_classes=10):
 		super(oneCNN, self).__init__()
@@ -11,12 +11,14 @@ class oneCNN(nn.Module):
 			#nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
 			nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			nn.BatchNorm2d(16),
-			nn.ReLU(inplace=True),
+			#nn.ReLU(inplace=True),
+			nn.Sigmoid(),
 			nn.MaxPool2d(kernel_size=3, stride=2))
 		self.features_2 = nn.Sequential(
 			nn.Conv2d(16, 4, kernel_size=8, stride=4, padding=2),
 			nn.BatchNorm2d(4),
-			nn.ReLU(inplace=True),
+			#nn.ReLU(inplace=True),
+			nn.Sigmoid(),
 			nn.MaxPool2d(kernel_size=2, stride=2))
 		#self.features_2 = nn.Sequential(
 		#	nn.Conv2d(16, 4, kernel_size=4, stride=2, padding=2),
@@ -61,10 +63,10 @@ class oneCNN(nn.Module):
 			return -1.0*loss
 		else:
 			return nn.functional.softmax(x_1,-1)
+
+
+
 '''
-
-
-
 class oneCNN(nn.Module):
 	def __init__(self, num_classes=10):
 		super(oneCNN, self).__init__()
@@ -106,7 +108,7 @@ class oneCNN(nn.Module):
 			return -1.0*loss
 		else:
 			return nn.functional.softmax(x_1,-1)
-
+'''
 
 
 class GBM(nn.Module):
