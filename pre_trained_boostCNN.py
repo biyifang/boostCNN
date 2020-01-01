@@ -367,6 +367,7 @@ def main_worker(gpu, ngpus_per_node, args):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+        print(top1)
         print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1))
     print('oneCNN optimization done')
     print(acc_one)
