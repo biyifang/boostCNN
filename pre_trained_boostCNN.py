@@ -35,6 +35,8 @@ parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                         ' (default: resnet18)')
 parser.add_argument('--data', metavar='DIR', default='/Users/biyifang/Desktop/research/AllState/experiment', type=str,
                     help='path to dataset')
+parser.add_argument('--model_save', metavar='MS', default='/Users/biyifang/Desktop/research/AllState/experiment', type=str,
+                    help='path to model')
 parser.add_argument('-j', '--workers', default=1, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('--epochs', default=90, type=int, metavar='N',
@@ -369,7 +371,7 @@ def main_worker(gpu, ngpus_per_node, args):
             optimizer.step()
         if top1.avg > acc2:
             acc2 = top1.avg
-            torch.save(model_2, 'initial_model')
+            torch.save(model_2, 'initial_model_'+ args.model_save)
         print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg))
     print('oneCNN optimization done')
     l = input('l')
@@ -379,7 +381,7 @@ def main_worker(gpu, ngpus_per_node, args):
     # boosted CNN
     output_file = open('out.txt','w')
     model_2.cpu()
-    model_2 = torch.load('initial_model')
+    model_2 = torch.load('initial_model_' + args.model_save)
     model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
     model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
     model_3.cpu()
