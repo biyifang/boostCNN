@@ -11,14 +11,14 @@ class oneCNN(nn.Module):
 			#nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
 			nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			nn.BatchNorm2d(16),
-			#nn.ReLU(inplace=True),
-			nn.Sigmoid(),
+			nn.ReLU(inplace=True),
+			#nn.Sigmoid(),
 			nn.MaxPool2d(kernel_size=3, stride=2))
 		self.features_2 = nn.Sequential(
 			nn.Conv2d(16, 4, kernel_size=8, stride=4, padding=2),
 			nn.BatchNorm2d(4),
-			#nn.ReLU(inplace=True),
-			nn.Sigmoid(),
+			nn.ReLU(inplace=True),
+			#nn.Sigmoid(),
 			nn.MaxPool2d(kernel_size=2, stride=2))
 		#self.features_2 = nn.Sequential(
 		#	nn.Conv2d(16, 4, kernel_size=4, stride=2, padding=2),
