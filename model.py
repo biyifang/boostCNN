@@ -19,7 +19,7 @@ class oneCNN(nn.Module):
 			nn.MaxPool2d(kernel_size=3, stride=2))
 		self.features_2 = nn.Sequential(
 			#nn.Conv2d(16, 4, kernel_size=8, stride=4, padding=2),
-			nn.Dropout(p=0.2),
+			#nn.Dropout(p=0.2),
 			nn.Conv2d(64, 4, kernel_size=8, stride=4, padding=2),
 			nn.BatchNorm2d(4),
 			nn.ReLU(inplace=True),
@@ -37,7 +37,7 @@ class oneCNN(nn.Module):
 		self.classifier = nn.Sequential(
 			#nn.Dropout(),
 			#2-layers
-			nn.Dropout(0.2),
+			#nn.Dropout(0.2),
 			nn.Linear(4*3*3, num_classes),
 			#nn.Linear(4*5*5, num_classes),
 			#3-layers

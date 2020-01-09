@@ -329,7 +329,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
-				torch.save(model, 'teacher_model_'+ args.teacher_model_save)
+				torch.save(model, 'teacher_model_resnet18')
 
 
 			if not args.multiprocessing_distributed or (args.multiprocessing_distributed
