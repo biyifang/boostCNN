@@ -556,6 +556,17 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			# measure data loading time
 			data_time.update(time.time() - end)
 
+			'''
+			if k == 1:
+				images = images[:, , ,:]
+			elif k == 2:
+				images = images[]
+			elif k == 3:
+				images = images[]
+			elif k == 4:
+				images = images[]
+			'''
+
 			images = images.cuda()
 			weight = weight.cuda()
 			#target = target.cuda(args.gpu, non_blocking=True)

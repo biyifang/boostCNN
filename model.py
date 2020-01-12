@@ -13,7 +13,7 @@ class oneCNN(nn.Module):
 			#nn.BatchNorm2d(16),
 			#nn.Dropout(p=0.2),
 			nn.Conv2d(3, 128, kernel_size=16, stride=4, padding=2),
-			nn.BatchNorm2d(64),
+			nn.BatchNorm2d(128),
 			nn.ReLU(inplace=True),
 			#nn.Sigmoid(),
 			nn.MaxPool2d(kernel_size=3, stride=2))
@@ -54,7 +54,7 @@ class oneCNN(nn.Module):
 		#self.res = nn.Linear(16*26*26, 4*3*3)
 		#self.res = nn.Linear(64*26*26, 4*3*3)
 		#3-layers
-		self.res = nn.Linear(64*26*26, 2*4*4)
+		self.res = nn.Linear(128*26*26, 2*4*4)
 		self.mse = nn.MSELoss()
 	def forward(self, x, label=None, temperature=None, if_student = True):
 		x_1 = self.features_1(x)
