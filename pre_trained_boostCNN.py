@@ -388,9 +388,9 @@ def main_worker(gpu, ngpus_per_node, args):
 	model = None
 
 	# boosted CNN
-	output_file = open('out.txt','w')
 	model_2.cpu()
 	'''
+	output_file = open('out.txt','w')
 
 
 
