@@ -305,6 +305,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		validate(val_loader, model, criterion, args)
 		return
 
+
+	'''
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
 	else:
@@ -388,6 +390,11 @@ def main_worker(gpu, ngpus_per_node, args):
 	# boosted CNN
 	output_file = open('out.txt','w')
 	model_2.cpu()
+	'''
+
+
+
+
 	model_2 = torch.load('initial_model_' + args.model_save)
 	model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
