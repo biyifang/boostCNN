@@ -77,7 +77,7 @@ class oneCNN(nn.Module):
 
 class oneCNN_two(nn.Module):
 	def __init__(self, num_classes=10):
-		super(oneCNN, self).__init__()
+		super(oneCNN_two, self).__init__()
 		self.features_1 = nn.Sequential(
 		#2/1-layer kernel=32 stride=4
 			#nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
