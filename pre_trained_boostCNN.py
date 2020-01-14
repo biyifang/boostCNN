@@ -410,7 +410,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	g = None
 	f = torch.zeros(len(train_dataset), args.num_class)
 
-	for k in range(args.num_boost_iter):
+	for k in range(1,args.num_boost_iter):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
 		#adjust_learning_rate(optimizer, epoch, args)
@@ -567,6 +567,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			# measure data loading time
 			data_time.update(time.time() - end)
 
+
 			if k == 1:
 				images = images[:, :, :168, :168]
 			elif k == 2:
@@ -575,6 +576,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 				images = images[:, :, 56:, :169]
 			elif k == 4:
 				images = images[:, :, 56:, 56:]
+			print(images.size())
 			
 
 			images = images.cuda()
