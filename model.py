@@ -126,7 +126,7 @@ class oneCNN_two(nn.Module):
 		#self.res = nn.Linear(16*26*26, 4*3*3)
 		#self.res = nn.Linear(64*26*26, 4*3*3)
 		#3-layers
-		self.res = nn.Linear(128*26*26, 32*4*4)
+		self.res = nn.Linear(128*494, 32*4*4)
 		self.mse = nn.MSELoss()
 	def forward(self, x, label=None, temperature=None, if_student = True):
 		x_1 = self.features_1(x)
@@ -135,6 +135,7 @@ class oneCNN_two(nn.Module):
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
+		print(x_1.size())
 		x_1 = self.classifier(x_1 + x_res)
 		#x_1 = self.classifier(x_1)
 		if not if_student:
