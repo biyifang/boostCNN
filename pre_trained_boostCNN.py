@@ -396,10 +396,11 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 
-	model_2 = torch.load('initial_model_' + args.model_save)
+	#model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	model_2_1 = oneCNN_two()
-	model_list = [copy.deepcopy(model_2)] + [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
+	#model_list = [copy.deepcopy(model_2)] + [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
+	model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
@@ -566,8 +567,9 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			# measure data loading time
 			data_time.update(time.time() - end)
 
-			if k == 1:
+			if k == 0:
 				images = images[:, :168, :168,:]
+				print(images.size())
 			elif k == 2:
 				images = images[:, :168, 56:, :]
 			elif k == 3:
