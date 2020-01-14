@@ -609,13 +609,13 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
 
 		if k == 1:
-				images = images[:, :, :168, :168]
-			elif k == 2:
-				images = images[:, :, :168, 56:]
-			elif k == 3:
-				images = images[:, :, 56:, :169]
-			elif k == 4:
-				images = images[:, :, 56:, 56:]
+			images = images[:, :, :168, :168]
+		elif k == 2:
+			images = images[:, :, :168, 56:]
+		elif k == 3:
+			images = images[:, :, 56:, :169]
+		elif k == 4:
+			images = images[:, :, 56:, 56:]
 
 		images = images.cuda()
 		weight = weight.cuda()
