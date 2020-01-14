@@ -396,11 +396,11 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 
-	model_2 = torch.load('initial_model_' + args.model_save)
+	#model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	model_2_1 = oneCNN_two()
-	model_list = [copy.deepcopy(model_2)] + [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
-	#model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
+	#model_list = [copy.deepcopy(model_2)] + [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
+	model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
@@ -410,7 +410,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	g = None
 	f = torch.zeros(len(train_dataset), args.num_class)
 
-	for k in range(1,args.num_boost_iter):
+	for k in range(0,args.num_boost_iter):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
 		#adjust_learning_rate(optimizer, epoch, args)
@@ -568,7 +568,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			data_time.update(time.time() - end)
 
 
-			if k == 1:
+			if k == 0:
 				images = images[:, :, :168, :168]
 			elif k == 2:
 				images = images[:, :, :168, 56:]
