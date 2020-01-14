@@ -568,14 +568,13 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			data_time.update(time.time() - end)
 
 			if k == 0:
-				images = images[:, :168, :168,:]
-				print(images.size())
+				images = images[:, :, :168, :168]
 			elif k == 2:
-				images = images[:, :168, 56:, :]
+				images = images[:, :, :168, 56:]
 			elif k == 3:
-				images = images[:, 56:, :169, :]
+				images = images[:, :, 56:, :169]
 			elif k == 4:
-				images = images[:, 56:, 56:, :]
+				images = images[:, :, 56:, 56:]
 			
 
 			images = images.cuda()
