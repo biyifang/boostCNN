@@ -19,6 +19,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
 from model import oneCNN
+from model import oneCNN_two
 from model import GBM
 from torch.utils.data import TensorDataset
 
