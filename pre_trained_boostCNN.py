@@ -569,6 +569,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 			if k == 0:
 				images = images[:, :, :168, :168]
+				print(images.size())
 			elif k == 2:
 				images = images[:, :, :168, 56:]
 			elif k == 3:
