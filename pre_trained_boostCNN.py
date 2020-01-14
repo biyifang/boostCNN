@@ -566,7 +566,6 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			# measure data loading time
 			data_time.update(time.time() - end)
 
-			print(images.size())
 			if k == 1:
 				images = images[:, :168, :168,:]
 			elif k == 2:
