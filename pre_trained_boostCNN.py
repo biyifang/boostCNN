@@ -563,8 +563,6 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	model.weight_fun(train_dataset,weight_dataset, k, g)
 
 	for epoch in range(args.epochs):
-		if k == 0:
-			break
 		for i, ( (images, _), (weight,)) in enumerate( zip(train_loader_seq , weight_loader) ):
 			# measure data loading time
 			data_time.update(time.time() - end)
@@ -578,7 +576,6 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 				images = images[:, :, 56:, :169]
 			elif k == 4:
 				images = images[:, :, 56:, 56:]
-			print(images.size())
 			
 
 			images = images.cuda()
@@ -610,6 +607,16 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	g = []
 	model.eval()
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
+
+		if k == 1:
+				images = images[:, :, :168, :168]
+			elif k == 2:
+				images = images[:, :, :168, 56:]
+			elif k == 3:
+				images = images[:, :, 56:, :169]
+			elif k == 4:
+				images = images[:, :, 56:, 56:]
+
 		images = images.cuda()
 		weight = weight.cuda()
 		with torch.no_grad():
