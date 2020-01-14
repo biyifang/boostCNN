@@ -264,7 +264,17 @@ class GBM(nn.Module):
 		for i,net in enumerate(self.weak_learners):
 			net.cuda()
 			if i <= k:
-				pred += net.forward(x) * self.alpha[i]*self.gamma
+				if i == 0:
+					x_1 = x
+				elif i == 1:
+					x_1 = x[:, :, :168, :168]
+				elif i == 2:
+					x_1 = x[:, :, :168, 56:]
+				elif i == 3:
+					x_1 = x[:, :, 56:, :169]
+				elif i == 4:
+					x_1 = x[:, :, 56:, 56:]
+				pred += net.forward(x_1) * self.alpha[i]*self.gamma
 			net.cpu()
 		#_, index = torch.max(pred, 0)
 		return pred

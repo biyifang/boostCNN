@@ -648,15 +648,6 @@ def validate_boost(val_loader, model, criterion, args, k):
 		end = time.time()
 		for i, (images, target) in enumerate(val_loader):
 
-			if k == 1:
-				images = images[:, :, :168, :168]
-			elif k == 2:
-				images = images[:, :, :168, 56:]
-			elif k == 3:
-				images = images[:, :, 56:, :169]
-			elif k == 4:
-				images = images[:, :, 56:, 56:]
-
 			images = images.cuda()
 			target = target.cuda()
 
