@@ -18,9 +18,9 @@ import torch.utils.data.distributed
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
-from model import oneCNN
-from model import oneCNN_two
-from model import GBM
+from model_flexible import oneCNN
+from model_flexible import oneCNN_two
+from model_flexible import GBM
 from torch.utils.data import TensorDataset
 
 model_names = sorted(name for name in models.__dict__
@@ -352,7 +352,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	'''
+
 
 	# one-layer CNN training
 	model_2 = oneCNN()
@@ -390,14 +390,17 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	
+	'''
 	output_file = open('out.txt','w')
 
 
 
 
 	model_2 = torch.load('initial_model_' + args.model_save)
-	model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
+	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
+	model_2_1 = oneCNN_two()
+	model_list = [copy.deepcopy(model_2)] + [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
+	#model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
@@ -564,6 +567,17 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			# measure data loading time
 			data_time.update(time.time() - end)
 
+
+			if k == 1:
+				images = images[:, :, :168, :168]
+			elif k == 2:
+				images = images[:, :, :168, 56:]
+			elif k == 3:
+				images = images[:, :, 56:, :169]
+			elif k == 4:
+				images = images[:, :, 56:, 56:]
+			
+
 			images = images.cuda()
 			weight = weight.cuda()
 			#target = target.cuda(args.gpu, non_blocking=True)
@@ -593,6 +607,16 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	g = []
 	model.eval()
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
+
+		if k == 1:
+			images = images[:, :, :168, :168]
+		elif k == 2:
+			images = images[:, :, :168, 56:]
+		elif k == 3:
+			images = images[:, :, 56:, :169]
+		elif k == 4:
+			images = images[:, :, 56:, 56:]
+
 		images = images.cuda()
 		weight = weight.cuda()
 		with torch.no_grad():

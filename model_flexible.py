@@ -12,7 +12,7 @@ class oneCNN(nn.Module):
 			#nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			#nn.BatchNorm2d(16),
 			#nn.Dropout(p=0.2),
-			nn.Conv2d(3, 128, kernel_size=2, stride=4, padding=2),
+			nn.Conv2d(3, 128, kernel_size=16, stride=4, padding=2),
 			nn.BatchNorm2d(128),
 			nn.ReLU(inplace=True),
 			#nn.Sigmoid(),
@@ -28,7 +28,7 @@ class oneCNN(nn.Module):
 			nn.MaxPool2d(kernel_size=2, stride=2))
 		'''
 		self.features_2 = nn.Sequential(
-			nn.Conv2d(128, 64, kernel_size=2, stride=2, padding=2),
+			nn.Conv2d(128, 64, kernel_size=4, stride=2, padding=2),
 			nn.BatchNorm2d(64),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=2),
@@ -59,11 +59,9 @@ class oneCNN(nn.Module):
 	def forward(self, x, label=None, temperature=None, if_student = True):
 		x_1 = self.features_1(x)
 		x_f = torch.flatten(x_1, 1)
-		print(x_f.size())
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
-		print(x_1.size())
 		x_1 = self.classifier(x_1 + x_res)
 		#x_1 = self.classifier(x_1)
 		if not if_student:
@@ -266,6 +264,16 @@ class GBM(nn.Module):
 		for i,net in enumerate(self.weak_learners):
 			net.cuda()
 			if i <= k:
+				if i == 0:
+					x_1 = x
+				elif i == 1:
+					x_1 = x[:, :, :168, :168]
+				elif i == 2:
+					x_1 = x[:, :, :168, 56:]
+				elif i == 3:
+					x_1 = x[:, :, 56:, :169]
+				elif i == 4:
+					x_1 = x[:, :, 56:, 56:]
 				pred += net.forward(x_1) * self.alpha[i]*self.gamma
 			net.cpu()
 		#_, index = torch.max(pred, 0)
