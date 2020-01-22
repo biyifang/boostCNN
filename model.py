@@ -12,7 +12,7 @@ class oneCNN(nn.Module):
 			#nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			#nn.BatchNorm2d(16),
 			#nn.Dropout(p=0.2),
-			nn.Conv2d(3, 128, kernel_size=3, stride=4, padding=2),
+			nn.Conv2d(3, 128, kernel_size=2, stride=4, padding=2),
 			nn.BatchNorm2d(128),
 			nn.ReLU(inplace=True),
 			#nn.Sigmoid(),
@@ -28,11 +28,11 @@ class oneCNN(nn.Module):
 			nn.MaxPool2d(kernel_size=2, stride=2))
 		'''
 		self.features_2 = nn.Sequential(
-			nn.Conv2d(128, 64, kernel_size=3, stride=2, padding=2),
+			nn.Conv2d(128, 64, kernel_size=2, stride=2, padding=2),
 			nn.BatchNorm2d(64),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=2),
-			nn.Conv2d(64, 32, kernel_size=3, stride=2, padding=2),
+			nn.Conv2d(64, 32, kernel_size=2, stride=2, padding=2),
 			nn.BatchNorm2d(32),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=1))
