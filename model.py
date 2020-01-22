@@ -12,7 +12,7 @@ class oneCNN(nn.Module):
 			#nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			#nn.BatchNorm2d(16),
 			#nn.Dropout(p=0.2),
-			nn.Conv2d(3, 128, kernel_size=4, stride=4, padding=2),
+			nn.Conv2d(3, 128, kernel_size=3, stride=4, padding=2),
 			nn.BatchNorm2d(128),
 			nn.ReLU(inplace=True),
 			#nn.Sigmoid(),
@@ -28,15 +28,15 @@ class oneCNN(nn.Module):
 			nn.MaxPool2d(kernel_size=2, stride=2))
 		'''
 		self.features_2 = nn.Sequential(
-			nn.Conv2d(128, 64, kernel_size=4, stride=2, padding=2),
+			nn.Conv2d(128, 64, kernel_size=3, stride=2, padding=2),
 			nn.BatchNorm2d(64),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=2),
-			nn.Conv2d(64, 32, kernel_size=4, stride=2, padding=2),
+			nn.Conv2d(64, 32, kernel_size=3, stride=2, padding=2),
 			nn.BatchNorm2d(32),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=1),
-			nn.Conv2d(32, 16, kernel_size=4, stride=2, padding=2),
+			nn.Conv2d(32, 16, kernel_size=3, stride=2, padding=2),
 			nn.BatchNorm2d(16),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=1))
@@ -67,7 +67,7 @@ class oneCNN(nn.Module):
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
-		#print(x_1.size())
+		print(x_1.size())
 		x_1 = self.classifier(x_1 + x_res)
 		#x_1 = self.classifier(x_1)
 		if not if_student:
