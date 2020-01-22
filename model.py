@@ -67,7 +67,7 @@ class oneCNN(nn.Module):
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
-		print(x_1.size())
+		#print(x_1.size())
 		x_1 = self.classifier(x_1 + x_res)
 		#x_1 = self.classifier(x_1)
 		if not if_student:
