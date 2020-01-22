@@ -405,9 +405,9 @@ def main_worker(gpu, ngpus_per_node, args):
 	# boosted CNN
 	model_2.cpu()
 	
-	
-	output_file = open('out.txt','w')
 	'''
+	output_file = open('out.txt','w')
+	
 
 
 
