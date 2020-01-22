@@ -18,6 +18,7 @@ import torch.utils.data.distributed
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
+from tqdm import tqdm,trange
 from model_flexible import oneCNN
 from model_flexible import oneCNN_two
 from model_flexible import GBM
@@ -44,6 +45,8 @@ parser.add_argument('-j', '--workers', default=1, type=int, metavar='N',
 					help='number of data loading workers (default: 4)')
 parser.add_argument('--epochs', default=90, type=int, metavar='N',
 					help='number of total epochs to run')
+parser.add_argument('--input_size', default=150, type=int, metavar='N',
+					help='the size of the input')
 parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
 					help='number of class')
 parser.add_argument('--num_boost_iter', default=50, type=int, metavar='N',
@@ -57,6 +60,8 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
 						 'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 					metavar='LR', help='initial learning rate', dest='lr')#default:0.1
+parser.add_argument('--image_pf', '--image_pf', default=0.5, type=float,
+					metavar='Ipf', help='partial fraction of an image', dest='Ipf')
 parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
@@ -232,8 +237,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
-			transforms.RandomResizedCrop(224),
-			transforms.RandomHorizontalFlip(),
+			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pf, args.image_pf)),
+			#transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
@@ -274,8 +279,9 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	
 	val_loader = torch.utils.data.DataLoader(datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
-			transforms.RandomResizedCrop(224),
-			transforms.RandomHorizontalFlip(),
+			#transforms.RandomResizedCrop(224),
+			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pf, args.image_pf)),
+			#transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=False), batch_size=args.batch_size, shuffle=False,
@@ -311,7 +317,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
 	else:
-		for epoch in range(args.start_epoch, args.epochs):
+		for epoch in trange(args.start_epoch, args.epochs):
 			if args.distributed:
 				train_sampler.set_epoch(epoch)
 			adjust_learning_rate(optimizer, epoch, args)
@@ -361,10 +367,10 @@ def main_worker(gpu, ngpus_per_node, args):
 	optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
 	model_2.train()
 	acc2 = 0.0
-	for epoch in range(args.epochs):
+	for epoch in trange(args.epochs):
 		lo = 0.0
 		top1 = AverageMeter('Acc@1', ':6.2f')
-		for i, ( (images, target), (label,)) in enumerate( zip(train_loader_seq , predict_loader) ):
+		for i, ( (images, target), (label,)) in enumerate( tqdm(zip(train_loader_seq , predict_loader)) ):
 			images = images.cuda()
 			label = label.cuda()
 			target = target.cuda()
@@ -410,7 +416,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	g = None
 	f = torch.zeros(len(train_dataset), args.num_class)
 
-	for k in range(0,args.num_boost_iter):
+	for k in trange(0,args.num_boost_iter):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
 		#adjust_learning_rate(optimizer, epoch, args)
@@ -455,7 +461,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 	model.train()
 
 	end = time.time()
-	for i, (images, target) in enumerate(train_loader):
+	for i, (images, target) in enumerate(tqdm(train_loader)):
 		# measure data loading time
 		data_time.update(time.time() - end)
 
@@ -562,8 +568,8 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 	model.weight_fun(train_dataset,weight_dataset, k, g)
 
-	for epoch in range(args.epochs):
-		for i, ( (images, _), (weight,)) in enumerate( zip(train_loader_seq , weight_loader) ):
+	for epoch in trange(args.epochs):
+		for i, ( (images, _), (weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
 			# measure data loading time
 			data_time.update(time.time() - end)
 
