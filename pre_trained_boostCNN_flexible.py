@@ -66,7 +66,7 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
 						 'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 					metavar='LR', help='initial learning rate', dest='lr')#default:0.1
-parser.add_argument('--image_pf', '--image_pf', default=0.5, type=float,
+parser.add_argument('--image_pf', default=0.5, type=float,
 					metavar='Ipf', help='partial fraction of an image', dest='Ipf')
 parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
@@ -243,7 +243,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
-			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pfs, args.image_pf)),
+			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pf, args.image_pf)),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
