@@ -65,6 +65,7 @@ class oneCNN(nn.Module):
 		x_f = torch.flatten(x_1, 1)
 		print('size 1')
 		print(x_f.size())
+		print('size 2')
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
