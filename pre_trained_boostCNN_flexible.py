@@ -363,6 +363,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
+	'''
 
 
 	# one-layer CNN training
@@ -401,7 +402,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	'''
+	
 	output_file = open('out.txt','w')
 
 
