@@ -66,7 +66,7 @@ class oneCNN(nn.Module):
 		print('size 1')
 		print(x_f.size())
 		print('size 2')
-		print(self.res.weight)
+		print(self.res.weight.size())
 		x_res = self.res(x_f)
 		print('res done')
 		x_1 = self.features_2(x_1)
