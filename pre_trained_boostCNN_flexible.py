@@ -365,6 +365,15 @@ def main_worker(gpu, ngpus_per_node, args):
 		#l = input('l')
 	'''
 
+	#if have teacher model, no need to do step one
+	model = torch.load('teacher_model_resnet18')
+	_, new_predict = validate(train_loader, model, criterion, args, True)
+	new_predict = torch.cat(new_predict)
+	predict_dataset = torch.utils.data.TensorDataset(new_predict)
+	predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
+	predict_loader = torch.utils.data.DataLoader(
+	predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
+
 
 	# one-layer CNN training
 	model_2 = oneCNN()
