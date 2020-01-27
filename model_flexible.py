@@ -76,7 +76,7 @@ class oneCNN(nn.Module):
 
 
 class oneCNN_two(nn.Module):
-	def __init__(self, num_classes=10, CNN_one, CNN_two, CNN_three, intermedia_1, intermida_2):
+	def __init__(self, CNN_one, CNN_two, CNN_three, intermedia_1, intermida_2, num_classes=10,):
 		super(oneCNN_two, self).__init__()
 		self.features_1 = nn.Sequential(
 		#2/1-layer kernel=32 stride=4
