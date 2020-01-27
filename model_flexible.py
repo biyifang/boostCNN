@@ -76,7 +76,7 @@ class oneCNN(nn.Module):
 
 
 class oneCNN_two(nn.Module):
-	def __init__(self, num_classes=10):
+	def __init__(self, num_classes=10, CNN_one, CNN_two, CNN_three, intermedia_1, intermida_2):
 		super(oneCNN_two, self).__init__()
 		self.features_1 = nn.Sequential(
 		#2/1-layer kernel=32 stride=4
@@ -84,7 +84,7 @@ class oneCNN_two(nn.Module):
 			#nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
 			#nn.BatchNorm2d(16),
 			#nn.Dropout(p=0.2),
-			nn.Conv2d(3, 128, kernel_size=16, stride=4, padding=2),
+			nn.Conv2d(3, 128, kernel_size=CNN_one, stride=4, padding=2),
 			nn.BatchNorm2d(128),
 			nn.ReLU(inplace=True),
 			#nn.Sigmoid(),
@@ -100,11 +100,11 @@ class oneCNN_two(nn.Module):
 			nn.MaxPool2d(kernel_size=2, stride=2))
 		'''
 		self.features_2 = nn.Sequential(
-			nn.Conv2d(128, 64, kernel_size=4, stride=2, padding=2),
+			nn.Conv2d(128, 64, kernel_size=CNN_two, stride=2, padding=2),
 			nn.BatchNorm2d(64),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=2),
-			nn.Conv2d(64, 32, kernel_size=2, stride=2, padding=2),
+			nn.Conv2d(64, 32, kernel_size=CNN_three, stride=2, padding=2),
 			nn.BatchNorm2d(32),
 			nn.ReLU(inplace=True),
 			nn.MaxPool2d(kernel_size=2, stride=1))
@@ -115,7 +115,7 @@ class oneCNN_two(nn.Module):
 			#nn.Linear(4*3*3, num_classes),
 			#nn.Linear(4*5*5, num_classes),
 			#3-layers
-			nn.Linear(32*3*3, num_classes),
+			nn.Linear(32*intermida_2*intermida_2, num_classes),
 			#nn.ReLU(inplace=True),
 			#nn.Dropout(),
 			#nn.Linear(4096, 4096),
@@ -126,7 +126,7 @@ class oneCNN_two(nn.Module):
 		#self.res = nn.Linear(16*26*26, 4*3*3)
 		#self.res = nn.Linear(64*26*26, 4*3*3)
 		#3-layers
-		self.res = nn.Linear(128*19*19, 32*3*3)
+		self.res = nn.Linear(128*intermedia_1*intermedia_1, 32*intermida_2*intermida_2)
 		self.mse = nn.MSELoss()
 	def forward(self, x, label=None, temperature=None, if_student = True):
 		x_1 = self.features_1(x)

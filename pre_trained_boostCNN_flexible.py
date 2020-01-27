@@ -45,6 +45,12 @@ parser.add_argument('-j', '--workers', default=1, type=int, metavar='N',
 					help='number of data loading workers (default: 4)')
 parser.add_argument('--epochs', default=90, type=int, metavar='N',
 					help='number of total epochs to run')
+parser.add_argument('--CNN_one', default=2, type=int, metavar='N',
+					help='the kernel size of CNN layer 1')
+parser.add_argument('--CNN_two', default=2, type=int, metavar='N',
+					help='the kernel size of CNN layer 2')
+parser.add_argument('--CNN_three', default=2, type=int, metavar='N',
+					help='the kernel size of CNN layer 3')
 parser.add_argument('--input_size', default=150, type=int, metavar='N',
 					help='the size of the input')
 parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
@@ -238,7 +244,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pf, args.image_pf)),
-			#transforms.RandomHorizontalFlip(),
+			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
@@ -404,7 +410,13 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
-	model_2_1 = oneCNN_two()
+	inter_media_1 = kernel_fun(args.input_size, args.CNN_one, 4, 2)
+	inter_media_two = maxpool_fun(inter_media_1, 3, 2)
+	inter_media_3 = kernel_fun(inter_media_two, args.CNN_two, 2, 2)
+	inter_media_4 = maxpool_fun(inter_media_3, 2, 2)
+	inter_media_5 = kernel_fun(inter_media_4, 2, 2, 2)
+	inter_media_six = maxpool_fun(inter_media_5, 2,1)
+	model_2_1 = oneCNN_two(args.CNN_one, args.CNN_two, args.CNN_three, inter_media_two, inter_media_six)
 	model_list = [copy.deepcopy(model_2)] + [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
 	#model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
@@ -686,6 +698,14 @@ def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
 	torch.save(state, filename)
 	if is_best:
 		shutil.copyfile(filename, 'model_best.pth.tar')
+
+
+def kernel_fun(orig_size, kern, stri, pad):
+	return int((orig_size + 2*pad - (kern - 1))/stri + 1)
+
+
+def maxpool_fun(orig_size, kern, stri):
+	return int((orig_size - (kern - 1) - 1)/stri + 1)
 
 
 class AverageMeter(object):
