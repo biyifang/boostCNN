@@ -240,6 +240,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 	#normalize = transforms.Normalize(mean=[0.485], std=[0.229])
 
+	print(args.image_pf)
 	
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pf, args.image_pf)),
