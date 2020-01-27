@@ -243,7 +243,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
-			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pf, args.image_pf)),
+			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pfs, args.image_pf)),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
