@@ -240,8 +240,6 @@ def main_worker(gpu, ngpus_per_node, args):
 	normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 	#normalize = transforms.Normalize(mean=[0.485], std=[0.229])
 
-	print(args.CNN_one)
-	print(args.image_pf)
 	
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(args.input_size, scale=(args.image_pf, args.image_pf)),
@@ -417,6 +415,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	inter_media_4 = maxpool_fun(inter_media_3, 2, 2)
 	inter_media_5 = kernel_fun(inter_media_4, 2, 2, 2)
 	inter_media_six = maxpool_fun(inter_media_5, 2,1)
+	print(inter_media_two)
+	print(inter_media_six)
 	model_2_1 = oneCNN_two(args.CNN_one, args.CNN_two, args.CNN_three, inter_media_two, inter_media_six)
 	model_list = [copy.deepcopy(model_2)] + [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
 	#model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
