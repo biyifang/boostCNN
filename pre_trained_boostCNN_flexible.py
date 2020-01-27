@@ -66,7 +66,7 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
 						 'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 					metavar='LR', help='initial learning rate', dest='lr')#default:0.1
-parser.add_argument('--image_pf', default=0.5, type=float, help='partial fraction of an image', dest='Ipf')
+parser.add_argument('--image_pf', default=0.5, type=float, help='partial fraction of an image')
 parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
