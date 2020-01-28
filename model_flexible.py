@@ -43,7 +43,7 @@ class oneCNN(nn.Module):
 			#nn.Linear(4*3*3, num_classes),
 			#nn.Linear(4*5*5, num_classes),
 			#3-layers
-			nn.Linear(32*3*3, num_classes),
+			nn.Linear(32*4*4, num_classes),
 			#nn.ReLU(inplace=True),
 			#nn.Dropout(),
 			#nn.Linear(4096, 4096),
@@ -54,7 +54,7 @@ class oneCNN(nn.Module):
 		#self.res = nn.Linear(16*26*26, 4*3*3)
 		#self.res = nn.Linear(64*26*26, 4*3*3)
 		#3-layers
-		self.res = nn.Linear(128*17*17, 32*3*3)
+		self.res = nn.Linear(128*26*26, 32*4*4)
 		self.mse = nn.MSELoss()
 	def forward(self, x, label=None, temperature=None, if_student = True):
 		x_1 = self.features_1(x)
@@ -62,7 +62,6 @@ class oneCNN(nn.Module):
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
-		#print(x_1.size())
 		x_1 = self.classifier(x_1 + x_res)
 		#x_1 = self.classifier(x_1)
 		if not if_student:
@@ -77,7 +76,7 @@ class oneCNN(nn.Module):
 
 
 class oneCNN_two(nn.Module):
-	def __init__(self, CNN_one, CNN_two, CNN_three, intermedia_1, intermida_2, num_classes=10,):
+	def __init__(self, CNN_one, CNN_two, CNN_three, intermedia_1, intermida_2, num_classes=10):
 		super(oneCNN_two, self).__init__()
 		self.features_1 = nn.Sequential(
 		#2/1-layer kernel=32 stride=4
@@ -131,13 +130,12 @@ class oneCNN_two(nn.Module):
 		self.mse = nn.MSELoss()
 	def forward(self, x, label=None, temperature=None, if_student = True):
 		x_1 = self.features_1(x)
-		print(x_1.size())
 		x_f = torch.flatten(x_1, 1)
-		print(x_f.size())
+		#print(x_f.size())
 		x_res = self.res(x_f)
 		x_1 = self.features_2(x_1)
 		x_1 = torch.flatten(x_1, 1)
-		print(x_1.size())
+		#print(x_1.size())
 		x_1 = self.classifier(x_1 + x_res)
 		#x_1 = self.classifier(x_1)
 		if not if_student:

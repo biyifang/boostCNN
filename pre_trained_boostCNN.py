@@ -194,7 +194,6 @@ def main_worker(gpu, ngpus_per_node, args):
 	"""
 
 	# define loss function (criterion) and optimizer
-	#criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 	criterion = nn.CrossEntropyLoss()
 
 	optimizer = torch.optim.SGD(model.parameters(), args.lr,
@@ -229,6 +228,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	traindir = os.path.join(args.data, 'train')
 	valdir = os.path.join(args.data, 'val')
 	normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+	#Normalization for MNIST
 	#normalize = transforms.Normalize(mean=[0.485], std=[0.229])
 
 	
@@ -248,16 +248,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 	weight = torch.zeros(len(train_dataset), args.num_class)
 	weight_dataset = torch.utils.data.TensorDataset(weight)
-	"""
-	train_dataset = datasets.ImageFolder(
-		traindir,
-		transforms.Compose([
-			transforms.RandomResizedCrop(224),
-			transforms.RandomHorizontalFlip(),
-			transforms.ToTensor(),
-			normalize,
-		]))
-	"""
+
 
 	if args.distributed:
 		train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
@@ -291,17 +282,6 @@ def main_worker(gpu, ngpus_per_node, args):
 		num_workers=args.workers, pin_memory=True)
 	'''
 
-	"""
-	val_loader = torch.utils.data.DataLoader(
-		datasets.ImageFolder(valdir, transforms.Compose([
-			transforms.Resize(256),
-			transforms.CenterCrop(224),
-			transforms.ToTensor(),
-			normalize,
-		])),
-		batch_size=args.batch_size, shuffle=False,
-		num_workers=args.workers, pin_memory=True)
-	"""
 
 	if args.evaluate:
 		validate(val_loader, model, criterion, args)
@@ -309,6 +289,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 	'''
+	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
 	else:
@@ -356,7 +337,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 
 	
-	#if have teacher model, no need to do step one
+	#if have teacher model, no need to run step one
 	model = torch.load('teacher_model_resnet18')
 	_, new_predict = validate(train_loader, model, criterion, args, True)
 	new_predict = torch.cat(new_predict)
@@ -411,7 +392,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 
-
+	#Create module for GBM
 	model_2 = torch.load('initial_model_' + args.model_save)
 	model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
@@ -423,10 +404,11 @@ def main_worker(gpu, ngpus_per_node, args):
 	g = None
 	f = torch.zeros(len(train_dataset), args.num_class)
 
+	#Train GBM
 	for k in trange(0,args.num_boost_iter):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
-		#adjust_learning_rate(optimizer, epoch, args)
+		
 
 		# train for one epoch
 		f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
@@ -559,10 +541,6 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	top5 = AverageMeter('Acc@5', ':6.2f')
 	optimizer = optimizer_list[k]
 	model.weak_learners[k].cuda()
-	#progress = ProgressMeter(
-	#    len(train_loader),
-	#    [batch_time, data_time, losses, top1, top5],
-	#    prefix="Iteration: [{}]".format(k))
 	progress = ProgressMeter(
 		len(train_loader_seq),
 		[batch_time, data_time, losses, top1, top5],
@@ -582,18 +560,13 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 			images = images.cuda()
 			weight = weight.cuda()
-			#target = target.cuda(args.gpu, non_blocking=True)
 
 
 			# compute output
-			loss = model(images, weight, k)
-			#output = model.predict(images, k-1)       
+			loss = model(images, weight, k)      
 
 			# measure accuracy and record loss
-			#acc1, acc5 = accuracy(output, target, topk=(1, 5))
 			losses.update(loss.item(), images.size(0))
-			#top1.update(acc1[0], images.size(0))
-			#top5.update(acc5[0], images.size(0))
 
 			# compute gradient and do SGD step
 			optimizer.zero_grad()

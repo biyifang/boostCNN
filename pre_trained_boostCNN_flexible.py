@@ -318,8 +318,9 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 
 
-	'''
+	
 	if args.teacher_model_save:
+		print(args.teacher_model_save)
 		model = torch.load('teacher_model_' + args.teacher_model_save)
 	else:
 		for epoch in trange(args.start_epoch, args.epochs):
@@ -363,7 +364,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	'''
+	
 
 	#if have teacher model, no need to do step one
 	model = torch.load('teacher_model_resnet18')
@@ -425,8 +426,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	inter_media_4 = maxpool_fun(inter_media_3, 2, 2)
 	inter_media_5 = kernel_fun(inter_media_4, 2, 2, 2)
 	inter_media_six = maxpool_fun(inter_media_5, 2,1)
-	print(inter_media_two)
-	print(inter_media_six)
+	#print(inter_media_two)
+	#print(inter_media_six)
 	model_2_1 = oneCNN_two(args.CNN_one, args.CNN_two, args.CNN_three, inter_media_two, inter_media_six)
 	model_list = [copy.deepcopy(model_2)] + [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
 	#model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
