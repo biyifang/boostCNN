@@ -288,10 +288,9 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
-		print(args.teacher_model_save)
 		model = torch.load('teacher_model_' + args.teacher_model_save)
 	else:
 		for epoch in trange(args.start_epoch, args.epochs):
@@ -335,7 +334,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	
+	'''
 
 	
 	#if have teacher model, no need to run step one
