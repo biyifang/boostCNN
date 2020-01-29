@@ -356,6 +356,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
 	model_2.train()
 	acc2 = 0.0
+	print('start step 2')
 	for epoch in trange(args.epochs):
 		lo = 0.0
 		top1 = AverageMeter('Acc@1', ':6.2f')
