@@ -378,7 +378,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		if top1.avg > acc2:
 			acc2 = top1.avg
 			torch.save(model_2, 'initial_model_'+ args.model_save)
-		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg))
+		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg)+'\n')
 	print('oneCNN optimization done')
 	#l = input('l')
 	model.cpu()
