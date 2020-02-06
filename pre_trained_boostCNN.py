@@ -58,6 +58,11 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
 						 'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 					metavar='LR', help='initial learning rate', dest='lr')#default:0.1
+parser.add_argument('-gradient_acc', default=256, type=int,
+                    metavar='N',
+                    help='mini-batch size (default: 256), this is the total '
+                         'batch size of all GPUs on the current node when '
+                         'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
@@ -71,7 +76,7 @@ parser.add_argument('--boost_shrink', default=0.9, type=float, metavar='S',
 parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
 					metavar='W', help='weight decay (default: 1e-4)',
 					dest='weight_decay')
-parser.add_argument('-p', '--print-freq', default=100, type=int,
+parser.add_argument('-p', '--print-freq', default=1000, type=int,
 					metavar='N', help='print frequency (default: 10)')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
 					help='path to latest checkpoint (default: none)')
@@ -357,6 +362,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	model_2.train()
 	acc2 = 0.0
 	print('start step 2')
+	optimizer.zero_grad()
 	for epoch in trange(args.epochs):
 		lo = 0.0
 		top1 = AverageMeter('Acc@1', ':6.2f')
@@ -372,14 +378,16 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			lo += loss.data
 			# compute gradient and do SGD step
-			optimizer.zero_grad()
 			loss.backward()
-			optimizer.step()
+			if i%args.gradient_acc == 0:
+				optimizer.step()
+				optimizer.zero_grad()
 		if top1.avg > acc2:
 			acc2 = top1.avg
 			torch.save(model_2, 'initial_model_'+ args.model_save)
 		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg)+'\n')
 	print('oneCNN optimization done')
+	optimizer.zero_grad()
 	#l = input('l')
 	model.cpu()
 	model = None
@@ -554,6 +562,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 	model.weight_fun(train_dataset,weight_dataset, k, g)
 
+	optimizer.zero_grad()
 	for epoch in trange(args.epochs):
 		for i, ( (images, _), (weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
 			# measure data loading time
@@ -570,9 +579,10 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			losses.update(loss.item(), images.size(0))
 
 			# compute gradient and do SGD step
-			optimizer.zero_grad()
 			loss.backward()
-			optimizer.step()
+			if i%args.gradient_acc == 0:
+				optimizer.step()
+				optimizer.zero_grad()
 
 			# measure elapsed time
 			batch_time.update(time.time() - end)
@@ -580,6 +590,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 			#if (i+1) % args.print_freq == 0:
 			#    progress.display(i)
+	optimizer.zero_grad()
 	g = []
 	model.eval()
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
