@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-
+'''
 class oneCNN(nn.Module):
 	def __init__(self, num_classes=10):
 		super(oneCNN, self).__init__()
@@ -18,6 +18,8 @@ class oneCNN(nn.Module):
 			#nn.Sigmoid(),
 			nn.MaxPool2d(kernel_size=3, stride=2))
 		'''
+
+		'''
 		self.features_2 = nn.Sequential(
 			#nn.Conv2d(16, 4, kernel_size=8, stride=4, padding=2),
 			nn.Dropout(p=0.2),
@@ -26,6 +28,8 @@ class oneCNN(nn.Module):
 			nn.ReLU(inplace=True),
 			#nn.Sigmoid(),
 			nn.MaxPool2d(kernel_size=2, stride=2))
+		'''
+
 		'''
 		self.features_2 = nn.Sequential(
 			nn.Conv2d(128, 64, kernel_size=4, stride=2, padding=2),
@@ -74,6 +78,148 @@ class oneCNN(nn.Module):
 		#print(x_1.size())
 		x_1 = self.classifier(x_1 + x_res)
 		#x_1 = self.classifier(x_1)
+		if not if_student:
+			return x_1
+		if label is not None:
+			loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x_1/temperature,-1), dim=1).mean()
+			return -1.0*loss
+		else:
+			return nn.functional.softmax(x_1,-1)
+'''
+
+
+
+class oneCNN(nn.Module):
+#MobileNet
+	def __init__(self, num_classes=10):
+		super(oneCNN, self).__init__()
+		self.features_1 = nn.Sequential(
+		#2/1-layer kernel=32 stride=4
+			#nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
+			#nn.Conv2d(3, 16, kernel_size=16, stride=4, padding=2),
+			#nn.BatchNorm2d(16),
+			#nn.Dropout(p=0.2),
+			nn.Conv2d(3, 32, kernel_size=3, stride=2),
+			nn.BatchNorm2d(32),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(32, 32, kernel_size=3, stride=1),
+			nn.BatchNorm2d(32),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(32, 64, kernel_size=1, stride=1),
+			nn.BatchNorm2d(64),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(64, 64, kernel_size=3, stride=2),
+			nn.BatchNorm2d(64),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(64, 128, kernel_size=1, stride=1),
+			nn.BatchNorm2d(128),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(128, 128, kernel_size=3, stride=1),
+			nn.BatchNorm2d(128),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(128, 128, kernel_size=1, stride=1),
+			nn.BatchNorm2d(128),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(128, 128, kernel_size=3, stride=2),
+			nn.BatchNorm2d(128),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(128, 256, kernel_size=1, stride=1),
+			nn.BatchNorm2d(256),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(256, 256, kernel_size=3, stride=1),
+			nn.BatchNorm2d(256),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(256, 256, kernel_size=1, stride=1),
+			nn.BatchNorm2d(256),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(256, 256, kernel_size=3, stride=2),
+			nn.BatchNorm2d(256),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(256, 512, kernel_size=1, stride=1),
+			nn.BatchNorm2d(512),
+			nn.ReLU(inplace=True))
+			#nn.Sigmoid(),
+			#nn.MaxPool2d(kernel_size=3, stride=2))
+		self.features_2 = nn.Sequential(
+			nn.Conv2d(512, 512, kernel_size=3, stride=1),
+			nn.BatchNorm2d(512),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(512, 512, kernel_size=1, stride=1),
+			nn.BatchNorm2d(512),
+			nn.ReLU(inplace=True))
+		'''
+		self.features_2 = nn.Sequential(
+			#nn.Conv2d(16, 4, kernel_size=8, stride=4, padding=2),
+			nn.Dropout(p=0.2),
+			nn.Conv2d(64, 4, kernel_size=8, stride=4, padding=2),
+			nn.BatchNorm2d(4),
+			nn.ReLU(inplace=True),
+			#nn.Sigmoid(),
+			nn.MaxPool2d(kernel_size=2, stride=2))
+		'''
+		self.features_3 = nn.Sequential(
+			nn.Conv2d(512, 512, kernel_size=3, stride=2),
+			nn.BatchNorm2d(512),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(512, 1024, kernel_size=1, stride=1),
+			nn.BatchNorm2d(1024),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(1024, 1024, kernel_size=3, stride=2),
+			nn.BatchNorm2d(1024),
+			nn.ReLU(inplace=True),
+			nn.Conv2d(1024, 1024, kernel_size=1, stride=1),
+			nn.BatchNorm2d(1024),
+			nn.ReLU(inplace=True),
+			nn.AvgPool2d(7, stride=1))
+
+			#nn.Conv2d(128, 64, kernel_size=4, stride=2, padding=2),
+			#nn.BatchNorm2d(64),
+			#nn.ReLU(inplace=True),
+			#nn.MaxPool2d(kernel_size=2, stride=2),
+			#nn.Conv2d(64, 32, kernel_size=2, stride=2, padding=2),
+			#nn.BatchNorm2d(32),
+			#nn.ReLU(inplace=True),
+			#nn.MaxPool2d(kernel_size=2, stride=1))
+
+			#nn.Conv2d(32, 16, kernel_size=3, stride=2, padding=2),
+			#nn.BatchNorm2d(16),
+			#nn.ReLU(inplace=True),
+			#nn.MaxPool2d(kernel_size=2, stride=1))
+		self.classifier = nn.Sequential(
+			#nn.Dropout(),
+			#2-layers
+			#nn.Dropout(0.2),
+			#nn.Linear(4*3*3, num_classes),
+			#nn.Linear(4*5*5, num_classes),
+			#3-layers
+			nn.Linear(1024, num_classes),
+			#nn.ReLU(inplace=True),
+			#nn.Dropout(),
+			#nn.Linear(4096, 4096),
+			#nn.ReLU(inplace=True),
+			#nn.Linear(4096, num_classes),
+		)
+		#2-layers
+		#self.res = nn.Linear(16*26*26, 4*3*3)
+		#self.res = nn.Linear(64*26*26, 4*3*3)
+		#3-layers
+		self.res = nn.Linear(128*26*26, 32*4*4)
+		self.mse = nn.MSELoss()
+	def forward(self, x, label=None, temperature=None, if_student = True):
+		x_1 = self.features_1(x)
+		#x_f = torch.flatten(x_1, 1)
+		#print('size 1')
+		#print(x_f.size())
+		#print('size 2')
+		#print(self.res.weight.size())
+		#x_res = self.res(x_f)
+		#print('res done')
+		for i in range(5):
+			x_1 = self.features_2(x_1)
+		#x_1 = torch.flatten(x_1, 1)
+		#print(x_1.size())
+		#x_1 = self.classifier(x_1 + x_res)
+		x_1 = self.classifier(x_1)
 		if not if_student:
 			return x_1
 		if label is not None:
