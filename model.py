@@ -7,6 +7,42 @@ class oneCNN(nn.Module):
 #MobileNet
     def __init__(self, num_classes=10):
         super(oneCNN, self).__init__()
+        def conv_bn(inp, oup, stride):
+            return nn.Sequential(
+                nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
+                nn.BatchNorm2d(oup),
+                nn.ReLU(inplace=True)
+            )
+
+        def conv_dw(inp, oup, stride):
+            return nn.Sequential(
+                nn.Conv2d(inp, inp, 3, stride, 1, groups=inp, bias=False),
+                nn.BatchNorm2d(inp),
+                nn.ReLU(inplace=True),
+    
+                nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(oup),
+                nn.ReLU(inplace=True),
+            )
+
+        self.model = nn.Sequential(
+            conv_bn(  3,  32, 2), 
+            conv_dw( 32,  64, 1),
+            conv_dw( 64, 128, 2),
+            conv_dw(128, 128, 1),
+            conv_dw(128, 256, 2),
+            conv_dw(256, 256, 1),
+            conv_dw(256, 512, 2),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 1024, 2),
+            conv_dw(1024, 1024, 1),
+            nn.AvgPool2d(7),
+        )
+        self.fc = nn.Linear(1024, 1000)
         self.features_1 = nn.Sequential(
         #2/1-layer kernel=32 stride=4
             #nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
@@ -120,9 +156,9 @@ class oneCNN(nn.Module):
         self.res = nn.Linear(128*26*26, 32*4*4)
         self.mse = nn.MSELoss()
     def forward(self, x, label=None, temperature=None, if_student = True):
-        print(x.size())
-        x_1 = self.features_1(x)
-        print(x_1.size())
+        #print(x.size())
+        #x_1 = self.features_1(x)
+        #print(x_1.size())
         #x_f = torch.flatten(x_1, 1)
         #print('size 1')
         #print(x_f.size())
@@ -130,14 +166,14 @@ class oneCNN(nn.Module):
         #print(self.res.weight.size())
         #x_res = self.res(x_f)
         #print('res done')
-        for i in range(5):
-            x_1 = self.features_2(x_1)
-            print(x_1.size())
         #x_1 = torch.flatten(x_1, 1)
         #print(x_1.size())
         #x_1 = self.classifier(x_1 + x_res)
-        x_1 = self.features_3(x_1)
-        x_1 = self.classifier(x_1)
+        #x_1 = self.classifier(x_1)
+
+        x = self.model(x)
+        x = x.view(-1, 1024)
+        x_1 = self.fc(x)
         if not if_student:
             return x_1
         if label is not None:
