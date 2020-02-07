@@ -42,7 +42,7 @@ class oneCNN(nn.Module):
             conv_dw(1024, 1024, 1),
             nn.AvgPool2d(7),
         )
-        self.fc = nn.Linear(1024, 1000)
+        self.fc = nn.Linear(1024, 10)
         self.features_1 = nn.Sequential(
         #2/1-layer kernel=32 stride=4
             #nn.Conv2d(3, 16, kernel_size=32, stride=4, padding=2),
