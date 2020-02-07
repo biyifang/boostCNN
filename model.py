@@ -120,7 +120,9 @@ class oneCNN(nn.Module):
         self.res = nn.Linear(128*26*26, 32*4*4)
         self.mse = nn.MSELoss()
     def forward(self, x, label=None, temperature=None, if_student = True):
+        print(x.size())
         x_1 = self.features_1(x)
+        print(x_1.size())
         #x_f = torch.flatten(x_1, 1)
         #print('size 1')
         #print(x_f.size())
