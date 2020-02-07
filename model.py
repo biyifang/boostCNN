@@ -130,9 +130,11 @@ class oneCNN(nn.Module):
         #print('res done')
         for i in range(5):
             x_1 = self.features_2(x_1)
+            print(x_1.size())
         #x_1 = torch.flatten(x_1, 1)
         #print(x_1.size())
         #x_1 = self.classifier(x_1 + x_res)
+        x_1 = self.features_3(x_1)
         x_1 = self.classifier(x_1)
         if not if_student:
             return x_1
