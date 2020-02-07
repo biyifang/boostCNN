@@ -355,7 +355,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	
 	# one-layer CNN training
-	model_2 = oneCNN()
+	#model_2 = oneCNN()
+	model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
 	model_2.cuda()
 	#optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
 	optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
