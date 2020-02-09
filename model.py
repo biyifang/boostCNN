@@ -114,7 +114,7 @@ class oneCNN(nn.Module):
             nn.Conv2d(512, 1024, kernel_size=1, stride=1),
             nn.BatchNorm2d(1024),
             nn.ReLU(inplace=True),
-            nn.Conv2d(1024, 1024, kernel_size=3, stride=2),
+            nn.Conv2d(1024, 1024, kernel_size=3, stride=1),
             nn.BatchNorm2d(1024),
             nn.ReLU(inplace=True),
             nn.Conv2d(1024, 1024, kernel_size=1, stride=1),
