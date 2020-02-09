@@ -350,6 +350,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
+	model.cuda()
 	
 
 
