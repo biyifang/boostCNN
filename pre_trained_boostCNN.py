@@ -342,7 +342,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 	
 
-	'''
+	
 	#if have teacher model, no need to run step one
 	model = torch.load('teacher_model_resnet18')
 	_, new_predict = validate(train_loader, model, criterion, args, True)
@@ -352,10 +352,10 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	'''
+	
 
 
-	'''
+	
 	# one-layer CNN training
 	model_2 = oneCNN()
 	#model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
@@ -397,7 +397,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	'''
+	
 	
 	#output_file = open('out.txt','w')
 	
