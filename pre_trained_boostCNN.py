@@ -163,8 +163,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	else:
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
-		model = models.resnet18(num_classes=10)
-		#model = oneCNN()
+		#model = models.resnet18(num_classes=10)
+		model = oneCNN()
 		model.cuda()
 
 	"""
@@ -293,7 +293,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 
 
-	'''
+	
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -312,6 +312,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			# remember best acc@1 and save checkpoint
 			is_best = acc1 > best_acc1
 			best_acc1 = max(acc1, best_acc1)
+			'''
 			if acc1 == best_acc1:
 				_, new_predict = validate(train_loader, model, criterion, args, True)
 				new_predict = torch.cat(new_predict)
@@ -320,6 +321,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 				torch.save(model, 'teacher_model_resnet18')
+			'''
 
 
 			if not args.multiprocessing_distributed or (args.multiprocessing_distributed
@@ -339,7 +341,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	'''
+	
 	
 
 	
@@ -490,9 +492,10 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		# measure elapsed time
 		batch_time.update(time.time() - end)
 		end = time.time()
-
+		'''
 		if i % args.print_freq == 0:
 			progress.display(i)
+		'''
 
 
 def validate(val_loader, model, criterion, args, Flag = False):
@@ -534,8 +537,10 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			batch_time.update(time.time() - end)
 			end = time.time()
 
+			'''
 			if i % args.print_freq == 0:
 				progress.display(i)
+			'''
 
 		# TODO: this should also be done with the ProgressMeter
 		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
