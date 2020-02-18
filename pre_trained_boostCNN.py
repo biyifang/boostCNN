@@ -626,6 +626,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	else:
 		model.alpha.append(1.0)
 		f = g
+	print(model.alpha)
 	model.weak_learners[k].cpu()
 	return f, g
 
