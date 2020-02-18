@@ -399,7 +399,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	model_2.cpu()
 	'''
 	
-	#output_file = open('out.txt','w')
+	output_file = open('out.txt','w')
 	
 
 
@@ -440,7 +440,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 		# evaluate on validation set
 		acc1 = validate_boost(val_loader, model_3, criterion, args, k)
-		#output_file.write('Iteration {} * Acc@1 {:5.5f} '.format(k, acc1))
+		output_file.write('Iteration {} * Acc@1 {:5.5f} '.format(k, acc1))
 
 		# remember best acc@1 and save checkpoint
 		is_best = acc1 > best_acc1
@@ -457,7 +457,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				'optimizer' : optimizer.state_dict(),
 			}, is_best)
 		'''
-	#output_file.close()
+	output_file.close()
 
 
 
