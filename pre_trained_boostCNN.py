@@ -21,6 +21,7 @@ import torchvision.models as models
 from tqdm import tqdm,trange
 from model import oneCNN
 from model import oneCNN_two
+from model import MobileNetV2
 from model import GBM
 from torch.utils.data import TensorDataset
 
@@ -407,7 +408,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	#Create module for GBM
 	#model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
-	model_2 = oneCNN()
+	#model_2 = oneCNN()
+	model_2 = mobilenet_v2()
 	model_list = [copy.deepcopy(model_2)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
@@ -704,6 +706,8 @@ class AverageMeter(object):
 		fmtstr = '{name} {val' + self.fmt + '} ({avg' + self.fmt + '})'
 		return fmtstr.format(**self.__dict__)
 
+def mobilenet_v2():
+    return MobileNetV2(width_mult=1)
 
 class ProgressMeter(object):
 	def __init__(self, num_batches, meters, prefix=""):
