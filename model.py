@@ -68,7 +68,7 @@ class InvertedResidual(nn.Module):
 
 
 class MobileNetV2(nn.Module):
-    def __init__(self, n_class=1000, input_size=224, width_mult=1.):
+    def __init__(self, n_class=10, input_size=224, width_mult=1.):
         super(MobileNetV2, self).__init__()
         block = InvertedResidual
         input_channel = 32
@@ -108,11 +108,17 @@ class MobileNetV2(nn.Module):
 
         self._initialize_weights()
 
-    def forward(self, x):
+    def forward(self, x, label=None, temperature=None, if_student = True):
         x = self.features(x)
         x = x.mean(3).mean(2)
         x = self.classifier(x)
-        return x
+        if not if_student:
+            return x
+        if label is not None:
+            loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x/temperature,-1), dim=1).mean()
+            return -1.0*loss
+        else:
+            return nn.functional.softmax(x,-1)
 
     def _initialize_weights(self):
         for m in self.modules():
@@ -129,7 +135,7 @@ class MobileNetV2(nn.Module):
                 m.weight.data.normal_(0, 0.01)
                 m.bias.data.zero_()
 
-                
+
 class oneCNN(nn.Module):
 #MobileNet
     def __init__(self, num_classes=10):
