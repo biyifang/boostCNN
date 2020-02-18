@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchvision.models as models
 import numpy as np
 import math
 
@@ -24,6 +25,19 @@ def conv_1x1_bn(inp, oup):
 def make_divisible(x, divisible_by=8):
     import numpy as np
     return int(np.ceil(x * 1. / divisible_by) * divisible_by)
+
+class resNet18(models.resnet18):
+    def __init__(self, numClasses=10):
+        super(resNet18, self).__init__(num_classes=numClasses)
+    def forward(self, x, label=None, temperature=None, if_student = True):
+        x = super(resNet18, self).forward(x)
+        if not if_student:
+            return x
+        if label is not None:
+            loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x/temperature,-1), dim=1).mean()
+            return -1.0*loss
+        else:
+            return nn.functional.softmax(x,-1)
 
 
 class InvertedResidual(nn.Module):
@@ -494,7 +508,7 @@ class GBM(nn.Module):
             temp2 = lower + (upper - lower)/seg
             loss_temp1 = obj(f + temp1 * g, label, num_classes)
             loss_temp2 = obj(f + temp2 * g, label, num_classes)
-            if loss_temp1 > loss_temp2:
+            if loss_temp1 < loss_temp2:
                 upper = temp2
             else:
                 lower = temp1

@@ -22,6 +22,7 @@ from tqdm import tqdm,trange
 from model import oneCNN
 from model import oneCNN_two
 from model import MobileNetV2
+from model import resNet18
 from model import GBM
 from torch.utils.data import TensorDataset
 
@@ -399,7 +400,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	# boosted CNN
 	model_2.cpu()
 	'''
-	
+	model.cpu()
 	output_file = open('out.txt','w')
 	
 
@@ -409,7 +410,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
-	model_2 = mobilenet_v2()
+	#model_2 = mobilenet_v2()
+	model_2 = resNet18()
 	model_list = [copy.deepcopy(model_2)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
