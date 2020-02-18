@@ -479,7 +479,7 @@ class GBM(nn.Module):
         #data = TensorDataset(f,g,label) sequntial data
         lower = 0.0
         upper = 1.0
-        merror = 100.0
+        merror = 1e-2
         label = [ it[1]  for it in data ]
         num_classes = self.num_classes
         def obj(pred, label, num_classes):
@@ -487,18 +487,18 @@ class GBM(nn.Module):
             for i in range(len(label)):
                 loss += torch.sum(torch.exp(-1.0/2*(torch.ones(num_classes)*pred[i, label[i]] - pred[i,:]))) - 1
             return loss
-        seg = (np.sqrt(5) - 1)/2
+        seg = (np.sqrt(5) + 1)/2
         error = 1000
         while error >= merror:
-            temp1 = upper - seg*(upper - lower)
-            temp2 = lower + seg*(upper - lower)
+            temp1 = upper - (upper - lower)/seg
+            temp2 = lower + (upper - lower)/seg
             loss_temp1 = obj(f + temp1 * g, label, num_classes)
             loss_temp2 = obj(f + temp2 * g, label, num_classes)
-            if loss_temp1 > loss_temp2:
+            if loss_temp1 < loss_temp2:
                 upper = temp2
             else:
                 lower = temp1
-            error = torch.abs(loss_temp1 - loss_temp2)
+            error = torch.abs(temp1 - temp2)
         #self.alpha.append((temp1 + temp2)/2) plane
         self.alpha.append((temp1 + temp2)/(2*gamma))
     def predict(self, x, k):
