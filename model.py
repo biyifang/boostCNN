@@ -463,7 +463,7 @@ class GBM(nn.Module):
                 temp_sum = 0.0
                 for j in range(self.num_classes):
                     if j != label:
-                        temp = - torch.exp(-1.0/2*self.gamma*alpha*(g[i][label] - g[i][j])*weight[j])
+                        temp = - torch.exp(-1.0/2*self.gamma*alpha*(g[i][label] - g[i][j]))*weight[j]
                         weight[j] = temp
                         temp_sum += temp
                 weight[label] = - temp_sum
