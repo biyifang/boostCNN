@@ -163,8 +163,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	else:
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
-		#model = models.resnet18(num_classes=10)
-		model = oneCNN()
+		model = models.resnet18(num_classes=10)
+		#model = oneCNN()
 		model.cuda()
 
 	"""
@@ -293,7 +293,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -312,7 +312,6 @@ def main_worker(gpu, ngpus_per_node, args):
 			# remember best acc@1 and save checkpoint
 			is_best = acc1 > best_acc1
 			best_acc1 = max(acc1, best_acc1)
-			'''
 			if acc1 == best_acc1:
 				_, new_predict = validate(train_loader, model, criterion, args, True)
 				new_predict = torch.cat(new_predict)
@@ -321,7 +320,6 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 				torch.save(model, 'teacher_model_resnet18')
-			'''
 
 
 			if not args.multiprocessing_distributed or (args.multiprocessing_distributed
@@ -341,10 +339,10 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	
+	'''
 	
 
-	
+	'''
 	#if have teacher model, no need to run step one
 	model = torch.load('teacher_model_resnet18')
 	_, new_predict = validate(train_loader, model, criterion, args, True)
@@ -354,10 +352,10 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	
+	'''
 
 
-	
+	'''
 	# one-layer CNN training
 	model_2 = oneCNN()
 	#model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
@@ -399,7 +397,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	
+	'''
 	
 	#output_file = open('out.txt','w')
 	
@@ -407,8 +405,10 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 	#Create module for GBM
-	model_2 = torch.load('initial_model_' + args.model_save)
-	model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
+	#model_2 = torch.load('initial_model_' + args.model_save)
+	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
+	model_2 = oneCNN()
+	model_list = [copy.deepcopy(model_2)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
@@ -422,6 +422,18 @@ def main_worker(gpu, ngpus_per_node, args):
 	for k in trange(0,args.num_boost_iter):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
+
+		if k >= 1:
+			model_list = model_list + [copy.deepcopy(model_3.weak_learners[k-1])]
+			alpha = model_3.alpha
+			#model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
+			model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
+			model_3.alpha = alpha
+			model_3.cpu()
+			model_3.train()
+			optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
+								momentum=args.momentum,
+								weight_decay=args.weight_decay) for it in model_3.weak_learners]
 		
 
 		# train for one epoch
@@ -492,10 +504,9 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		# measure elapsed time
 		batch_time.update(time.time() - end)
 		end = time.time()
-		'''
+
 		if i % args.print_freq == 0:
 			progress.display(i)
-		'''
 
 
 def validate(val_loader, model, criterion, args, Flag = False):
@@ -537,10 +548,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			batch_time.update(time.time() - end)
 			end = time.time()
 
-			'''
 			if i % args.print_freq == 0:
 				progress.display(i)
-			'''
 
 		# TODO: this should also be done with the ProgressMeter
 		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
