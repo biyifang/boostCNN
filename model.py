@@ -26,11 +26,12 @@ def make_divisible(x, divisible_by=8):
     import numpy as np
     return int(np.ceil(x * 1. / divisible_by) * divisible_by)
 
-class resNet18(resnet18):
+class resNet18(nn.Module):
     def __init__(self, numClasses=10):
-        super(resNet18, self).__init__(num_classes=numClasses)
+        super(resNet18, self).__init__()
+        self.resNet18 = resnet18(num_classes=10)
     def forward(self, x, label=None, temperature=None, if_student = True):
-        x = super(resNet18, self).forward(x)
+        x = self.resNet18(x)
         if not if_student:
             return x
         if label is not None:
