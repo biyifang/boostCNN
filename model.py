@@ -498,7 +498,7 @@ class GBM(nn.Module):
                 upper = temp2
             else:
                 lower = temp1
-            error = torch.abs(temp1 - temp2)
+            error = np.abs(temp1 - temp2)
         #self.alpha.append((temp1 + temp2)/2) plane
         self.alpha.append((temp1 + temp2)/(2*gamma))
     def predict(self, x, k):
