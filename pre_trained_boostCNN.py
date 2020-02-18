@@ -618,8 +618,12 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			g.append(model(images, weight, k, False).detach())
 	g = torch.cat(g, 0).cpu()
 	# model.line_search(f, g, train_dataset) plane
-	model.line_search(f, g, train_dataset, model.gamma)
-	f = f + model.gamma*model.alpha[-1] * g
+	if k >= 1:
+		model.line_search(f, g, train_dataset, model.gamma)
+		f = f + model.gamma*model.alpha[-1] * g
+	else:
+		model.alpha.append(1.0)
+		f = g
 	model.weak_learners[k].cpu()
 	return f, g
 
