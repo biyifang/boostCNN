@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torchvision.models as models
+from torchvision.models import resnet18
 import numpy as np
 import math
 
@@ -26,7 +26,7 @@ def make_divisible(x, divisible_by=8):
     import numpy as np
     return int(np.ceil(x * 1. / divisible_by) * divisible_by)
 
-class resNet18(models.resnet18):
+class resNet18(resnet18):
     def __init__(self, numClasses=10):
         super(resNet18, self).__init__(num_classes=numClasses)
     def forward(self, x, label=None, temperature=None, if_student = True):
