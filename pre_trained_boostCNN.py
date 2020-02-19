@@ -291,7 +291,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		num_workers=args.workers, pin_memory=True)
 	'''
 
-
+	'''
 	if args.evaluate:
 		validate(val_loader, model, criterion, args)
 		return
@@ -343,7 +343,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	
+	'''
 	
 
 	'''
