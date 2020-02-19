@@ -496,7 +496,7 @@ class GBM(nn.Module):
         #data = TensorDataset(f,g,label) sequntial data
         lower = 0.0
         upper = 1.0
-        merror = 1e-2
+        merror = 1e-5
         label = [ it[1]  for it in data ]
         num_classes = self.num_classes
         def obj(pred, label, num_classes):
@@ -520,6 +520,10 @@ class GBM(nn.Module):
             print(temp1)
             print('temp2')
             print(temp2)
+            print('loss_temp1')
+            print(loss_temp1)
+            print('loss_temp2')
+            print(loss_temp2)
         #self.alpha.append((temp1 + temp2)/2) plane
         self.alpha.append((temp1 + temp2)/(2*gamma))
     def predict(self, x, k):
