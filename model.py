@@ -485,7 +485,7 @@ class GBM(nn.Module):
                         temp_sum += temp
                 weight[label] = - temp_sum
     def forward(self, x, w, iteration, loss=True):
-        g = self.weak_learners[iteration](x)
+        g = self.weak_learners[iteration](x, if_student=False)
         if loss:
             return self.mse(g, w)
         else:
