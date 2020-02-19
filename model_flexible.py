@@ -251,7 +251,7 @@ class GBM(nn.Module):
 			temp2 = lower + seg*(upper - lower)
 			loss_temp1 = obj(f + temp1 * g, label, num_classes)
 			loss_temp2 = obj(f + temp2 * g, label, num_classes)
-			if loss_temp1 > loss_temp2:
+			if loss_temp1 < loss_temp2:
 				upper = temp2
 			else:
 				lower = temp1
