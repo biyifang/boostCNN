@@ -166,6 +166,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
 		model = models.resnet18(num_classes=10)
+		model = mobilenet_v2()
 		#model = oneCNN()
 		model.cuda()
 
@@ -295,7 +296,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 
 
-	'''
+	
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -341,7 +342,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	'''
+	
 	
 
 	'''
