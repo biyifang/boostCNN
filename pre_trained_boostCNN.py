@@ -494,6 +494,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		#output = model(images,if_student=False)
 		output = model(images)
 		output = output/args.temperature
+		print(output.size())
+		print(target.size())
 		loss = criterion(output, target)
 
 		# measure accuracy and record loss
