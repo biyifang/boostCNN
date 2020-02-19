@@ -503,7 +503,7 @@ class GBM(nn.Module):
             loss = 0.0
             for i in range(len(label)):
                 loss += torch.sum(torch.exp(-1.0/2*(torch.ones(num_classes)*pred[i, label[i]] - pred[i,:]))) - 1
-            return loss
+            return loss/len(label)
         seg = (np.sqrt(5) + 1)/2
         error = 1000
         while error >= merror:
@@ -515,7 +515,7 @@ class GBM(nn.Module):
                 upper = temp2
             else:
                 lower = temp1
-            error = np.abs(temp1 - temp2)
+            error = np.abs(loss_temp1 - loss_temp2)
             print('temp1')
             print(temp1)
             print('temp2')
