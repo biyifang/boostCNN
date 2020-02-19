@@ -504,6 +504,8 @@ class GBM(nn.Module):
             for i in range(len(label)):
                 loss += torch.sum(torch.exp(-1.0/2*(torch.ones(num_classes)*pred[i, label[i]] - pred[i,:]))) - 1
             return loss/len(label)
+        print('loss before line search')
+        print(obj(f,label,num_classes))
         seg = (np.sqrt(5) + 1)/2
         error = 1000
         while error >= merror:
@@ -524,6 +526,8 @@ class GBM(nn.Module):
             print(loss_temp1)
             print('loss_temp2')
             print(loss_temp2)
+        print('loss after line search')
+        print(obj(f + ((temp1+temp2)/2.0)*g,label,num_classes))
         #self.alpha.append((temp1 + temp2)/2) plane
         self.alpha.append((temp1 + temp2)/(2*gamma))
     def predict(self, x, k):
