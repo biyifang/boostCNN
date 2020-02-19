@@ -495,7 +495,7 @@ class GBM(nn.Module):
     def line_search(self, f, g, data, gamma):
         #data = TensorDataset(f,g,label) sequntial data
         lower = 0.0
-        upper = 5.0
+        upper = 1.0
         merror = 1e-5
         label = [ it[1]  for it in data ]
         num_classes = self.num_classes
