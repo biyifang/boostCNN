@@ -3,6 +3,7 @@ import torch.nn as nn
 from torchvision.models import resnet18
 import numpy as np
 import math
+from torchvision.models.mobilenet import MobileNetV2
 
 
 
@@ -40,6 +41,19 @@ class resNet18(nn.Module):
         else:
             return nn.functional.softmax(x,-1)
 
+class MobileNet_V2(nn.Module):
+    def __init__(self, numClasses=10):
+        super(MobileNet_V2, self).__init__()
+        self.model = MobileNetV2(num_classes=10)
+    def forward(self, x, label=None, temperature=None, if_student = True):
+        x = self.model(x)
+        if not if_student:
+            return x
+        if label is not None:
+            loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x/temperature,-1), dim=1).mean()
+            return -1.0*loss
+        else:
+            return nn.functional.softmax(x,-1)
 
 class InvertedResidual(nn.Module):
     def __init__(self, inp, oup, stride, expand_ratio):
@@ -82,7 +96,7 @@ class InvertedResidual(nn.Module):
             return self.conv(x)
 
 
-class MobileNetV2(nn.Module):
+class MobileNetv2(nn.Module):
     def __init__(self, n_class=10, input_size=224, width_mult=1.):
         super(MobileNetV2, self).__init__()
         block = InvertedResidual
@@ -470,10 +484,10 @@ class GBM(nn.Module):
                 #print(weight)
                 for j in range(self.num_classes):
                     if j != label:
-                        #weight[j] = - 1.0
-                        weight[j] = 0.0
-                #weight[label] = 1.0 * (self.num_classes - 1)
-                weight[label] = 1.0
+                        weight[j] = - 1.0
+                        #weight[j] = 0.0
+                weight[label] = 1.0 * (self.num_classes - 1)
+                #weight[label] = 1.0
         else:
             alpha = self.alpha[iteration-1]
             for i,( (_,label) ,(weight,)) in enumerate( zip(data,weight_data)):
