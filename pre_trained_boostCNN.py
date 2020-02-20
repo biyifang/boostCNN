@@ -166,7 +166,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
 		model = models.resnet18(num_classes=10)
-		model = mobilenet_v2()
+		#model = mobilenet_v2()
 		#model = oneCNN()
 		model.cuda()
 
@@ -295,7 +295,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	if args.evaluate:
 		validate(val_loader, model, criterion, args)
 		return
-
+	'''
 
 	
 	#step one: find a good teacher model
@@ -343,7 +343,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	'''
+	
 	
 
 	'''
@@ -412,8 +412,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
-	#model_2 = mobilenet_v2()
-	model_2 = resNet18()
+	model_2 = mobilenet_v2()
+	#model_2 = resNet18()
 	model_list = [copy.deepcopy(model_2)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
@@ -494,8 +494,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		#output = model(images,if_student=False)
 		output = model(images)
 		output = output/args.temperature
-		target_1 = nn.functional.one_hot(target, num_classes = 10).float()
-		loss = criterion(output, target_1)
+		#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
+		loss = criterion(output, target)
 
 		# measure accuracy and record loss
 		acc1, acc5 = accuracy(output, target, topk=(1, 5))
@@ -543,8 +543,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
-			target_1 = nn.functional.one_hot(target, num_classes = 10).float()
-			loss = criterion(output, target_1)
+			#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
+			loss = criterion(output, target)
 
 			# measure accuracy and record loss
 			acc1, acc5 = accuracy(output, target, topk=(1, 5))
