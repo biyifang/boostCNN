@@ -202,8 +202,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	"""
 
 	# define loss function (criterion) and optimizer
-	criterion = nn.CrossEntropyLoss()
-	#criterion = nn.MSELoss()
+	#criterion = nn.CrossEntropyLoss()
+	criterion = nn.MSELoss()
 
 	optimizer = torch.optim.SGD(model.parameters(), args.lr,
 								momentum=args.momentum,
@@ -494,8 +494,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		#output = model(images,if_student=False)
 		output = model(images)
 		output = output/args.temperature
-		#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
-		loss = criterion(output, target)
+		target_1 = nn.functional.one_hot(target, num_classes = 10).float()
+		loss = criterion(output, target_1)
 
 		# measure accuracy and record loss
 		acc1, acc5 = accuracy(output, target, topk=(1, 5))
@@ -543,8 +543,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
-			#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
-			loss = criterion(output, target)
+			target_1 = nn.functional.one_hot(target, num_classes = 10).float()
+			loss = criterion(output, target_1)
 
 			# measure accuracy and record loss
 			acc1, acc5 = accuracy(output, target, topk=(1, 5))
