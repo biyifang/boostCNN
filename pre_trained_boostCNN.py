@@ -202,8 +202,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	"""
 
 	# define loss function (criterion) and optimizer
-	#criterion = nn.CrossEntropyLoss()
-	criterion = nn.MSELoss()
+	criterion = nn.CrossEntropyLoss()
+	#criterion = nn.MSELoss()
 
 	optimizer = torch.optim.SGD(model.parameters(), args.lr,
 								momentum=args.momentum,
