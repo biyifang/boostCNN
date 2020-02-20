@@ -470,10 +470,10 @@ class GBM(nn.Module):
                 #print(weight)
                 for j in range(self.num_classes):
                     if j != label:
-                        weight[j] = - 1.0
-                        #weight[j] = 0.0
-                weight[label] = 1.0 * (self.num_classes - 1)
-                #weight[label] = 1.0
+                        #weight[j] = - 1.0
+                        weight[j] = 0.0
+                #weight[label] = 1.0 * (self.num_classes - 1)
+                weight[label] = 1.0
         else:
             alpha = self.alpha[iteration-1]
             for i,( (_,label) ,(weight,)) in enumerate( zip(data,weight_data)):

@@ -202,8 +202,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	"""
 
 	# define loss function (criterion) and optimizer
-	#criterion = nn.CrossEntropyLoss()
-	criterion = nn.MSELoss()
+	criterion = nn.CrossEntropyLoss()
+	#criterion = nn.MSELoss()
 
 	optimizer = torch.optim.SGD(model.parameters(), args.lr,
 								momentum=args.momentum,
@@ -295,7 +295,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	if args.evaluate:
 		validate(val_loader, model, criterion, args)
 		return
-	'''
+	
 
 	
 	#step one: find a good teacher model
@@ -343,7 +343,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	
+	'''
 	
 
 	'''
@@ -412,8 +412,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
-	model_2 = mobilenet_v2()
-	#model_2 = resNet18()
+	#model_2 = mobilenet_v2()
+	model_2 = resNet18()
 	model_list = [copy.deepcopy(model_2)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
