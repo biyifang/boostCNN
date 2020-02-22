@@ -683,7 +683,7 @@ def validate_boost(val_loader, model, criterion, args, k):
 				progress.display(i)
 
 		# TODO: this should also be done with the ProgressMeter
-		print('Iteration: ' + str(k) + '\n')
+		print('Iteration:  ' + str(k) + '\n')
 		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
 			  .format(top1=top1, top5=top5))
 
