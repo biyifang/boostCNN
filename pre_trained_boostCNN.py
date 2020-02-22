@@ -169,8 +169,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
 		#model = models.resnet18(num_classes=10)
-		model = resNet18()
-		#model = mobilenet_v2()
+		#model = resNet18()
+		model = mobilenet_v2()
 		#model = oneCNN()
 		model.cuda()
 
@@ -313,6 +313,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			# train for one epoch
 			train(train_loader, model, criterion, optimizer, epoch, args)
+			print('Iteration: ' + str(epoch) + '\n')
 
 			# evaluate on validation set
 			acc1 = validate(val_loader, model, criterion, args)
@@ -687,7 +688,6 @@ def validate_boost(val_loader, model, criterion, args, k):
 				progress.display(i)
 
 		# TODO: this should also be done with the ProgressMeter
-		print('Iteration: ' + str(k) + '\n')
 		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
 			  .format(top1=top1, top5=top5))
 
