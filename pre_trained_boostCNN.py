@@ -46,8 +46,10 @@ parser.add_argument('--teacher_model_save', metavar='MS', default='', type=str,
 					help='path to teacher model')
 parser.add_argument('-j', '--workers', default=1, type=int, metavar='N',
 					help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=90, type=int, metavar='N',
+parser.add_argument('--epochs', default=50, type=int, metavar='N',
 					help='number of total epochs to run')
+parser.add_argument('--bs_epochs', default=10, type=int, metavar='N',
+					help='number of total epochs to run in boosting CNN')
 parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
 					help='number of class')
 parser.add_argument('--num_boost_iter', default=50, type=int, metavar='N',
@@ -74,7 +76,7 @@ parser.add_argument('--temperature', '--temperature', default=3.0, type=float,
 					metavar='temperature', help='temperature for softmax', dest='temperature')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
 					help='momentum')
-parser.add_argument('--boost_shrink', default=0.9, type=float, metavar='S',
+parser.add_argument('--boost_shrink', default=0.99, type=float, metavar='S',
 					help='boosting shrinkage parameter')
 parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
 					metavar='W', help='weight decay (default: 1e-4)',
@@ -166,7 +168,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	else:
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
-		model = models.resnet18(num_classes=10)
+		#model = models.resnet18(num_classes=10)
+		model = resNet18()
 		#model = mobilenet_v2()
 		#model = oneCNN()
 		model.cuda()
@@ -296,7 +299,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	if args.evaluate:
 		validate(val_loader, model, criterion, args)
 		return
-	
+	'''
 
 	
 	#step one: find a good teacher model
@@ -344,7 +347,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	'''
+	
 	
 
 	'''
@@ -413,10 +416,10 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
-	model_2 = mobilenet_v2()
+	#model_2 = mobilenet_v2()
 	#model_2 = resNet18()
 	#model_2 = MobileNet_V2()
-	model_list = [copy.deepcopy(model_2)]
+	model_list = [copy.deepcopy(model)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
@@ -496,8 +499,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		#output = model(images,if_student=False)
 		output = model(images)
 		output = output/args.temperature
-		target_1 = nn.functional.one_hot(target, num_classes = 10).float()
-		loss = criterion(output, target_1)
+		#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
+		loss = criterion(output, target)
 
 		# measure accuracy and record loss
 		acc1, acc5 = accuracy(output, target, topk=(1, 5))
@@ -545,8 +548,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
-			target_1 = nn.functional.one_hot(target, num_classes = 10).float()
-			loss = criterion(output, target_1)
+			#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
+			loss = criterion(output, target)
 
 			# measure accuracy and record loss
 			acc1, acc5 = accuracy(output, target, topk=(1, 5))
@@ -591,7 +594,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	model.weight_fun(train_dataset,weight_dataset, k, g)
 
 	optimizer.zero_grad()
-	for epoch in trange(args.epochs):
+	for epoch in trange(args.bs_epochs):
 		for i, ( (images, _), (weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
 			# measure data loading time
 			data_time.update(time.time() - end)
