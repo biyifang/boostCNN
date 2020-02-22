@@ -484,10 +484,10 @@ class GBM(nn.Module):
                 #print(weight)
                 for j in range(self.num_classes):
                     if j != label:
-                        weight[j] = - 1.0
-                        #weight[j] = 0.0
-                weight[label] = 1.0 * (self.num_classes - 1)
-                #weight[label] = 1.0
+                        #weight[j] = - 1.0
+                        weight[j] = 0.0
+                #weight[label] = 1.0 * (self.num_classes - 1)
+                weight[label] = 1.0
         else:
             alpha = self.alpha[iteration-1]
             for i,( (_,label) ,(weight,)) in enumerate( zip(data,weight_data)):
@@ -538,7 +538,7 @@ class GBM(nn.Module):
         for i,net in enumerate(self.weak_learners):
             net.cuda()
             if i <= k:
-                pred += net.forward(x) * self.alpha[i]*self.gamma
+                pred += net.forward(x, if_student=False) * self.alpha[i]*self.gamma
             net.cpu()
         #_, index = torch.max(pred, 0)
         return pred
