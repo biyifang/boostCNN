@@ -169,8 +169,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
 		#model = models.resnet18(num_classes=10)
-		model = resNet18()
-		#model = mobilenet_v2()
+		#model = resNet18()
+		model = mobilenet_v2()
 		#model = oneCNN()
 		model.cuda()
 
@@ -301,7 +301,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	'''
+	
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -348,7 +348,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-		'''
+		
 	
 
 	'''
@@ -499,7 +499,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 
 		# compute output
 		#output = model(images,if_student=False)
-		output = model(images, if_student=False)
+		output = model(images)
 		output = output/args.temperature
 		#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
 		loss = criterion(output, target)
@@ -548,7 +548,7 @@ def validate(val_loader, model, criterion, args, Flag = False):
 
 			# compute output
 			#output = model(images, if_student=False)
-			output = model(images, if_student=False)
+			output = model(images)
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
