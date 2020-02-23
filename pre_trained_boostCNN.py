@@ -599,7 +599,11 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	model.weight_fun(train_dataset,weight_dataset, k, g)
 
 	optimizer.zero_grad()
-	for epoch in trange(args.bs_epochs):
+	if k == 0:
+		bs_epochs = 0
+	else:
+		bs_epochs = args.bs_epochs
+	for epoch in trange(bs_epochs):
 		for i, ( (images, _), (weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
 			# measure data loading time
 			data_time.update(time.time() - end)
