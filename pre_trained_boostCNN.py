@@ -169,8 +169,9 @@ def main_worker(gpu, ngpus_per_node, args):
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
 		#model = models.resnet18(num_classes=10)
-		model = resNet18()
+		#model = resNet18()
 		#model = mobilenet_v2()
+		model = MobileNet_V2()
 		#model = oneCNN()
 		model.cuda()
 
