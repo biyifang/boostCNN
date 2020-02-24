@@ -548,7 +548,7 @@ def validate(val_loader, model, criterion, args, Flag = False):
 
 			# compute output
 			#output = model(images, if_student=False)
-			output = model(images, if_student=False)
+			output = model(images)
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
