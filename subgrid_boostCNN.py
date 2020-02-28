@@ -50,7 +50,7 @@ parser.add_argument('--epochs', default=50, type=int, metavar='N',
 					help='number of total epochs to run')
 parser.add_argument('--bs_epochs', default=10, type=int, metavar='N',
 					help='number of total epochs to run in boosting CNN')
-parser.add_argument('--subgrid_epochs', default=t0, type=int, metavar='N',
+parser.add_argument('--subgrid_epochs', default=10, type=int, metavar='N',
 					help='number of total epochs to run in subgrid boosting CNN')
 parser.add_argument('--CNN_one', default=5, type=int, metavar='N',
 					help='the kernel size of CNN layer 1')
