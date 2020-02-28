@@ -388,7 +388,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	inter_media_4 = maxpool_fun(inter_media_3, 2, 2)
 	inter_media_5 = kernel_fun(inter_media_4, args.CNN_three, 2, 2)
 	inter_media_six = maxpool_fun(inter_media_5, 2,1)
-	model_2 = oneCNN_two(CNN_one, CNN_two, CNN_three, inter_media_two, inter_media_six)
+	model_2 = oneCNN_two(args.CNN_one, args.CNN_two, args.CNN_three, inter_media_two, inter_media_six)
 	#model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
 	model_2.cuda()
 	#optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
