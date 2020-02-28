@@ -382,7 +382,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	
 	# one-layer CNN training
-	inter_media_1 = kernel_fun(input_size, args.CNN_one, 4, 2)
+	inter_media_1 = kernel_fun(224, args.CNN_one, 4, 2)
 	inter_media_two = maxpool_fun(inter_media_1, 3, 2)
 	inter_media_3 = kernel_fun(inter_media_two, args.CNN_two, 2, 2)
 	inter_media_4 = maxpool_fun(inter_media_3, 2, 2)
