@@ -498,11 +498,11 @@ def main_worker(gpu, ngpus_per_node, args):
 				for a in trange(224 - x + 1):
 					for b in trange(224 - x + 1):
 						inter_media_1_t = kernel_fun(x, args.CNN_one, 4, 2)
-						inter_media_two_t = maxpool_fun(inter_media_1, 3, 2)
-						inter_media_3_t = kernel_fun(inter_media_two, args.CNN_two, 2, 2)
-						inter_media_4_t = maxpool_fun(inter_media_3, 2, 2)
-						inter_media_5_t = kernel_fun(inter_media_4, args.CNN_three, 2, 2)
-						inter_media_six_t = maxpool_fun(inter_media_5, 2,1)
+						inter_media_two_t = maxpool_fun(inter_media_1_t, 3, 2)
+						inter_media_3_t = kernel_fun(inter_media_two_t, args.CNN_two, 2, 2)
+						inter_media_4_t = maxpool_fun(inter_media_3_t, 2, 2)
+						inter_media_5_t = kernel_fun(inter_media_4_t, args.CNN_three, 2, 2)
+						inter_media_six_t = maxpool_fun(inter_media_5_t, 2,1)
 						model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, args.num_class)
 						model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
 						optimizer_list[k] = torch.optim.SGD(model_3.weak_learners[k].parameters(), args.lr_boost, 
