@@ -507,10 +507,10 @@ def main_worker(gpu, ngpus_per_node, args):
 						model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
 						optimizer_list[k] = torch.optim.SGD(model_3.weak_learners[k].parameters(), args.lr_boost, 
 							momentum=args.momentum,weight_decay=args.weight_decay)
-						print('a' + str(a))
+						print('a' + str(a) + '\n')
 						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
 						print('end subgrid train')
-						acc3 = subgrid_validate(val_loader, model_3, criterion, args, k, prob_load, a,b,x)
+						acc3 = subgrid_validate(val_loader, model_3, criterion, args, k, probability_loader, a,b,x)
 						if acc3 > acc1:
 							a_opt = a
 							b_opt = b
@@ -525,7 +525,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			print('a: ' + str(a_opt) )
 			print('b: '+ str(b_opt))
 			print('x: ' + str(x_opt))
-			subgrid_validate(val_loader, model_3, criterion, args, k, prob_load, a,b,x, flag = 1)
+			subgrid_validate(val_loader, model_3, criterion, args, k, probability_loader, a,b,x, flag = 1)
 
 
 
