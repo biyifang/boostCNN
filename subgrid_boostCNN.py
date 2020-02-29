@@ -478,6 +478,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k, probability_loader)
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
+			print(k)
 			
 		# initialize the weight for the next weak learner
 		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
@@ -496,7 +497,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			for x in range(190, 212):
 				for a in range(224 - x + 1):
 					for b in range(224 - x + 1):
-						inter_media_1_t = kernel_fun(input_size, args.CNN_one, 4, 2)
+						inter_media_1_t = kernel_fun(x, args.CNN_one, 4, 2)
 						inter_media_two_t = maxpool_fun(inter_media_1, 3, 2)
 						inter_media_3_t = kernel_fun(inter_media_two, args.CNN_two, 2, 2)
 						inter_media_4_t = maxpool_fun(inter_media_3, 2, 2)
@@ -506,7 +507,9 @@ def main_worker(gpu, ngpus_per_node, args):
 						model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
 						optimizer_list[k] = torch.optim.SGD(model_3.weak_learners[k].parameters(), args.lr_boost, 
 							momentum=args.momentum,weight_decay=args.weight_decay)
+						print('a' + str(a))
 						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
+						print('end subgrid train')
 						acc3 = subgrid_validate(val_loader, model_3, criterion, args, k, prob_load, a,b,x)
 						if acc3 > acc1:
 							a_opt = a
