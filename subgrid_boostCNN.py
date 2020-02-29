@@ -80,7 +80,7 @@ parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
 					metavar='LRboost', help='learning rate for boosting', dest='lr_boost')
-parser.add_argument('--lr_sub', '--learning-rate-subgrid', default=0.00001, type=float,
+parser.add_argument('--lr_sub', default=0.00001, type=float,
 					metavar='LRsubgrid', help='learning rate for subgrid training', dest='lr_boost')
 parser.add_argument('--temperature', '--temperature', default=3.0, type=float,
 					metavar='temperature', help='temperature for softmax', dest='temperature')
