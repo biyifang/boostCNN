@@ -80,7 +80,7 @@ parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.0001, type=float,
 					metavar='LRboost', help='learning rate for boosting', dest='lr_boost')
-parser.add_argument('--lr_sub', default=0.00001, type=float,
+parser.add_argument('--lr_sub', default=0.000001, type=float,
 					metavar='LRsubgrid', help='learning rate for subgrid training')
 parser.add_argument('--temperature', '--temperature', default=3.0, type=float,
 					metavar='temperature', help='temperature for softmax', dest='temperature')
@@ -178,8 +178,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	else:
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
-		#model = models.resnet18(num_classes=10)
-		model = resNet18()
+		model = models.resnet18(num_classes=10)
+		#model = resNet18()
 		#model = mobilenet_v2()
 		#model = MobileNet_V2()
 		#model = oneCNN()
@@ -484,7 +484,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k, probability_loader)
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			print(k)
+			acc_temp = subgrid_validate(val_loader, model_3, criterion, args, k, probability_loader, 0,0,224)
+			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 			
 		# initialize the weight for the next weak learner
 		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
