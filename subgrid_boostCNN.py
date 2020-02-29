@@ -347,7 +347,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 				model.cpu()
-				torch.save(model_temp, 'teacher_model_resnet18')
+				torch.save(model, 'teacher_model_resnet18')
 				model.cuda()
 
 
