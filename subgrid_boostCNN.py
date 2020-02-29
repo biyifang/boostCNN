@@ -666,6 +666,7 @@ def set_grad_to_false(model):
 
 def subgrid_train(train_loader_seq, weight_loader, model, optimizer_list, k, f, g, a, b, x, args):
 	model.train()
+	optimizer = optimizer_list[k]
 	optimizer.zero_grad()
 	for epoch in trange(args.subgrid_epochs):
 		for i, ( (images, _), (weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
