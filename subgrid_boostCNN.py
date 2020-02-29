@@ -680,7 +680,7 @@ def subgrid_train(train_loader_seq, weight_loader, model, optimizer_list, k, f, 
 			loss = model(images, weight, k)      
 
 			# measure accuracy and record loss
-			losses.update(loss.item(), images.size(0))
+			#losses.update(loss.item(), images.size(0))
 
 			# compute gradient and do SGD step
 			loss.backward()
