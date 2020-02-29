@@ -80,6 +80,8 @@ parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
 					metavar='LRboost', help='learning rate for distillation', dest='lr_boost')
+parser.add_argument('--lr_sub', '--learning-rate-boost', default=0.00001, type=float,
+					metavar='LRboost', help='learning rate for distillation', dest='lr_boost')
 parser.add_argument('--temperature', '--temperature', default=3.0, type=float,
 					metavar='temperature', help='temperature for softmax', dest='temperature')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
@@ -506,7 +508,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						inter_media_six_t = maxpool_fun(inter_media_5_t, 2,1)
 						model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, args.num_class)
 						model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
-						optimizer_list[k] = torch.optim.SGD(model_3.weak_learners[k].parameters(), args.lr_boost, 
+						optimizer_list[k] = torch.optim.SGD(model_3.weak_learners[k].parameters(), args.lr_sub, 
 							momentum=args.momentum,weight_decay=args.weight_decay)
 						print('a' + str(a) + '\n')
 						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
