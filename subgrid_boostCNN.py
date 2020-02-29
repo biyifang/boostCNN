@@ -78,7 +78,7 @@ parser.add_argument('-gradient_acc', default=256, type=int,
                          'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
-parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
+parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.0001, type=float,
 					metavar='LRboost', help='learning rate for boosting', dest='lr_boost')
 parser.add_argument('--lr_sub', default=0.00001, type=float,
 					metavar='LRsubgrid', help='learning rate for subgrid training')
@@ -369,7 +369,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 	
 
-	'''
+	
 	#if have teacher model, no need to run step one
 	model = torch.load('teacher_model_resnet18')
 	_, new_predict = validate(train_loader, model, criterion, args, True)
@@ -429,7 +429,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	'''
+	
 
 	#model.cpu()
 	output_file = open('out.txt','w')
@@ -439,7 +439,6 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	#Create module for GBM
 	model_2 = torch.load('initial_model_' + args.model_save)
-	model.cpu()
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
@@ -498,8 +497,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			b_opt = 0
 			x_opt = 190
 			acc1 = 0.0
-			#for x in trange(190, 212):
-			for x in trange(224,225):
+			for x in trange(190, 212):
+			#for x in trange(224,225):
 				for a in trange(224 - x + 1):
 					for b in trange(224 - x + 1):
 						inter_media_1_t = kernel_fun(x, args.CNN_one, 4, 2)
