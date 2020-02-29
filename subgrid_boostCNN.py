@@ -346,8 +346,9 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_sampler = torch.utils.data.SequentialSampler(predict_dataset )
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
-				model_temp = model.cpu()
+				model.cpu()
 				torch.save(model_temp, 'teacher_model_resnet18')
+				model.cuda()
 
 
 			if not args.multiprocessing_distributed or (args.multiprocessing_distributed
@@ -422,8 +423,9 @@ def main_worker(gpu, ngpus_per_node, args):
 				optimizer.zero_grad()
 		if top1.avg > acc2:
 			acc2 = top1.avg
-			model_2_temp = model_2.cpu()
-			torch.save(model_2_temp, 'initial_model_'+ args.model_save)
+			model_2.cpu()
+			torch.save(model_2, 'initial_model_'+ args.model_save)
+			model_2.cuda()
 		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg)+'\n')
 	print('oneCNN optimization done')
 	optimizer.zero_grad()
