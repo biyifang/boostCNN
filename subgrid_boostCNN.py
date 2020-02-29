@@ -508,7 +508,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						optimizer_list[k] = torch.optim.SGD(model_3.weak_learners[k].parameters(), args.lr_boost, 
 							momentum=args.momentum,weight_decay=args.weight_decay)
 						print('a' + str(a))
-						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
+						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
 						print('end subgrid train')
 						acc3 = subgrid_validate(val_loader, model_3, criterion, args, k, prob_load, a,b,x)
 						if acc3 > acc1:
@@ -522,9 +522,9 @@ def main_worker(gpu, ngpus_per_node, args):
 			f = f_opt
 			g = g_opt
 			model_3.alpha[k] = alpha_k_opt
-			print('a: ' + str(a) )
-			print('b: '+ str(b))
-			print('x: ' + str(x))
+			print('a: ' + str(a_opt) )
+			print('b: '+ str(b_opt))
+			print('x: ' + str(x_opt))
 			subgrid_validate(val_loader, model_3, criterion, args, k, prob_load, a,b,x, flag = 1)
 
 
@@ -664,7 +664,7 @@ def set_grad_to_false(model):
 	for p in model.parameters():
 		p.required_grad = False
 
-def subgrid_train(train_loader_seq, weight_loader, model, optimizer_list, k, f, g, a, b, x, args):
+def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimizer_list, k, f, g, a, b, x, args):
 	optimizer = optimizer_list[k]
 	model.weak_learners[k].cuda()
 	model.train()
