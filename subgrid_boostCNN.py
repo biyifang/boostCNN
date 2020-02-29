@@ -503,7 +503,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						inter_media_4_t = maxpool_fun(inter_media_3, 2, 2)
 						inter_media_5_t = kernel_fun(inter_media_4, args.CNN_three, 2, 2)
 						inter_media_six_t = maxpool_fun(inter_media_5, 2,1)
-						model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, num_classes)
+						model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, args.num_class)
 						model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
 						optimizer_list[k] = torch.optim.SGD(model_3.weak_learners[k].parameters(), args.lr_boost, 
 							momentum=args.momentum,weight_decay=args.weight_decay)
