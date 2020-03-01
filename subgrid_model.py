@@ -582,8 +582,7 @@ class GBM(nn.Module):
             error = np.abs(loss_temp1 - loss_temp2)
         #self.alpha.append((temp1 + temp2)/2) plane
         return (temp1 + temp2)/(2*gamma)
-    def predict(self, x, k, prob):
-        '''
+    def predict(self, x, k):
         pred = next(self.weak_learners.parameters())
         pred = pred.new_zeros(x.size(0), self.num_classes).cuda()
         for i,net in enumerate(self.weak_learners):
@@ -601,7 +600,7 @@ class GBM(nn.Module):
         previous_prob += self.weak_learners[k].forward(x, if_student=False) * self.alpha[k]*self.gamma
         self.weak_learners[k].cpu()
         return previous_prob.cpu()
-
+        '''
 
 
 

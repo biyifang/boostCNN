@@ -483,10 +483,10 @@ def main_worker(gpu, ngpus_per_node, args):
 		# train for one epoch
 		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			acc1 = validate_boost(val_loader, model_3, criterion, args, k, probability_loader)
+			acc1 = validate_boost(val_loader, model_3, criterion, args, k, 0, 0, 224)
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			acc_temp = subgrid_validate(val_loader, model_3, criterion, args, k, probability_loader, 0,0,224)
+			acc_temp = validate_boost(val_loader, model_3, criterion, args, k, 0,0,224)
 			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 			
 		# initialize the weight for the next weak learner
@@ -521,7 +521,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
 						model_3.alpha[k] = alpha_k_temp
 						print('end subgrid train')
-						acc3 = subgrid_validate(val_loader, model_3, criterion, args, k, probability_loader, a,b,x)
+						acc3 = validate_boost(val_loader, model_3, criterion, args, k, a,b,x)
 						if acc3 > acc1:
 							a_opt = a
 							b_opt = b
@@ -536,7 +536,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			print('a: ' + str(a_opt) )
 			print('b: '+ str(b_opt))
 			print('x: ' + str(x_opt))
-			subgrid_validate(val_loader, model_3, criterion, args, k, probability_loader, a,b,x, flag = 1)
+			validate_boost(val_loader, model_3, criterion, args, k, a,b,x)
 
 
 
@@ -789,7 +789,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 		model.weak_learners[k].cpu()
 
 
-def subgrid_validate(val_loader, model, criterion, args, k, prob_load, a,b,x, flag = 0 ):
+def validate_boost(val_loader, model, criterion, args, k, a,b,x):
 	batch_time = AverageMeter('Time', ':6.3f')
 	losses = AverageMeter('Loss', ':.4e')
 	top1 = AverageMeter('Acc@1', ':6.2f')
@@ -811,13 +811,7 @@ def subgrid_validate(val_loader, model, criterion, args, k, prob_load, a,b,x, fl
 			prob = prob[0]
 
 			# compute output
-			output = model.predict(images, k, prob)
-			print('prob')
-			print(prob)
-			print(output)
-			if flag != 0:
-				for j in range(prob.size()[0]):
-					prob[j] = output[j]
+			output = model.predict(images, k)
 			output = output.cuda()
 			#output = output/args.temperature
 			loss = criterion(output, target)
@@ -838,56 +832,6 @@ def subgrid_validate(val_loader, model, criterion, args, k, prob_load, a,b,x, fl
 		# TODO: this should also be done with the ProgressMeter
 		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
 			  .format(top1=top1, top5=top5))
-
-	return top1.avg
-def validate_boost(val_loader, model, criterion, args, k, prob_load):
-	batch_time = AverageMeter('Time', ':6.3f')
-	losses = AverageMeter('Loss', ':.4e')
-	top1 = AverageMeter('Acc@1', ':6.2f')
-	top5 = AverageMeter('Acc@5', ':6.2f')
-	progress = ProgressMeter(
-		len(val_loader),
-		[batch_time, losses, top1, top5],
-		prefix='Test: ')
-
-	# switch to evaluate mode
-	model.eval()
-
-	with torch.no_grad():
-		end = time.time()
-		for i, ((images, target), prob) in enumerate(zip(val_loader, prob_load)):
-
-			images = images.cuda()
-			target = target.cuda()
-			prob = prob[0]
-
-			# compute output
-			output = model.predict(images, k, prob)
-			for j in range(prob.size()[0]):
-				prob[j] = output[j]
-			output = output.cuda()
-			#output = output/args.temperature
-			loss = criterion(output, target)
-
-			# measure accuracy and record loss
-			acc1, acc5 = accuracy(output, target, topk=(1, 5))
-			losses.update(loss.item(), images.size(0))
-			top1.update(acc1[0], images.size(0))
-			top5.update(acc5[0], images.size(0))
-
-			# measure elapsed time
-			batch_time.update(time.time() - end)
-			end = time.time()
-
-			if i % args.print_freq == 0:
-				progress.display(i)
-
-		# TODO: this should also be done with the ProgressMeter
-		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
-			  .format(top1=top1, top5=top5))
-	for i, ((images, target), prob) in enumerate(zip(val_loader, prob_load)):
-		print('check prob')
-		print(prob[0])
 
 	return top1.avg
 
