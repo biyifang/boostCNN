@@ -746,9 +746,6 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			data_time.update(time.time() - end)
 
 			images = images.cuda()
-			if i == 0:
-				print('weight')
-				print(weight)
 			weight = weight.cuda()
 
 
@@ -767,8 +764,6 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			# measure elapsed time
 			batch_time.update(time.time() - end)
 			end = time.time()
-
-			print(loss.item())
 
 			#if (i+1) % args.print_freq == 0:
 			#    progress.display(i)
