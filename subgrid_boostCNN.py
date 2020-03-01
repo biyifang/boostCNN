@@ -746,6 +746,9 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			data_time.update(time.time() - end)
 
 			images = images.cuda()
+			if i == 0:
+				print('weight')
+				print(weight)
 			weight = weight.cuda()
 
 
@@ -808,7 +811,6 @@ def validate_boost(val_loader, model, criterion, args, k, a,b,x):
 
 			images = images[:,:, a:a+x, b:b+x].cuda()
 			target = target.cuda()
-			prob = prob[0]
 
 			# compute output
 			output = model.predict(images, k)
