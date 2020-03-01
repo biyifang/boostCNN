@@ -865,9 +865,6 @@ def validate_boost(val_loader, model, criterion, args, k, prob_load):
 			output = model.predict(images, k, prob)
 			for j in range(prob.size()[0]):
 				prob[j] = output[j]
-			print('prob')
-			print(prob)
-			print(output)
 			output = output.cuda()
 			#output = output/args.temperature
 			loss = criterion(output, target)
@@ -888,6 +885,9 @@ def validate_boost(val_loader, model, criterion, args, k, prob_load):
 		# TODO: this should also be done with the ProgressMeter
 		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
 			  .format(top1=top1, top5=top5))
+	for i, ((images, target), prob) in enumerate(zip(val_loader, prob_load)):
+		print('check prob')
+		print(prob[0])
 
 	return top1.avg
 
