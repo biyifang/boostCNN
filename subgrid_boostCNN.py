@@ -782,7 +782,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 		f = g
 	else:
 		model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
-		f = f + model.gamma*model.alpha[-1] * g
+		f = f + model.gamma*model.alpha[k] * g
 	print(model.alpha)
 	model.weak_learners[k].cpu()
 	return f, g
