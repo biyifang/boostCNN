@@ -769,22 +769,23 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			#    progress.display(i)
 	optimizer.zero_grad()
 
+	g = []
+	model.eval()
+	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
+		images = images.cuda()
+		weight = weight.cuda()
+		with torch.no_grad():
+			g.append(model(images, weight, k, False).detach())
+	g = torch.cat(g, 0).cpu()
 	if k == 0:
-		g = []
-		model.eval()
-		for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
-			images = images.cuda()
-			weight = weight.cuda()
-			with torch.no_grad():
-				g.append(model(images, weight, k, False).detach())
-		g = torch.cat(g, 0).cpu()
 		model.alpha[0] = 1.0
 		f = g
-		print(model.alpha)
-		model.weak_learners[k].cpu()
-		return f, g
 	else:
-		model.weak_learners[k].cpu()
+		model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
+		f = f + model.gamma*model.alpha[-1] * g
+	print(model.alpha)
+	model.weak_learners[k].cpu()
+	return f, g
 
 
 def validate_boost(val_loader, model, criterion, args, k, a,b,x):
