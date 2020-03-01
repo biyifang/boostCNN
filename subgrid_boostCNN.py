@@ -78,7 +78,7 @@ parser.add_argument('-gradient_acc', default=256, type=int,
                          'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
-parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.0001, type=float,
+parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
 					metavar='LRboost', help='learning rate for boosting', dest='lr_boost')
 parser.add_argument('--lr_sub', default=0.000001, type=float,
 					metavar='LRsubgrid', help='learning rate for subgrid training')
@@ -519,6 +519,7 @@ def main_worker(gpu, ngpus_per_node, args):
 							momentum=args.momentum,weight_decay=args.weight_decay)
 						print('a' + str(a) + '\n')
 						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
+						model_3.alpha[k] = alpha_k_temp
 						print('end subgrid train')
 						acc3 = subgrid_validate(val_loader, model_3, criterion, args, k, probability_loader, a,b,x)
 						if acc3 > acc1:
@@ -764,6 +765,8 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 			batch_time.update(time.time() - end)
 			end = time.time()
 
+			print(loss.item())
+
 			#if (i+1) % args.print_freq == 0:
 			#    progress.display(i)
 	optimizer.zero_grad()
@@ -809,6 +812,9 @@ def subgrid_validate(val_loader, model, criterion, args, k, prob_load, a,b,x, fl
 
 			# compute output
 			output = model.predict(images, k, prob)
+			print('prob')
+			print(prob)
+			print(output)
 			if flag != 0:
 				for j in range(prob.size()[0]):
 					prob[j] = output[j]
