@@ -804,7 +804,7 @@ def validate_boost(val_loader, model, criterion, args, k, a,b,x):
 
 	with torch.no_grad():
 		end = time.time()
-		for i, ((images, target), prob) in enumerate(zip(val_loader, prob_load)):
+		for i, (images, target) in enumerate(val_loader):
 
 			images = images[:,:, a:a+x, b:b+x].cuda()
 			target = target.cuda()
