@@ -455,8 +455,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
-	optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
-								momentum=args.momentum,
+	optimizer_list = [torch.optim.Adam(it.parameters(), args.lr_boost,
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
 	g = None
 	f = torch.zeros(len(train_dataset), args.num_class)
@@ -496,7 +495,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		model_3.alpha = alpha
 		model_3.cpu()
 		model_3.train()
-		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost, momentum=args.momentum,
+		optimizer_list = [torch.optim.Adam(it.parameters(), args.lr_boost,
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
 		if k > 0:
 			a_opt = 0
@@ -515,8 +514,8 @@ def main_worker(gpu, ngpus_per_node, args):
 						inter_media_six_t = maxpool_fun(inter_media_5_t, 2,1)
 						model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, args.num_class)
 						model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
-						optimizer_list[k] = torch.optim.SGD(model_3.weak_learners[k].parameters(), args.lr_sub, 
-							momentum=args.momentum,weight_decay=args.weight_decay)
+						optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
+							weight_decay=args.weight_decay)
 						print('a' + str(a) + '\n')
 						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
 						model_3.alpha[k] = alpha_k_temp
