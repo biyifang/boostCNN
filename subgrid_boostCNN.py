@@ -482,9 +482,9 @@ def main_worker(gpu, ngpus_per_node, args):
 		# train for one epoch
 		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
+			model_3.subgrid[0] = (0,0,224)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k, 0, 0, 224)
 			#(a,b,x)	
-			model_3.subgrid[0] = (0,0,224)
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k, 0,0,224)
@@ -808,7 +808,7 @@ def validate_boost(val_loader, model, criterion, args, k, a,b,x):
 		end = time.time()
 		for i, (images, target) in enumerate(val_loader):
 
-			images = images[:,:, a:a+x, b:b+x].cuda()
+			images = images.cuda()
 			target = target.cuda()
 
 			# compute output
