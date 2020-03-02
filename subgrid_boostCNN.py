@@ -508,7 +508,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			x_opt = 190
 			acc1 = 0.0
 			#for x in trange(190, 212):
-			for x in trange(223,225):
+			for x in trange(223,224):
 				for a in trange(224 - x + 1):
 					for b in trange(224 - x + 1):
 						inter_media_1_t = kernel_fun(x, args.CNN_one, 4, 2)
@@ -548,6 +548,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 			model_3.alpha = alpha
 			model_3.subgrid = subgrid_map
+			print(model_3.subgrid)
+			print(model_3.alpha)
 			model_3.cpu()
 			model_3.train()
 			optimizer_list = [torch.optim.Adam(it.parameters(), args.lr_boost,
