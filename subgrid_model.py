@@ -600,7 +600,7 @@ class GBM(nn.Module):
                 a, b, j = self.subgrid[i]
                 pred += net.forward(x[:,:,a:a+j, b:b+j], if_student=False)
             elif i <= k:
-                a, b, k = self.subgrid[i]
+                a, b, j = self.subgrid[i]
                 pred += net.forward(x[:,:,a:a+j, b:b+j], if_student=False) * self.alpha[i]*self.gamma
             net.cpu()
         #_, index = torch.max(pred, 0)
