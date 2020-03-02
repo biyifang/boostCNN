@@ -525,7 +525,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						f_temp, g_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
 						model_3.subgrid[k] = (a,b,x)
 						print('end subgrid train')
-						acc3 = validate_boost(val_loader, model_3, criterion, args, k)
+						acc3 = validate_boost(train_loader_seq, model_3, criterion, args, k)
 						if acc3 > acc1:
 							a_opt = a
 							b_opt = b
