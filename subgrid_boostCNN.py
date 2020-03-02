@@ -507,8 +507,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			b_opt = 0
 			x_opt = 190
 			acc1 = 0.0
-			for x in trange(190, 212):
-			#for x in trange(223,225):
+			#for x in trange(190, 212):
+			for x in trange(223,225):
 				for a in trange(224 - x + 1):
 					for b in trange(224 - x + 1):
 						inter_media_1_t = kernel_fun(x, args.CNN_one, 4, 2)
