@@ -527,6 +527,7 @@ class GBM(nn.Module):
         self.mse = nn.MSELoss()
         self.alpha = [0.0 for _ in range(num_iter)]
         self.gamma = shrink_param
+        self.subgird = {}
     def weight_fun(self, data, weight_data, iteration, g):
         #data = TensorDataset(x,label,weight)
         if iteration == 0:
@@ -595,10 +596,11 @@ class GBM(nn.Module):
         pred = pred.new_zeros(x.size(0), self.num_classes).cuda()
         for i,net in enumerate(self.weak_learners):
             net.cuda()
+            a, b, k = self.subgrid[i]
             if i == 0:
-                pred += net.forward(x, if_student=False)
+                pred += net.forward(x[:,:,a:a+k, b:b+k], if_student=False)
             elif i <= k:
-                pred += net.forward(x, if_student=False) * self.alpha[i]*self.gamma
+                pred += net.forward(x[:,:,a:a+k, b:b+k], if_student=False) * self.alpha[i]*self.gamma
             net.cpu()
         #_, index = torch.max(pred, 0)
         return pred

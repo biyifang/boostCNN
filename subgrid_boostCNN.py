@@ -483,6 +483,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k, 0, 0, 224)
+			#(a,b,x)	
+			model_3.subgrid[0] = (0,0,224)
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k, 0,0,224)
@@ -519,6 +521,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						print('a' + str(a) + '\n')
 						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
 						model_3.alpha[k] = alpha_k_temp
+						model_3.subgrid[k] = (a,b,x)
 						print('end subgrid train')
 						acc3 = validate_boost(val_loader, model_3, criterion, args, k, a,b,x)
 						if acc3 > acc1:
@@ -532,6 +535,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			f = f_opt
 			g = g_opt
 			model_3.alpha[k] = alpha_k_opt
+			model_3.subgrid[k] = (a_opt, b_opt, x_opt)
 			print('a: ' + str(a_opt) )
 			print('b: '+ str(b_opt))
 			print('x: ' + str(x_opt))
