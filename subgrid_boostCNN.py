@@ -483,11 +483,12 @@ def main_worker(gpu, ngpus_per_node, args):
 		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			model_3.subgrid[0] = (0,0,224)
-			acc1 = validate_boost(val_loader, model_3, criterion, args, k, 0, 0, 224)
+			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			acc_temp = validate_boost(val_loader, model_3, criterion, args, k, 0,0,224)
+			model_3.subgrid[0] = (0,0,224)
+			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 			
 		# initialize the weight for the next weak learner
@@ -525,7 +526,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						model_3.alpha[k] = alpha_k_temp
 						model_3.subgrid[k] = (a,b,x)
 						print('end subgrid train')
-						acc3 = validate_boost(val_loader, model_3, criterion, args, k, a,b,x)
+						acc3 = validate_boost(val_loader, model_3, criterion, args, k)
 						if acc3 > acc1:
 							a_opt = a
 							b_opt = b
@@ -534,6 +535,7 @@ def main_worker(gpu, ngpus_per_node, args):
 							f_opt = f_temp
 							alpha_k_opt = alpha_k_temp
 							acc1 = acc3
+							model_k_opt = copy.deepcopy(model_3.weak_learners[k])
 			f = f_opt
 			g = g_opt
 			model_3.alpha[k] = alpha_k_opt
@@ -541,7 +543,17 @@ def main_worker(gpu, ngpus_per_node, args):
 			print('a: ' + str(a_opt) )
 			print('b: '+ str(b_opt))
 			print('x: ' + str(x_opt))
-			validate_boost(val_loader, model_3, criterion, args, k, a,b,x)
+			model_list[k] = model_k_opt 
+			alpha = model_3.alpha
+			subgrid_map = model_3.subgrid
+			model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
+			model_3.alpha = alpha
+			model_3.subgrid = subgrid_map
+			model_3.cpu()
+			model_3.train()
+			optimizer_list = [torch.optim.Adam(it.parameters(), args.lr_boost,
+								weight_decay=args.weight_decay) for it in model_3.weak_learners]
+			validate_boost(val_loader, model_3, criterion, args, k)
 
 
 
@@ -793,7 +805,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	return f, g
 
 
-def validate_boost(val_loader, model, criterion, args, k, a,b,x):
+def validate_boost(val_loader, model, criterion, args, k):
 	batch_time = AverageMeter('Time', ':6.3f')
 	losses = AverageMeter('Loss', ':.4e')
 	top1 = AverageMeter('Acc@1', ':6.2f')
