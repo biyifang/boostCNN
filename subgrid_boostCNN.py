@@ -493,8 +493,10 @@ def main_worker(gpu, ngpus_per_node, args):
 		# initialize the weight for the next weak learner
 		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
 		alpha = model_3.alpha
+		subgrid_map = model_3.subgrid
 		model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 		model_3.alpha = alpha
+		model_3.subgrid = subgrid_map
 		model_3.cpu()
 		model_3.train()
 		optimizer_list = [torch.optim.Adam(it.parameters(), args.lr_boost,
