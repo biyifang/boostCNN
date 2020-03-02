@@ -573,8 +573,14 @@ class GBM(nn.Module):
         while error >= merror:
             temp1 = upper - (upper - lower)/seg
             temp2 = lower + (upper - lower)/seg
+            print('temp1')
+            print(temp1)
+            print(temp2)
             loss_temp1 = obj(f + temp1 * g, label, num_classes)
             loss_temp2 = obj(f + temp2 * g, label, num_classes)
+            print('loss')
+            print(loss_temp1)
+            print(loss_temp2)
             if loss_temp1 < loss_temp2:
                 upper = temp2
             else:
