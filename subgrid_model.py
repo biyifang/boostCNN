@@ -576,6 +576,8 @@ class GBM(nn.Module):
             print('temp1')
             print(temp1)
             print(temp2)
+            print(f)
+            print(g)
             loss_temp1 = obj(f + temp1 * g, label, num_classes)
             loss_temp2 = obj(f + temp2 * g, label, num_classes)
             print('loss')
