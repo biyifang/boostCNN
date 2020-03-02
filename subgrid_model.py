@@ -596,10 +596,11 @@ class GBM(nn.Module):
         pred = pred.new_zeros(x.size(0), self.num_classes).cuda()
         for i,net in enumerate(self.weak_learners):
             net.cuda()
-            a, b, k = self.subgrid[i]
             if i == 0:
+                a, b, k = self.subgrid[i]
                 pred += net.forward(x[:,:,a:a+k, b:b+k], if_student=False)
             elif i <= k:
+                a, b, k = self.subgrid[i]
                 pred += net.forward(x[:,:,a:a+k, b:b+k], if_student=False) * self.alpha[i]*self.gamma
             net.cpu()
         #_, index = torch.max(pred, 0)
