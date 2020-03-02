@@ -507,8 +507,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			b_opt = 0
 			x_opt = 190
 			acc1 = 0.0
-			#for x in trange(190, 212):
-			for x in trange(223,225):
+			for x in trange(190, 212):
+			#for x in trange(223,225):
 				for a in trange(224 - x + 1):
 					for b in trange(224 - x + 1):
 						inter_media_1_t = kernel_fun(x, args.CNN_one, 4, 2)
@@ -522,8 +522,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
 							weight_decay=args.weight_decay)
 						print('a' + str(a) + '\n')
-						f_temp, g_temp, alpha_k_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
-						model_3.alpha[k] = alpha_k_temp
+						f_temp, g_temp = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, a, b, x, args)
 						model_3.subgrid[k] = (a,b,x)
 						print('end subgrid train')
 						acc3 = validate_boost(val_loader, model_3, criterion, args, k)
@@ -533,7 +532,7 @@ def main_worker(gpu, ngpus_per_node, args):
 							x_opt = x
 							g_opt = g_temp
 							f_opt = f_temp
-							alpha_k_opt = alpha_k_temp
+							alpha_k_opt = model_3.alpha[k]
 							acc1 = acc3
 							model_k_opt = copy.deepcopy(model_3.weak_learners[k])
 			f = f_opt
@@ -725,11 +724,11 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 			g.append(model(images, weight, k, False).detach())
 	g = torch.cat(g, 0).cpu()
 	# model.line_search(f, g, train_dataset) plane
-	alpha_k = model.line_search(f, g, train_dataset, model.gamma)
+	model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
 	f = f + model.gamma*model.alpha[k] * g
 	print(model.alpha)
 	model.weak_learners[k].cpu()
-	return f, g, alpha_k
+	return f, g
 
 
 def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset, model, optimizer_list, k, f, g, args):
