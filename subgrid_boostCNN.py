@@ -487,7 +487,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			#(a,b,x)	
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			model_3.subgrid[0] = (0,0,224)
+			model_3.subgrid[k] = (0,0,224)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 			
@@ -507,8 +507,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			b_opt = 0
 			x_opt = 190
 			acc1 = 0.0
-			for x in trange(190, 212):
-			#for x in trange(224,225):
+			#for x in trange(190, 212):
+			for x in trange(223,225):
 				for a in trange(224 - x + 1):
 					for b in trange(224 - x + 1):
 						inter_media_1_t = kernel_fun(x, args.CNN_one, 4, 2)
