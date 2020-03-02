@@ -527,7 +527,7 @@ class GBM(nn.Module):
         self.mse = nn.MSELoss()
         self.alpha = [0.0 for _ in range(num_iter)]
         self.gamma = shrink_param
-        self.subgird = {}
+        self.subgrid = {}
     def weight_fun(self, data, weight_data, iteration, g):
         #data = TensorDataset(x,label,weight)
         if iteration == 0:
