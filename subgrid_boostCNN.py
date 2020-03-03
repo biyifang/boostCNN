@@ -489,8 +489,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			model_3.subgrid[k] = (0,0,224)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
-			set_grad_to_false(model.weak_learners[k].features_1)
-			set_grad_to_false(model.weak_learners[k].features_2)
+			set_grad_to_false(model_3.weak_learners[k].features_1)
+			set_grad_to_false(model_3.weak_learners[k].features_2)
 			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 			
 		# initialize the weight for the next weak learner
