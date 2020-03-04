@@ -455,8 +455,10 @@ def main_worker(gpu, ngpus_per_node, args):
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
-	optimizer_list = [torch.optim.Adam(it.parameters(), args.lr_boost,
+	optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
+								momentum=args.momentum,
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
+	
 	g = None
 	f = torch.zeros(len(train_dataset), args.num_class)
 
@@ -502,7 +504,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		model_3.subgrid = subgrid_map
 		model_3.cpu()
 		model_3.train()
-		optimizer_list = [torch.optim.Adam(it.parameters(), args.lr_boost,
+		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
+								momentum=args.momentum,
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
 		if k > 0:
 			set_grad_to_false(model_3.weak_learners[k].features_1)
@@ -546,7 +549,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
 			acc3 = validate_boost(train_loader_seq, model_3, criterion, args, k)
-			print(acc3)
+			validate_boost(val_loader, model_3, criterion, args, k)
+
 
 
 
