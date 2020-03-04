@@ -697,7 +697,7 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 	optimizer.zero_grad()
 	for i, ((images, target),(weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
 		images = images.cuda()
-		images.required_grad = 	True
+		images.requires_grad = 	True
 		target = target.cuda()
 		#print(target)
 		weight = weight.cuda()
