@@ -548,8 +548,8 @@ def main_worker(gpu, ngpus_per_node, args):
 					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
-			acc3 = validate_boost(train_loader_seq, model_3, criterion, args, k)
-			validate_boost(val_loader, model_3, criterion, args, k)
+			validate_boost(train_loader_seq, model_3, criterion, args, k)
+			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
 
 
 
