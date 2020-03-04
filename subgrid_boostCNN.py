@@ -514,7 +514,7 @@ def main_worker(gpu, ngpus_per_node, args):
 					for b in trange(20):
 						if a <= b:
 							y_axis = [i for i in range(b, 224, x)]
-							x_axis = [i for i in rang(a,224,x)][:y_axis.size()]
+							x_axis = [i for i in range(a,224,x)][:y_axis.size()]
 						else:
 							x_axis = [i for i in range(a, 224, x)]
 							y_axis = [i for i in range(b,224,x)][:x_axis.size()]
