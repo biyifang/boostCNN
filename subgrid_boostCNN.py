@@ -711,7 +711,7 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 		else:
 			grad_input += torch.abs(images.grad.data).sum(-1) + 0.0
 
-	return grad_input/len(train_dataset)
+	return grad_input[0]/len(train_dataset)
 
 def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimizer_list, k, f, g,args):
 	x_start, y_start, x_end, y_end, stepsize = model.subgrid[k]
