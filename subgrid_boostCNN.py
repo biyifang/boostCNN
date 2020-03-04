@@ -508,10 +508,10 @@ def main_worker(gpu, ngpus_per_node, args):
 			set_grad_to_false(model_3.weak_learners[k].features_1)
 			set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
-			for x in trange(2, 7):
+			for x in range(2, 7):
 			#for x in trange(223,224):
-				for a in trange(20):
-					for b in trange(20):
+				for a in range(20):
+					for b in range(20):
 						if a <= b:
 							y_axis = [i for i in range(b, 224, x)]
 							x_axis = [i for i in range(a,224,x)][:len(y_axis)]
