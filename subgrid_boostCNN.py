@@ -519,14 +519,14 @@ def main_worker(gpu, ngpus_per_node, args):
 							x_axis = [i for i in range(a, 224, x)]
 							y_axis = [i for i in range(b,224,x)][:len(x_axis)]
 					#images = images[:,:,x_axis, y_axis]
-					grad_temp = torch.sum(grad_value[x_axis, y_axis])
-					if grad_temp > grad_opt:
-						x_start_opt = x_axis[0]
-						x_end_opt = x_axis[-1]
-						y_start_opt = y_axis[0]
-						y_end_opt = y_axis[-1]
-						stepsize_opt = x
-						grad_opt = grad_temp
+						grad_temp = torch.sum(grad_value[x_axis, y_axis])
+						if grad_temp > grad_opt:
+							x_start_opt = x_axis[0]
+							x_end_opt = x_axis[-1]
+							y_start_opt = y_axis[0]
+							y_end_opt = y_axis[-1]
+							stepsize_opt = x
+							grad_opt = grad_temp
 
 
 			model_3.subgrid[k] = (x_start_opt,y_start_opt, x_end_opt, y_end_opt, stepsize_opt)
