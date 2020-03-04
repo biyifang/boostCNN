@@ -561,7 +561,7 @@ class GBM(nn.Module):
         #data = TensorDataset(f,g,label) sequntial data
         lower = 0.0
         upper = 1.0
-        merror = 1e-5
+        merror = 1e-2
         label = [ it[1]  for it in data ]
         num_classes = self.num_classes
         def obj(pred, label, num_classes):
@@ -580,6 +580,7 @@ class GBM(nn.Module):
             print(temp2)
             print(f)
             print(g)
+            print(label)
             '''
             loss_temp1 = obj(f + temp1 * g, label, num_classes)
             loss_temp2 = obj(f + temp2 * g, label, num_classes)
@@ -601,11 +602,11 @@ class GBM(nn.Module):
         for i,net in enumerate(self.weak_learners):
             net.cuda()
             if i == 0:
-                a, b, j = self.subgrid[i]
-                pred += net.forward(x[:,:,a:a+j, b:b+j], if_student=False)
+                x_axis, y_axis = self.subgrid[i]
+                pred += net.forward(x[:,:,x_axis, y_axis], if_student=False)
             elif i <= k:
-                a, b, j = self.subgrid[i]
-                pred += net.forward(x[:,:,a:a+j, b:b+j], if_student=False) * self.alpha[i]*self.gamma
+                x_axis, y_axis = self.subgrid[i]
+                pred += net.forward(x[:,:,x_axis, y_axis], if_student=False) * self.alpha[i]*self.gamma
             net.cpu()
         #_, index = torch.max(pred, 0)
         return pred
