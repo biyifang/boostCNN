@@ -530,6 +530,7 @@ def main_worker(gpu, ngpus_per_node, args):
 							y_end_opt = y_axis[-1]
 							stepsize_opt = x
 							grad_opt = grad_temp
+							print(x_start_opt)
 
 
 			model_3.subgrid[k] = (x_start_opt,y_start_opt, x_end_opt, y_end_opt, stepsize_opt)
