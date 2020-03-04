@@ -689,10 +689,10 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 	optimizer = optimizer_list[k]
 	model.weak_learners[k].cuda()
 	model.eval()
-	train_sampler = SequentialSampler(train_dataset)
-	weight_sampler = SequentialSampler(weight_dataset)
-	train_loader_seq = DataLoader(train_dataset, sampler=train_sampler, batch_size=1)
-	weight_loader = DataLoader(weight_dataset, sampler=weight_sampler, batch_size=1)
+	train_sampler = torch.utils.data.SequentialSampler(train_dataset)
+	weight_sampler = torch.utils.data.SequentialSampler(weight_dataset)
+	train_loader_seq = torch.utils.data.DataLoader(train_dataset, sampler=train_sampler, batch_size=1)
+	weight_loader = torch.utils.data.DataLoader(weight_dataset, sampler=weight_sampler, batch_size=1)
 	grad_input = None
 	optimizer.zero_grad()
 	for i, ((images, target),(weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
