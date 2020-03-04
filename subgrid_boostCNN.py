@@ -685,20 +685,30 @@ def set_grad_to_false(model):
 	for p in model.parameters():
 		p.required_grad = False
 
-def find_grad(train_loader_seq, weight_loader, model, optimizer_list, k, args):
+def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 	optimizer = optimizer_list[k]
 	model.weak_learners[k].cuda()
-	model.train()
+	model.eval()
+	train_sampler = SequentialSampler(train_dataset)
+	weight_sampler = SequentialSampler(weight_dataset)
+	train_loader_seq = DataLoader(train_dataset, sampler=train_sampler, batch_size=1)
+	weight_loader = DataLoader(weight_dataset, sampler=weight_sampler, batch_size=1)
+	grad_input = None
 	optimizer.zero_grad()
 	for i, ((images, target),(weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
 		images = images.cuda()
+		images.required_grad = 	True
 		target = target.cuda()
-		print(target)
-		print(target[0])
+		#print(target)
 		weight = weight.cuda()
 		output = model(images, weight, k, False)
-		output[[i for i in range(args.batch_size)], target[0]].backward(retain_graph=True)
+		output.backward()
+		if grad_input is None:
+			grad_input = torch.abs(images.grad.data).sum(-1) + 0.0
+		else:
+			grad_input += torch.abs(images.grad.data).sum(-1) + 0.0
 
+	return grad_input/len(train_dataset)
 
 def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimizer_list, k, f, g,args):
 	x_start, y_start, x_end, y_end, stepsize = model.subgrid[k]
