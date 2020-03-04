@@ -489,7 +489,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			model_3.subgrid[k] = (0,0,223,223,1)
 			#find gradient
-			grad_value = find_grad(train_loader_seq, weight_loader, model_e, optimizer_list, k, args)
+			grad_value = find_grad(train_loader_seq, weight_loader, model_3, optimizer_list, k, args)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 			
