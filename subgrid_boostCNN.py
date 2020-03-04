@@ -707,9 +707,9 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 		output = model(images, weight, k)
 		output.backward()
 		if grad_input is None:
-			grad_input = torch.abs(images.grad.data).sum(-1) + 0.0
+			grad_input = torch.abs(images.grad.data).sum(1) + 0.0
 		else:
-			grad_input += torch.abs(images.grad.data).sum(-1) + 0.0
+			grad_input += torch.abs(images.grad.data).sum(1) + 0.0
 
 	return grad_input[0]/len(train_dataset)
 
