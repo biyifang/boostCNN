@@ -482,18 +482,12 @@ def main_worker(gpu, ngpus_per_node, args):
 		# train for one epoch
 		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			x_axis = []
-			for i in range(224):
-				x_axis += [i]*224
-			model_3.subgrid[0] = (x_axis, x_axis)
+			model_3.subgrid[0] = (0,0,1,223, 223)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			x_axis = []
-			for i in range(224):
-				x_axis += [i]*224
-			model_3.subgrid[0] = (x_axis, x_axis)
+			model_3.subgrid[k] = (0,0,1,223,223)
 			#find gradient
 			grad_value = find_grad(train_loader_seq, weight_loader, model_e, optimizer_list, k, args)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
@@ -513,37 +507,29 @@ def main_worker(gpu, ngpus_per_node, args):
 		if k > 0:
 			set_grad_to_false(model_3.weak_learners[k].features_1)
 			set_grad_to_false(model_3.weak_learners[k].features_2)
+			grad_opt = 0.0
 			for x in trange(2, 7):
 			#for x in trange(223,224):
 				for a in trange(20):
 					for b in trange(20):
 						if a <= b:
-							test_axis = [i for i in range(b, 224, x)]
-						else:
-							test_axis = [i for i in range(a, 224, x)]
-						length = test_axis.size()
-					x_axis = []
-					y_axis = []
-					x_index = [i for i in range(a, 224, x)][:length]
-					y_index = [i for i in range(b, 224, x)][:length]
-					for i in x_index:
-						x_axis += [i]*length
-					for j in y_index:
-						y_axis += [j]*length
-
-
-						if a <= b:
-							#x_axis = [i for i in range(a,224, x)]
 							y_axis = [i for i in range(b, 224, x)]
-							x_axis = [i for i in range(a,224, x)][:y_axis.size()]
+							x_axis = [i for i in rang(a,224,x)][:y_axis.size()]
 						else:
-							x_axis = [i for i in range(a,224, x)]
-							y_axis = [i for i in range(b, 224, x)][:x_axis.size()]
-						#images = images[:,:,x_axis, y_axis]
-						#grad = 
+							x_axis = [i for i in range(a, 224, x)]
+							y_axis = [i for i in range(b,224,x)][:x_axis.size()]
+					#images = images[:,:,x_axis, y_axis]
+					grad_temp = torch.sum(grad_value[x_axis, y_axis])
+					if grad_temp > grad_opt:
+						x_start_opt = x_axis[0]
+						x_end_opt = x_axis[-1]
+						y_start_opt = y_axis[0]
+						y_end_opt = y_axis[-1]
+						stepsize_opt = x
+						grad_opt = grad_temp
 
 
-			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
+			model_3.subgrid[k] = (x_start_opt,y_start_opt, x_end_opt, y_end_opt, stepsize_opt)
 			print(model_3.subgrid[k])
 			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
 			input_size = x_axis_opt.size()
@@ -557,7 +543,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
 					weight_decay=args.weight_decay)
-			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g, x_axis_opt,y_axis_opt, args)
+			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
 			acc3 = validate_boost(train_loader_seq, model_3, criterion, args, k)
 			print(acc3)
@@ -714,14 +700,15 @@ def find_grad(train_loader_seq, weight_loader, model, optimizer_list, k, args):
 		output[[i for i in range(args.batch_size)], target[0]].backward(retain_graph=True)
 
 
-def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimizer_list, k, f, g, x_axis, y_axis, args):
+def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimizer_list, k, f, g,args):
+	x_start, y_start, x_end, y_end, stepsize = model.subgrid[k]
 	optimizer = optimizer_list[k]
 	model.weak_learners[k].cuda()
 	model.train()
 	optimizer.zero_grad()
 	for epoch in trange(args.subgrid_epochs):
 		for i, ( (images, _), (weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
-			images = images[:,:, x_axis, y_axis].cuda()
+			images = images[:,:, x_start:x_end+1:stepsize, y_start:y_end+1:stepsize].cuda()
 			weight = weight.cuda()
 			#set_grad_to_false(model.weak_learners[k].features_1)
 			#set_grad_to_false(model.weak_learners[k].features_2)
