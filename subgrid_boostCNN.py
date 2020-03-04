@@ -514,10 +514,10 @@ def main_worker(gpu, ngpus_per_node, args):
 					for b in trange(20):
 						if a <= b:
 							y_axis = [i for i in range(b, 224, x)]
-							x_axis = [i for i in range(a,224,x)][:y_axis.size()]
+							x_axis = [i for i in range(a,224,x)][:len(y_axis)]
 						else:
 							x_axis = [i for i in range(a, 224, x)]
-							y_axis = [i for i in range(b,224,x)][:x_axis.size()]
+							y_axis = [i for i in range(b,224,x)][:len(x_axis)]
 					#images = images[:,:,x_axis, y_axis]
 					grad_temp = torch.sum(grad_value[x_axis, y_axis])
 					if grad_temp > grad_opt:
