@@ -540,7 +540,7 @@ def main_worker(gpu, ngpus_per_node, args):
 							x_axis = [i for i in range(a,224, x)]
 							y_axis = [i for i in range(b, 224, x)][:x_axis.size()]
 						#images = images[:,:,x_axis, y_axis]
-						grad = 
+						#grad = 
 
 
 			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
