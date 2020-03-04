@@ -482,12 +482,18 @@ def main_worker(gpu, ngpus_per_node, args):
 		# train for one epoch
 		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			model_3.subgrid[0] = ([i for i in range(224)], [i for i in range(224)])
+			x_axis = []
+			for i in range(224):
+				x_axis += [i]*224
+			model_3.subgrid[0] = (x_axis, x_axis)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			model_3.subgrid[k] = ([i for i in range(224)], [i for i in range(224)])
+			x_axis = []
+			for i in range(224):
+				x_axis += [i]*224
+			model_3.subgrid[0] = (x_axis, x_axis)
 			#find gradient
 			grad_value = find_grad(train_loader_seq, weight_loader, model_e, optimizer_list, k, args)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
@@ -512,6 +518,21 @@ def main_worker(gpu, ngpus_per_node, args):
 				for a in trange(20):
 					for b in trange(20):
 						if a <= b:
+							test_axis = [i for i in range(b, 224, x)]
+						else:
+							test_axis = [i for i in range(a, 224, x)]
+						length = test_axis.size()
+					x_axis = []
+					y_axis = []
+					x_index = [i for i in range(a, 224, x)][:length]
+					y_index = [i for i in range(b, 224, x)][:length]
+					for i in x_index:
+						x_axis += [i]*length
+					for j in y_index:
+						y_axis += [j]*length
+
+
+						if a <= b:
 							#x_axis = [i for i in range(a,224, x)]
 							y_axis = [i for i in range(b, 224, x)]
 							x_axis = [i for i in range(a,224, x)][:y_axis.size()]
@@ -519,6 +540,7 @@ def main_worker(gpu, ngpus_per_node, args):
 							x_axis = [i for i in range(a,224, x)]
 							y_axis = [i for i in range(b, 224, x)][:x_axis.size()]
 						#images = images[:,:,x_axis, y_axis]
+						grad = 
 
 
 			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
