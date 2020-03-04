@@ -482,12 +482,12 @@ def main_worker(gpu, ngpus_per_node, args):
 		# train for one epoch
 		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			model_3.subgrid[0] = (0,0,1,223, 223)
+			model_3.subgrid[0] = (0,0,223,223,1)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			model_3.subgrid[k] = (0,0,1,223,223)
+			model_3.subgrid[k] = (0,0,223,223,1)
 			#find gradient
 			grad_value = find_grad(train_loader_seq, weight_loader, model_e, optimizer_list, k, args)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
@@ -532,7 +532,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			model_3.subgrid[k] = (x_start_opt,y_start_opt, x_end_opt, y_end_opt, stepsize_opt)
 			print(model_3.subgrid[k])
 			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
-			input_size = x_axis_opt.size()
+			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
 			inter_media_1_t = kernel_fun(input_size, args.CNN_one, 4, 2)
 			inter_media_two_t = maxpool_fun(inter_media_1_t, 3, 2)
 			inter_media_3_t = kernel_fun(inter_media_two_t, args.CNN_two, 2, 2)
