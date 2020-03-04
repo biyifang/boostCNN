@@ -701,7 +701,7 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 		target = target.cuda()
 		#print(target)
 		weight = weight.cuda()
-		output = model(images, weight, k, False)
+		output = model(images, weight, k)
 		output.backward()
 		if grad_input is None:
 			grad_input = torch.abs(images.grad.data).sum(-1) + 0.0
