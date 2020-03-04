@@ -741,7 +741,7 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 	g = []
 	model.eval()
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
-		images = images[:,:, a:a+x, b:b+x].cuda()
+		images = images[:,:, x_start:x_end+1:stepsize, y_start:y_end+1:stepsize].cuda()
 		weight = weight.cuda()
 		with torch.no_grad():
 			g.append(model(images, weight, k, False).detach())
