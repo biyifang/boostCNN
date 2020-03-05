@@ -826,9 +826,6 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 		model.alpha[0] = 1.0
 		f = g
 	else:
-		print('compare f and g')
-		print(f)
-		print(g)
 		model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
 		f = f + model.gamma*model.alpha[k] * g
 	print(model.alpha)
