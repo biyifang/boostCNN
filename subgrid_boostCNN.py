@@ -521,8 +521,9 @@ def main_worker(gpu, ngpus_per_node, args):
 						else:
 							x_axis = [i for i in range(a, 224, x)]
 							y_axis = [i for i in range(b,224,x)][:len(x_axis)]
-					#images = images[:,:,x_axis, y_axis]
+						#images = images[:,:,x_axis, y_axis]
 						grad_temp = torch.sum(grad_value[x_axis, y_axis])
+						print(grad_temp)
 						if grad_temp > grad_opt:
 							x_start_opt = x_axis[0]
 							x_end_opt = x_axis[-1]
