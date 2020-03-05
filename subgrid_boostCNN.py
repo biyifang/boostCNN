@@ -78,7 +78,7 @@ parser.add_argument('-gradient_acc', default=256, type=int,
                          'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
-parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.00001, type=float,
+parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.000001, type=float,
 					metavar='LRboost', help='learning rate for boosting', dest='lr_boost')
 parser.add_argument('--lr_sub', default=0.000001, type=float,
 					metavar='LRsubgrid', help='learning rate for subgrid training')
