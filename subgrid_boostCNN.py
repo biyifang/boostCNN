@@ -700,7 +700,7 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 	train_loader_seq = torch.utils.data.DataLoader(train_dataset, sampler=train_sampler, batch_size=1)
 	weight_loader = torch.utils.data.DataLoader(weight_dataset, sampler=weight_sampler, batch_size=1)
 	grad_input = None
-	optimizer.zero_grad()
+	model.weak_learners[k].zero_grad()
 	for i, ((images, target),(weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
 		images = images.cuda()
 		images.requires_grad = 	True
@@ -713,6 +713,7 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 			grad_input = torch.abs(images.grad.data).sum(1) + 0.0
 		else:
 			grad_input += torch.abs(images.grad.data).sum(1) + 0.0
+		model.weak_learners[k].zero_grad()
 
 	return grad_input[0]/len(train_dataset)
 
@@ -816,13 +817,18 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
 		images = images.cuda()
 		weight = weight.cuda()
+		print(weight)
 		with torch.no_grad():
+			print(model(images, weight, k, False).detach())
 			g.append(model(images, weight, k, False).detach())
 	g = torch.cat(g, 0).cpu()
 	if k == 0:
 		model.alpha[0] = 1.0
 		f = g
 	else:
+		print('compare f and g')
+		print(f)
+		print(g)
 		model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
 		f = f + model.gamma*model.alpha[k] * g
 	print(model.alpha)
