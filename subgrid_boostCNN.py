@@ -482,11 +482,15 @@ def main_worker(gpu, ngpus_per_node, args):
 		'''
 
 		# train for one epoch
-		if k == 0:
+		#if k == 0:
+		if k > -1:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			model_3.subgrid[0] = (0,0,223,223,1)
+			model_3.subgrid[k] = (0,0,223,223,1)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
-			#(a,b,x)	
+			#(a,b,x)
+
+
+		'''	
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			model_3.subgrid[k] = (0,0,223,223,1)
@@ -552,7 +556,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			print('end subgrid train')
 			validate_boost(train_loader_seq, model_3, criterion, args, k)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
-
+		'''
 
 
 
