@@ -498,7 +498,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
-			
+		'''
+
 		# initialize the weight for the next weak learner
 		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
 		alpha = model_3.alpha
@@ -511,6 +512,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
 								momentum=args.momentum,
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
+		
+		'''
 		if k > 0:
 			set_grad_to_false(model_3.weak_learners[k].features_1)
 			set_grad_to_false(model_3.weak_learners[k].features_2)
