@@ -561,7 +561,7 @@ class GBM(nn.Module):
         #data = TensorDataset(f,g,label) sequntial data
         lower = 0.0
         upper = 1.0
-        merror = 1e-5
+        merror = 1e-4
         label = [ it[1]  for it in data ]
         num_classes = self.num_classes
         def obj(pred, label, num_classes):
