@@ -555,7 +555,7 @@ class GBM(nn.Module):
             return self.mse(g, w)
         else:
             #return g
-            self.weak_learners[iteration](x)
+            return self.weak_learners[iteration](x)
         #data already with correct w/label
     #def line_search(self, f, g, data): plane
     def line_search(self, f, g, data, gamma):
