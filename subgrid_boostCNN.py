@@ -482,24 +482,23 @@ def main_worker(gpu, ngpus_per_node, args):
 		'''
 
 		# train for one epoch
-		#if k == 0:
-		if k > -1:
+		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			model_3.subgrid[k] = (0,0,223,223,1)
+			#model_3.subgrid[0] = (0,0,223,223,1)
+			temp = [i for i in range(224)]
+			model_3.subgrid[0] = (temp, temp)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
-			#(a,b,x)
-
-
-		'''	
+			#(a,b,x)	
 		else:
 			train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
-			model_3.subgrid[k] = (0,0,223,223,1)
+			#model_3.subgrid[k] = (0,0,223,223,1)
+			temp = [i for i in range(224)]
+			model_3.subgrid[k] = (temp, temp)
 			#find gradient
 			grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
-		'''
-
+			
 		# initialize the weight for the next weak learner
 		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
 		alpha = model_3.alpha
@@ -512,12 +511,12 @@ def main_worker(gpu, ngpus_per_node, args):
 		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
 								momentum=args.momentum,
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
-		
-		'''
 		if k > 0:
 			set_grad_to_false(model_3.weak_learners[k].features_1)
 			set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
+
+			'''
 			for x in range(2, 7):
 			#for x in trange(223,224):
 				for a in range(20):
@@ -528,8 +527,8 @@ def main_worker(gpu, ngpus_per_node, args):
 						else:
 							x_axis = [i for i in range(a, 224, x)]
 							y_axis = [i for i in range(b,224,x)][:len(x_axis)]
-						#images = images[:,:,x_axis, y_axis]
-						grad_temp = torch.sum(grad_value[x_axis, y_axis])
+						
+						grad_temp = torch.mean(grad_value[x_axis, y_axis])
 						#print(grad_temp)
 						if grad_temp > grad_opt:
 							x_start_opt = x_axis[0]
@@ -539,12 +538,38 @@ def main_worker(gpu, ngpus_per_node, args):
 							stepsize_opt = x
 							grad_opt = grad_temp
 							#print(x_start_opt)
-
-
 			model_3.subgrid[k] = (x_start_opt,y_start_opt, x_end_opt, y_end_opt, stepsize_opt)
 			print(model_3.subgrid[k])
-			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
 			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
+			'''
+
+			for x in range(180, 202):
+				'''
+				index = [i for i in range(224)]
+				del index[::x]
+				images = images[:,:,index,:]
+				images = images[:,:,:,index]
+				'''
+				for a in range(10):
+					for b in range(10):
+						x_axis = sorted(random.sample(range(a,224), x))
+						y_axis = sorted(random.sample(range(b,224), x))
+						
+						grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
+						#print(grad_temp)
+						if grad_temp > grad_opt:
+							x_axis_opt = x_axis
+							y_axis_opt = y_axis
+							x_opt = x
+							a_opt = a
+							b_opt = b
+							grad_opt = grad_temp
+							#print(x_start_opt)
+			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
+
+			print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
+			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
+			input_size = x_opt
 			inter_media_1_t = kernel_fun(input_size, args.CNN_one, 4, 2)
 			inter_media_two_t = maxpool_fun(inter_media_1_t, 3, 2)
 			inter_media_3_t = kernel_fun(inter_media_two_t, args.CNN_two, 2, 2)
@@ -559,7 +584,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			print('end subgrid train')
 			validate_boost(train_loader_seq, model_3, criterion, args, k)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
-		'''
+
 
 
 
@@ -725,14 +750,16 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 	return grad_input[0]/len(train_dataset)
 
 def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimizer_list, k, f, g,args):
-	x_start, y_start, x_end, y_end, stepsize = model.subgrid[k]
+	#x_start, y_start, x_end, y_end, stepsize = model.subgrid[k]
+	x_axis, y_axis = model.subgrid[k]
 	optimizer = optimizer_list[k]
 	model.weak_learners[k].cuda()
 	model.train()
 	optimizer.zero_grad()
 	for epoch in trange(args.subgrid_epochs):
 		for i, ( (images, _), (weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
-			images = images[:,:, x_start:x_end+1:stepsize, y_start:y_end+1:stepsize].cuda()
+			#images = images[:,:, x_start:x_end+1:stepsize, y_start:y_end+1:stepsize].cuda()
+			images = images[:,:, x_axis,:][:,:,:,y_axis].cuda()
 			weight = weight.cuda()
 			#set_grad_to_false(model.weak_learners[k].features_1)
 			#set_grad_to_false(model.weak_learners[k].features_2)
@@ -752,7 +779,8 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 	g = []
 	model.eval()
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
-		images = images[:,:, x_start:x_end+1:stepsize, y_start:y_end+1:stepsize].cuda()
+		#images = images[:,:, x_start:x_end+1:stepsize, y_start:y_end+1:stepsize].cuda()
+		images = images[:,:, x_axis,:][:,:,:,y_axis].cuda()
 		weight = weight.cuda()
 		with torch.no_grad():
 			g.append(model(images, weight, k, False).detach())

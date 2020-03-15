@@ -603,11 +603,17 @@ class GBM(nn.Module):
         for i,net in enumerate(self.weak_learners):
             net.cuda()
             if i == 0:
-                x_start, y_start, x_end, y_end, stepsize = self.subgrid[i]
-                pred += net.forward(x[:,:,x_start:x_end+1:stepsize, y_start:y_end+1:stepsize], if_student=False)
+                #x_start, y_start, x_end, y_end, stepsize = self.subgrid[i]
+                #pred += net.forward(x[:,:,x_start:x_end+1:stepsize, y_start:y_end+1:stepsize], if_student=False)
+                
+                x_axis, y_axis = self.subgrid[i]
+                pred += net.forward(x[:,:, x_axis,:][:,:,:,y_axis], if_student=False)
             elif i <= k:
-                x_start, y_start, x_end, y_end, stepsize = self.subgrid[i]
-                pred += net.forward(x[:,:,x_start:x_end+1:stepsize, y_start:y_end+1:stepsize], if_student=False) * self.alpha[i]*self.gamma
+                #x_start, y_start, x_end, y_end, stepsize = self.subgrid[i]
+                #pred += net.forward(x[:,:,x_start:x_end+1:stepsize, y_start:y_end+1:stepsize], if_student=False) * self.alpha[i]*self.gamma
+
+                x_axis, y_axis = self.subgrid[i]
+                pred += net.forward(x[:,:, x_axis,:][:,:,:,y_axis], if_student=False) * self.alpha[i]*self.gamma
             net.cpu()
         #_, index = torch.max(pred, 0)
         return pred
