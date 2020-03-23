@@ -543,8 +543,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
 			'''
 
-			for x in range(134, 180):
-			#180,202
+			for x in range(180, 202):
+			#134, 180,202
 				'''
 				index = [i for i in range(224)]
 				del index[::x]
