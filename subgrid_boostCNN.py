@@ -490,6 +490,9 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 
+			x_axis_opt = temp
+			y_axis_opt = temp
+			
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
