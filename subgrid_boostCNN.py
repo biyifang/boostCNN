@@ -492,7 +492,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			x_axis_opt = temp
 			y_axis_opt = temp
-			
+
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
@@ -501,11 +501,11 @@ def main_worker(gpu, ngpus_per_node, args):
 			temp = [i for i in range(224)]
 			model_3.subgrid[k] = (temp, temp)
 			#find gradient
-			#grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
+			grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 
 			#update certain pixels
-			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
-			grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp[x_axis_opt,:][:,y_axis_opt]
+			#grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
+			#grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp[x_axis_opt,:][:,y_axis_opt]
 
 			acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
@@ -523,8 +523,8 @@ def main_worker(gpu, ngpus_per_node, args):
 								momentum=args.momentum,
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
 		if k > 0:
-			set_grad_to_false(model_3.weak_learners[k].features_1)
-			set_grad_to_false(model_3.weak_learners[k].features_2)
+			#set_grad_to_false(model_3.weak_learners[k].features_1)
+			#set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
 
 			'''
