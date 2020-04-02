@@ -740,6 +740,8 @@ def set_grad_to_false(model):
 		p.required_grad = False
 
 def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
+	x_axis, y_axis = model.subgrid[k]
+
 	optimizer = optimizer_list[k]
 	model.weak_learners[k].cuda()
 	model.eval()
@@ -750,7 +752,8 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 	grad_input = None
 	model.weak_learners[k].zero_grad()
 	for i, ((images, target),(weight,)) in enumerate( tqdm(zip(train_loader_seq , weight_loader)) ):
-		images = images.cuda()
+		#images = images.cuda()
+		images = images[:,:, x_axis,:][:,:,:,y_axis].cuda()
 		images.requires_grad = 	True
 		target = target.cuda()
 		#print(target)
