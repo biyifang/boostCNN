@@ -596,6 +596,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			validate_boost(train_loader_seq, model_3, criterion, args, k)
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
 
+
 			#update gradient
 			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 			grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp
