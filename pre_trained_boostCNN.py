@@ -302,7 +302,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -349,7 +349,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		#     predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 		print(best_acc1)
 		#l = input('l')
-	
+	'''
 	
 
 	'''
@@ -422,7 +422,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = resNet18()
 	#model_2 = MobileNet_V2()
 	model = torch.load('SVHN_initial_model_' + args.model_save)
-	
+
 	model_list = [copy.deepcopy(model)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
