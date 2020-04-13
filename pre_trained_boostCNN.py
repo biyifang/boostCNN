@@ -421,6 +421,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = mobilenet_v2()
 	#model_2 = resNet18()
 	#model_2 = MobileNet_V2()
+	model = torch.load('SVHN_initial_model_' + args.model_save)
+	
 	model_list = [copy.deepcopy(model)]
 	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 	model_3.cpu()
