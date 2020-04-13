@@ -501,7 +501,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			#model_3.subgrid[0] = (0,0,223,223,1)
 			temp = [i for i in range(224)]
-			model_3.subgrid[0] = (temp, temp)
+			model_3.subgrid[k] = (temp, temp)
 
 			grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 
