@@ -497,7 +497,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		'''
 
 		# train for one epoch
-		if k == 0:
+		if k > -1:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			#model_3.subgrid[0] = (0,0,223,223,1)
 			temp = [i for i in range(224)]
@@ -540,7 +540,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		'''
 
 
-		if k > 0:
+		if k > 100:
 			#set_grad_to_false(model_3.weak_learners[k].features_1)
 			#set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
@@ -628,8 +628,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 		model_3.alpha = alpha
 		model_3.subgrid = subgrid_map
-		model_3.weak_learners[k+1].res = model_3.weak_learners[0].res
-		model_3.weak_learners[k+1].classifier = model_3.weak_learners[0].classifier
+		#model_3.weak_learners[k+1].res = model_3.weak_learners[0].res
+		#model_3.weak_learners[k+1].classifier = model_3.weak_learners[0].classifier
 		model_3.cpu()
 		model_3.train()
 		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
