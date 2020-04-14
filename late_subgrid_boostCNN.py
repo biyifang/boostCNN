@@ -497,11 +497,11 @@ def main_worker(gpu, ngpus_per_node, args):
 		'''
 
 		# train for one epoch
-		if k > -1:
+		if k == 0:
 			f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			#model_3.subgrid[0] = (0,0,223,223,1)
 			temp = [i for i in range(224)]
-			model_3.subgrid[k] = (temp, temp)
+			model_3.subgrid[0] = (temp, temp)
 
 			grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 
@@ -540,7 +540,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		'''
 
 
-		if k > 100:
+		if k > 0:
 			#set_grad_to_false(model_3.weak_learners[k].features_1)
 			#set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
@@ -571,7 +571,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			print(model_3.subgrid[k])
 			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
 			'''
-
+			grad_pre = []
 			for x in range(180, 202):
 			#134, 180,202
 				'''
@@ -586,6 +586,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						y_axis = sorted(random.sample(range(b,224), x))
 						
 						grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
+						grad_pre.append(grad_temp)
 						#print(grad_temp)
 						if grad_temp > grad_opt:
 							x_axis_opt = x_axis
@@ -596,6 +597,8 @@ def main_worker(gpu, ngpus_per_node, args):
 							grad_opt = grad_temp
 							#print(x_start_opt)
 			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
+			print('gradient_opt: ' + str(grad_opt) + '\t' + 'gradient_mean: ' + str(sum(grad_pre)/len(sum)))
+			print(grad_pre)
 
 			print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
 			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
@@ -628,8 +631,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
 		model_3.alpha = alpha
 		model_3.subgrid = subgrid_map
-		#model_3.weak_learners[k+1].res = model_3.weak_learners[0].res
-		#model_3.weak_learners[k+1].classifier = model_3.weak_learners[0].classifier
+		model_3.weak_learners[k+1].res = model_3.weak_learners[0].res
+		model_3.weak_learners[k+1].classifier = model_3.weak_learners[0].classifier
 		model_3.cpu()
 		model_3.train()
 		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
