@@ -200,8 +200,16 @@ class ResNet(nn.Module):
 
         return x
 
-    def forward(self, x):
-        return self._forward_impl(x)
+
+    def forward(self, x, label=None, temperature=None, if_student = True):
+        x = self._forward_impl(x)
+        if not if_student:
+            return x
+        if label is not None:
+            loss = torch.sum(nn.functional.softmax(label, -1)*nn.functional.log_softmax(x/temperature,-1), dim=1).mean()
+            return -1.0*loss
+        else:
+            return nn.functional.softmax(x,-1)
 
 
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):
@@ -218,3 +226,114 @@ def resnet18(pretrained=False, progress=True, **kwargs):
     """
     return _resnet('resnet18', BasicBlock, [2, 2, 2, 2], pretrained, progress,
                    **kwargs)
+
+
+class GBM(nn.Module):
+    def __init__(self, num_iter, shrink_param, model_list=None):
+        super(GBM, self).__init__()
+        if not model_list:
+            self.weak_learners = nn.ModuleList([oneCNN() for _ in range(num_iter)]) 
+        else:
+            self.weak_learners = nn.ModuleList(model_list)
+        self.num_classes = 10
+        self.mse = nn.MSELoss()
+        self.alpha = [0.0 for _ in range(num_iter)]
+        self.gamma = shrink_param
+        self.subgrid = {}
+    def weight_fun(self, data, weight_data, iteration, g):
+        #data = TensorDataset(x,label,weight)
+        if iteration == 0:
+            for i, ( (_, label),  (weight,)) in enumerate(zip(data,weight_data) ):
+                #print(weight)
+                for j in range(self.num_classes):
+                    if j != label:
+                        weight[j] = - 1.0
+                        #weight[j] = 0.0
+                weight[label] = 1.0 * (self.num_classes - 1)
+                #weight[label] = 1.0
+        else:
+            alpha = self.alpha[iteration-1]
+            for i,( (_,label) ,(weight,)) in enumerate( zip(data,weight_data)):
+                temp_sum = 0.0
+                for j in range(self.num_classes):
+                    if j != label:
+                        temp = - torch.exp(-1.0/2*self.gamma*alpha*(g[i][label] - g[i][j]))*weight[j]
+                        weight[j] = temp
+                        temp_sum += temp
+                weight[label] = - temp_sum
+    def forward(self, x, w, iteration, loss=True):
+        g = self.weak_learners[iteration](x, if_student=False)
+        if loss:
+            return self.mse(g, w)
+        else:
+            #return g
+            return self.weak_learners[iteration](x)
+        #data already with correct w/label
+    #def line_search(self, f, g, data): plane
+    def line_search(self, f, g, data, gamma):
+        #data = TensorDataset(f,g,label) sequntial data
+        lower = 0.0
+        upper = 1.0
+        merror = 1e-4
+        label = [ it[1]  for it in data ]
+        num_classes = self.num_classes
+        def obj(pred, label, num_classes):
+            loss = 0.0
+            for i in range(len(label)):
+                loss += torch.sum(torch.exp(-1.0/2*(torch.ones(num_classes)*pred[i, label[i]] - pred[i,:]))) - 1
+            return loss/len(label)
+        seg = (np.sqrt(5) + 1)/2
+        error = 1000
+        while error >= merror:
+            temp1 = upper - (upper - lower)/seg
+            temp2 = lower + (upper - lower)/seg
+            '''
+            print('temp1')
+            print(temp1)
+            print(temp2)
+            print(f)
+            print(g)
+            print(label)
+            '''
+            loss_temp1 = obj(f + temp1 * g, label, num_classes)
+            loss_temp2 = obj(f + temp2 * g, label, num_classes)
+            '''
+            print('loss')
+            print(loss_temp1)
+            print(loss_temp2)
+            '''
+            if loss_temp1 < loss_temp2:
+                upper = temp2
+            else:
+                lower = temp1
+            error = np.abs(loss_temp1 - loss_temp2)
+        #self.alpha.append((temp1 + temp2)/2) plane
+        return (temp1 + temp2)/(2*gamma)
+    def predict(self, x, k):
+        pred = next(self.weak_learners.parameters())
+        pred = pred.new_zeros(x.size(0), self.num_classes).cuda()
+        for i,net in enumerate(self.weak_learners):
+            net.cuda()
+            if i == 0:
+                #x_start, y_start, x_end, y_end, stepsize = self.subgrid[i]
+                #pred += net.forward(x[:,:,x_start:x_end+1:stepsize, y_start:y_end+1:stepsize], if_student=False)
+                
+                x_axis, y_axis = self.subgrid[i]
+                pred += net.forward(x[:,:, x_axis,:][:,:,:,y_axis], if_student=False)
+            elif i <= k:
+                #x_start, y_start, x_end, y_end, stepsize = self.subgrid[i]
+                #pred += net.forward(x[:,:,x_start:x_end+1:stepsize, y_start:y_end+1:stepsize], if_student=False) * self.alpha[i]*self.gamma
+
+                x_axis, y_axis = self.subgrid[i]
+                pred += net.forward(x[:,:, x_axis,:][:,:,:,y_axis], if_student=False) * self.alpha[i]*self.gamma
+            net.cpu()
+        #_, index = torch.max(pred, 0)
+        return pred
+        '''
+        previous_prob = prob.cuda()
+        self.weak_learners[k].cuda()
+        previous_prob += self.weak_learners[k].forward(x, if_student=False) * self.alpha[k]*self.gamma
+        self.weak_learners[k].cpu()
+        return previous_prob.cpu()
+        '''
+

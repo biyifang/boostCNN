@@ -20,6 +20,7 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 from tqdm import tqdm,trange
 from resNet18_self import ResNet
+from resNet18_self import GBM
 from torch.utils.data import TensorDataset
 
 model_names = sorted(name for name in models.__dict__
