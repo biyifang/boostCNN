@@ -343,6 +343,7 @@ class GBM(nn.Module):
                 pred += net.forward(x[:,:, x_axis,:][:,:,:,y_axis], if_student=False) * self.alpha[i]*self.gamma
             net.cpu()
         #_, index = torch.max(pred, 0)
+        pred.cpu()
         return pred
         '''
         previous_prob = prob.cuda()
