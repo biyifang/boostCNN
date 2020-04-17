@@ -612,6 +612,11 @@ def main_worker(gpu, ngpus_per_node, args):
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
 					weight_decay=args.weight_decay)
 			'''
+			with torch.no_grad():
+				new_size = model_3.weak_learners[k].get_size(next(train_loader_seq)[0])
+			model_3.weak_learners[k].fc = nn.Linear(new_size, 10)
+			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
+					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
 			validate_boost(train_loader_seq, model_3, criterion, args, k)
