@@ -567,7 +567,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			print(model_3.subgrid[k])
 			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
 			'''
-			grad_pre = []
+
 			for x in range(180, 202):
 			#134, 180,202
 				'''
@@ -582,7 +582,6 @@ def main_worker(gpu, ngpus_per_node, args):
 						y_axis = sorted(random.sample(range(b,224), x))
 						
 						grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
-						grad_pre.append(grad_temp)
 						#print(grad_temp)
 						if grad_temp > grad_opt:
 							x_axis_opt = x_axis
@@ -593,8 +592,6 @@ def main_worker(gpu, ngpus_per_node, args):
 							grad_opt = grad_temp
 							#print(x_start_opt)
 			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
-			print('gradient_opt: ' + str(grad_opt) + '\t' + 'gradient_mean: ' + str(sum(grad_pre)/len(grad_pre)))
-			print(grad_pre)
 
 			print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
 			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
@@ -613,7 +610,7 @@ def main_worker(gpu, ngpus_per_node, args):
 					weight_decay=args.weight_decay)
 			'''
 			with torch.no_grad():
-				new_size = model_3.weak_learners[k].get_size(next(train_loader_seq)[0])
+				new_size = model_3.weak_learners[k].get_size(train_loader_seq[0][0])
 			model_3.weak_learners[k].fc = nn.Linear(new_size, 10)
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
 					weight_decay=args.weight_decay)
