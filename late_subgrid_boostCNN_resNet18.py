@@ -610,7 +610,10 @@ def main_worker(gpu, ngpus_per_node, args):
 					weight_decay=args.weight_decay)
 			'''
 			with torch.no_grad():
-				new_size = model_3.weak_learners[k].get_size(train_loader_seq[0][0])
+				for i, (images, target) in enumerate(tqdm(train_loader_seq)):
+					images = images[:,:, x_axis,:][:,:,:,y_axis]
+					new_size = model_3.weak_learners[k].get_size(images)
+					break
 			model_3.weak_learners[k].fc = nn.Linear(new_size, 10)
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
 					weight_decay=args.weight_decay)
