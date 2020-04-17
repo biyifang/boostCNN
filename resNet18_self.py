@@ -224,7 +224,7 @@ class ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-        return x.size()
+        return x.size()[1]
 
 
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):
