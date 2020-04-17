@@ -212,7 +212,7 @@ class ResNet(nn.Module):
             return nn.functional.softmax(x,-1)
 
     def get_size(self, x):
-    	x = self.conv1(x)
+        x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
