@@ -331,7 +331,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -351,7 +351,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			# remember best acc@1 and save checkpoint
 			is_best = acc1 > best_acc1
 			best_acc1 = max(acc1, best_acc1)
-			'''
+			
 			if acc1 == best_acc1:
 				_, new_predict = validate(train_loader, model, criterion, args, True)
 				new_predict = torch.cat(new_predict)
@@ -362,7 +362,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				model.cpu()
 				torch.save(model, 'SVHN_teacher_model_resnet18')
 				model.cuda()
-			'''
+			
 
 			if not args.multiprocessing_distributed or (args.multiprocessing_distributed
 					and args.rank % ngpus_per_node == 0):
@@ -382,7 +382,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
+	'''
 	
 
 	'''
