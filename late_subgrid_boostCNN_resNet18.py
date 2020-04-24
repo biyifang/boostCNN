@@ -251,13 +251,25 @@ def main_worker(gpu, ngpus_per_node, args):
 	#Normalization for MNIST
 	#normalize = transforms.Normalize(mean=[0.485], std=[0.229])
 
-	
+	'''
 	train_dataset = datasets.SVHN(args.data, split='train', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
+	'''
+	train_dataset = datasets.ImageFolder(traindir, transforms.Compose([
+			transforms.RandomResizedCrop(224),
+			transforms.RandomHorizontalFlip(),
+			transforms.ToTensor(),
+			normalize,
+		]))
+	index_list = []
+	for i, ( _, label) in enumerate(train_dataset):
+		if label < 100:
+			index_list.append(i)
+	train_dataset = torch.utils.data.Subset(train_dataset, index_list)
 	'''
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
@@ -293,12 +305,24 @@ def main_worker(gpu, ngpus_per_node, args):
 	weight_loader = torch.utils.data.DataLoader(
 		 weight_dataset, batch_size=args.batch_size, sampler=weight_sampler)
 
-	
+	'''
 	val_dataset = datasets.SVHN(args.data, split='test', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224, scale=(1.0, 1.0)),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
+	'''
+	val_dataset = datasets.ImageFolder(valdir, transforms.Compose([
+			transforms.RandomResizedCrop(224),
+			transforms.RandomHorizontalFlip(),
+			transforms.ToTensor(),
+			normalize,
+		]))
+	index_list = []
+	for i, ( _, label) in enumerate(val_dataset):
+		if label < 100:
+			index_list.append(i)
+	val_dataset = torch.utils.data.Subset(val_dataset, index_list)
 	'''
 	val_dataset = datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
 			#transforms.RandomResizedCrop(224),
