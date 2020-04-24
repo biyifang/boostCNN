@@ -264,7 +264,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
-		]), target_transform=None. download=True)
+		]), target_transform=None, download=True)
 	index_list = []
 	for i, ( _, label) in enumerate(train_dataset):
 		if label < 100:
