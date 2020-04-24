@@ -259,12 +259,12 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform=None, download=True)
 	'''
-	train_dataset = datasets.ImageFolder(traindir, transforms.Compose([
+	train_dataset = datasets.ImageNet(traindir, split='train', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
-		]))
+		]), target_transform=None. download=True)
 	index_list = []
 	for i, ( _, label) in enumerate(train_dataset):
 		if label < 100:
@@ -312,12 +312,12 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform=None, download=True)
 	'''
-	val_dataset = datasets.ImageFolder(valdir, transforms.Compose([
+	val_dataset = datasets.ImageFolder(valdir, split='val', transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
-		]))
+		]), target_transform = None, download=True)
 	index_list = []
 	for i, ( _, label) in enumerate(val_dataset):
 		if label < 100:
