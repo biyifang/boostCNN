@@ -318,7 +318,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform=None, download=True)
 	'''
-	val_dataset = datasets.ImageNet(valdir, split='val', tranform=transforms.Compose([
+	val_dataset = datasets.ImageNet(valdir, split='val', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
