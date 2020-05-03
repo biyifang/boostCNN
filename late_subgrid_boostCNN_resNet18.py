@@ -22,6 +22,7 @@ from tqdm import tqdm,trange
 from resNet18_self import ResNet
 from resNet18_self import GBM
 from torch.utils.data import TensorDataset
+from image_net_loader import SubImageNet
 
 model_names = sorted(name for name in models.__dict__
 	if name.islower() and not name.startswith("__")
@@ -261,17 +262,20 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform=None, download=True)
 	'''
-	train_dataset = datasets.ImageNet(traindir, split='train', transform=transforms.Compose([
+	train_dataset = SubImageNet(traindir, split='train', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
+	'''
 	index_list = []
 	for i, ( _, label) in enumerate(tqdm(train_dataset)):
 		if label < 100:
 			index_list.append(i)
 	train_dataset = torch.utils.data.Subset(train_dataset, index_list)
+	'''
+	
 	'''
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
@@ -357,7 +361,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	'''
+	
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -408,7 +412,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	'''
+	
 	
 
 	'''
