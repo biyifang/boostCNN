@@ -55,7 +55,7 @@ parser.add_argument('--CNN_two', default=5, type=int, metavar='N',
 					help='the kernel size of CNN layer 2')
 parser.add_argument('--CNN_three', default=3, type=int, metavar='N',
 					help='the kernel size of CNN layer 3')
-parser.add_argument('--num_class', default=10, type=int, metavar='NoC',
+parser.add_argument('--num_class', default=100, type=int, metavar='NoC',
 					help='number of class')
 parser.add_argument('--num_boost_iter', default=50, type=int, metavar='N',
 					help='number of boosting iterations')
