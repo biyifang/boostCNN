@@ -361,7 +361,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -412,7 +412,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
+	'''
 	
 
 	'''
