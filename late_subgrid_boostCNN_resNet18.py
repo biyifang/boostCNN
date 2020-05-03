@@ -355,7 +355,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	'''
+	
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -384,7 +384,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 				model.cpu()
-				torch.save(model, 'SVHN_teacher_model_resnet18')
+				torch.save(model, 'ImageNet_teacher_model_resnet18')
 				model.cuda()
 			
 
@@ -406,7 +406,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	'''
+	
 	
 
 	'''
