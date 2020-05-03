@@ -268,7 +268,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform=None, download=True)
 	index_list = []
-	for i, ( _, label) in enumerate(train_dataset):
+	for i, ( _, label) in enumerate(tqdm(train_dataset)):
 		if label < 100:
 			index_list.append(i)
 	train_dataset = torch.utils.data.Subset(train_dataset, index_list)
