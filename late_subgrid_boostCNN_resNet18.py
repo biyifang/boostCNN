@@ -275,7 +275,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			index_list.append(i)
 	train_dataset = torch.utils.data.Subset(train_dataset, index_list)
 	'''
-	
+
 	'''
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
@@ -325,7 +325,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform = None, download=True)
 	index_list = []
-	for i, ( _, label) in enumerate(val_dataset):
+	for i, ( _, label) in enumerate(tqdm(val_dataset)):
 		if label < 100:
 			index_list.append(i)
 	val_dataset = torch.utils.data.Subset(val_dataset, index_list)
