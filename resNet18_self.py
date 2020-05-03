@@ -250,7 +250,7 @@ class GBM(nn.Module):
             self.weak_learners = nn.ModuleList([oneCNN() for _ in range(num_iter)]) 
         else:
             self.weak_learners = nn.ModuleList(model_list)
-        self.num_classes = 10
+        self.num_classes = 100
         self.mse = nn.MSELoss()
         self.alpha = [0.0 for _ in range(num_iter)]
         self.gamma = shrink_param
