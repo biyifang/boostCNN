@@ -332,6 +332,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			if label < 100:
 				index_list.append(i)
 		torch.save(index_list, valdir+'imagenet_100_val_index')
+	print(len(index_list))
 	val_dataset = torch.utils.data.Subset(val_dataset, index_list)
 	'''
 	val_dataset = datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
