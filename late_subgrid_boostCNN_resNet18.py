@@ -735,6 +735,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		output = output/args.temperature
 		#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
 		loss = criterion(output, target)
+		if i%100 == 0:
+			print(loss)
 
 		# measure accuracy and record loss
 		acc1, acc5 = accuracy(output, target, topk=(1, 5))
