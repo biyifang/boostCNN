@@ -175,8 +175,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	else:
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
-		#model = models.resnet18(num_classes=10)
-		model = ResNet(num_classes=100)
+		model = models.resnet18(num_classes=args.num_class)
+		#model = ResNet(num_classes=100)
 		#model = mobilenet_v2()
 		#model = MobileNet_V2()
 		#model = oneCNN()
@@ -218,7 +218,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#criterion = nn.MSELoss()
 
 	#optimizer = torch.optim.SGD(model.parameters(), args.lr,momentum=args.momentum, weight_decay=args.weight_decay)
-	optimizer = torch.optim.Adam(model.parameters(),args.lr)
+	optimizer = torch.optim.Adam(model.parameters(),args.lr,weight_decay=args.weight_decay)
 
 	# optionally resume from a checkpoint
 	if args.resume:
@@ -729,8 +729,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		target = target.cuda()
 
 		# compute output
-		output = model(images,if_student=False)
-		#output = model(images)
+		#output = model(images,if_student=False)
+		output = model(images)
 		output = output/args.temperature
 		#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
 		loss = criterion(output, target)
