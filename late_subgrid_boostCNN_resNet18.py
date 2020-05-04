@@ -318,7 +318,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform=None, download=True)
 	'''
-	val_dataset = datasets.ImageNet(valdir, split='val', transform=transforms.Compose([
+	val_dataset = SubImageNet(valdir, split='val', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
@@ -329,6 +329,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	else:
 		index_list = []
 		for i, ( _, label) in enumerate(tqdm(val_dataset)):
+			print(label)
 			if label < 100:
 				index_list.append(i)
 		torch.save(index_list, valdir+'/imagenet_100_val_index')
