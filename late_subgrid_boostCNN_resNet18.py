@@ -324,7 +324,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform = None, download=True)
-	if os.path.exists(valdir+'imagenet_100_val_index'):
+	if os.path.exists(valdir+'/imagenet_100_val_index'):
 		index_list = torch.load(valdir+'/imagenet_100_val_index')
 	else:
 		index_list = []
