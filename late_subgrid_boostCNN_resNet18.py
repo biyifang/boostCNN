@@ -365,7 +365,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -416,7 +416,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
+	'''
 	
 
 	'''
@@ -650,7 +650,7 @@ def main_worker(gpu, ngpus_per_node, args):
 					images = images[:,:, x_axis,:][:,:,:,y_axis]
 					new_size = model_3.weak_learners[k].get_size(images)
 					break
-			model_3.weak_learners[k].fc = nn.Linear(new_size, 10)
+			model_3.weak_learners[k].fc = nn.Linear(new_size, args.num_class)
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
 					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
