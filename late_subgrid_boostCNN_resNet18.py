@@ -176,6 +176,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
 		model = models.resnet18(num_classes=args.num_class)
+		#, pretrained=True)
 		#model = ResNet(num_classes=100)
 		#model = mobilenet_v2()
 		#model = MobileNet_V2()
@@ -780,8 +781,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			target = target.cuda()
 
 			# compute output
-			output = model(images, if_student=False)
-			#output = model(images)
+			#output = model(images, if_student=False)
+			output = model(images)
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
