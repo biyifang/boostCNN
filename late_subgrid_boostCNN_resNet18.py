@@ -218,7 +218,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#criterion = nn.MSELoss()
 
 	#optimizer = torch.optim.SGD(model.parameters(), args.lr,momentum=args.momentum, weight_decay=args.weight_decay)
-	optimizer = torch.optim.AdamW(model.parameters(),args.lr,weight_decay=args.weight_decay)
+	optimizer = torch.optim.Adam(model.parameters(),args.lr,weight_decay=args.weight_decay)
 
 	# optionally resume from a checkpoint
 	if args.resume:
