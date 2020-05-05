@@ -104,7 +104,7 @@ parser.add_argument('--dist-url', default='tcp://224.66.41.62:23456', type=str,
 					help='url used to set up distributed training')
 parser.add_argument('--dist-backend', default='nccl', type=str,
 					help='distributed backend')
-parser.add_argument('--seed', default=None, type=int,
+parser.add_argument('--seed', default=1111, type=int,
 					help='seed for initializing training. ')
 parser.add_argument('--gpu', default=None, type=int,
 					help='GPU id to use.')
@@ -123,12 +123,12 @@ def main():
 	if args.seed is not None:
 		random.seed(args.seed)
 		torch.manual_seed(args.seed)
-		cudnn.deterministic = True
-		warnings.warn('You have chosen to seed training. '
-					  'This will turn on the CUDNN deterministic setting, '
-					  'which can slow down your training considerably! '
-					  'You may see unexpected behavior when restarting '
-					  'from checkpoints.')
+		#cudnn.deterministic = True
+		#warnings.warn('You have chosen to seed training. '
+		#			  'This will turn on the CUDNN deterministic setting, '
+		#			  'which can slow down your training considerably! '
+		#			  'You may see unexpected behavior when restarting '
+		#			  'from checkpoints.')
 
 	if args.gpu is not None:
 		warnings.warn('You have chosen a specific GPU. This will completely '
@@ -369,7 +369,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -421,7 +421,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
+
 
 
 	'''
