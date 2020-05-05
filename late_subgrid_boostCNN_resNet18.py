@@ -735,8 +735,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		target = target.cuda()
 
 		# compute output
-		#output = model(images,if_student=False)
-		output = model(images)
+		output = model(images,if_student=False)
+		#output = model(images)
 		output = output/args.temperature
 		#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
 		loss = criterion(output, target)
@@ -786,8 +786,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			target = target.cuda()
 
 			# compute output
-			#output = model(images, if_student=False)
-			output = model(images)
+			output = model(images, if_student=False)
+			#output = model(images)
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
