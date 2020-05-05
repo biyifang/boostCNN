@@ -175,8 +175,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	else:
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
-		model = models.resnet18(num_classes=args.num_class)
-		#model = ResNet(num_classes=args.num_class)
+		#model = models.resnet18(num_classes=args.num_class)
+		model = ResNet(num_classes=args.num_class)
 		#model = mobilenet_v2()
 		#model = MobileNet_V2()
 		#model = oneCNN()
@@ -740,6 +740,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 		output = output/args.temperature
 		#target_1 = nn.functional.one_hot(target, num_classes = 10).float()
 		loss = criterion(output, target)
+		if i%100 == 0:
+			print(loss)
 
 		# measure accuracy and record loss
 		acc1, acc5 = accuracy(output, target, topk=(1, 5))
