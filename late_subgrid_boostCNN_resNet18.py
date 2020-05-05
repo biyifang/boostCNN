@@ -267,6 +267,11 @@ def main_worker(gpu, ngpus_per_node, args):
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
+# shuffle
+	train_data_index = list(range(len(train_dataset)))
+	random.shuffle(train_data_index)
+	train_dataset = torch.utils.data.Subset(train_dataset, train_data_index)
+
 	'''
 	index_list = []
 	for i, ( _, label) in enumerate(tqdm(train_dataset)):
@@ -364,7 +369,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -384,7 +389,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			# remember best acc@1 and save checkpoint
 			is_best = acc1 > best_acc1
 			best_acc1 = max(acc1, best_acc1)
-			
+
 			if acc1 == best_acc1:
 				_, new_predict = validate(train_loader, model, criterion, args, True)
 				new_predict = torch.cat(new_predict)
@@ -395,7 +400,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				model.cpu()
 				torch.save(model, 'ImageNet_teacher_model_resnet18')
 				model.cuda()
-			
+
 
 			if not args.multiprocessing_distributed or (args.multiprocessing_distributed
 					and args.rank % ngpus_per_node == 0):
@@ -415,8 +420,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
-	
+
+
 
 	'''
 	#if have teacher model, no need to run step one
@@ -484,7 +489,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	model.cpu()
 	output_file = open('out.txt','w')
-	
+
 
 
 
@@ -504,7 +509,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
 								momentum=args.momentum,
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
-	
+
 	g = None
 	f = torch.zeros(len(train_dataset), args.num_class)
 
@@ -539,7 +544,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			x_axis_opt = temp
 			y_axis_opt = temp
 			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
-			#(a,b,x)	
+			#(a,b,x)
 		else:
 			#train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
 			#model_3.subgrid[k] = (0,0,223,223,1)
@@ -554,8 +559,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			#acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			#print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
-		
-		'''	
+
+		'''
 		# initialize the weight for the next weak learner
 		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
 		alpha = model_3.alpha
@@ -587,7 +592,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						else:
 							x_axis = [i for i in range(a, 224, x)]
 							y_axis = [i for i in range(b,224,x)][:len(x_axis)]
-						
+
 						grad_temp = torch.mean(grad_value[x_axis, y_axis])
 						#print(grad_temp)
 						if grad_temp > grad_opt:
@@ -615,7 +620,7 @@ def main_worker(gpu, ngpus_per_node, args):
 					for b in range(10):
 						x_axis = sorted(random.sample(range(a,224), x))
 						y_axis = sorted(random.sample(range(b,224), x))
-						
+
 						grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
 						#print(grad_temp)
 						if grad_temp > grad_opt:
@@ -641,7 +646,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			inter_media_six_t = maxpool_fun(inter_media_5_t, 2,1)
 			model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, args.num_class)
 			model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
-			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
+			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub,
 					weight_decay=args.weight_decay)
 			'''
 			with torch.no_grad():
@@ -650,7 +655,7 @@ def main_worker(gpu, ngpus_per_node, args):
 					new_size = model_3.weak_learners[k].get_size(images)
 					break
 			model_3.weak_learners[k].fc = nn.Linear(new_size, args.num_class)
-			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
+			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub,
 					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
@@ -861,7 +866,7 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 			#set_grad_to_false(model.weak_learners[k].features_2)
 
 			# compute output
-			loss = model(images, weight, k)      
+			loss = model(images, weight, k)
 
 			# measure accuracy and record loss
 			#losses.update(loss.item(), images.size(0))
@@ -924,7 +929,7 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 
 			# compute output
-			loss = model(images, weight, k)      
+			loss = model(images, weight, k)
 
 			# measure accuracy and record loss
 			losses.update(loss.item(), images.size(0))
