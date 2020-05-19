@@ -244,13 +244,13 @@ def resnet18(pretrained=False, progress=True, **kwargs):
 
 
 class GBM(nn.Module):
-    def __init__(self, num_iter, shrink_param, model_list=None):
+    def __init__(self, num_iter,num_class, shrink_param, model_list=None):
         super(GBM, self).__init__()
         if not model_list:
             self.weak_learners = nn.ModuleList([oneCNN() for _ in range(num_iter)]) 
         else:
             self.weak_learners = nn.ModuleList(model_list)
-        self.num_classes = 100
+        self.num_classes = num_class
         self.mse = nn.MSELoss()
         self.alpha = [0.0 for _ in range(num_iter)]
         self.gamma = shrink_param
