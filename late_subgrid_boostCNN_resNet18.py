@@ -925,7 +925,8 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 
 	optimizer.zero_grad()
 	if k == 0:
-		bs_epochs = 0
+		#bs_epochs = 0
+		bs_epochs = args.bs_epochs
 	else:
 		bs_epochs = args.bs_epochs
 	for epoch in trange(bs_epochs):
