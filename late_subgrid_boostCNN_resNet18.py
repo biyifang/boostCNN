@@ -262,7 +262,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		]), target_transform=None, download=True)
 	'''
 
-	'''
+	
 	train_dataset = SubImageNet(traindir, split='train', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
@@ -273,25 +273,18 @@ def main_worker(gpu, ngpus_per_node, args):
 	train_data_index = list(range(len(train_dataset)))
 	random.shuffle(train_data_index)
 	train_dataset = torch.utils.data.Subset(train_dataset, train_data_index)
-	'''
-
-
-	'''
-	index_list = []
-	for i, ( _, label) in enumerate(tqdm(train_dataset)):
-		if label < 100:
-			index_list.append(i)
-	train_dataset = torch.utils.data.Subset(train_dataset, index_list)
-	'''
-
 	
+
+
+
+	'''
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
-	
+	'''
 
 	'''
 	train_dataset = datasets.MNIST(args.data, train=True, transform=transforms.Compose([
@@ -327,7 +320,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		]), target_transform=None, download=True)
 	'''
 
-	'''
+	
 	val_dataset = SubImageNet(valdir, split='val', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
@@ -343,9 +336,9 @@ def main_worker(gpu, ngpus_per_node, args):
 				index_list.append(i)
 		torch.save(index_list, valdir+'/imagenet_100_val_index')
 	val_dataset = torch.utils.data.Subset(val_dataset, index_list)
-	'''
-
 	
+
+	'''
 	val_dataset = datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
 			#transforms.RandomResizedCrop(224),
 			transforms.RandomResizedCrop(224, scale=(1.0, 1.0)),
@@ -353,7 +346,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=False)
-	
+	'''
+
 	val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False,
 		num_workers=args.workers, pin_memory=True)
 	probability = torch.zeros(len(val_dataset), args.num_class)
