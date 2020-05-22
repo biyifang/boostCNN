@@ -509,7 +509,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
-	model_2 = torch.load('cifar_initial_model_' + args.model_save)
+	#model_2 = torch.load('cifar_initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
@@ -517,7 +517,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = MobileNet_V2()
 	#model_2_1 = oneCNN_two(CNN_one, CNN_two, CNN_three, inter_media_two, inter_media_six)
 
-	model_list = [copy.deepcopy(model_2)]
+	model_list = [copy.deepcopy(model)]
 	model_3 = GBM(args.num_boost_iter,args.num_class, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
