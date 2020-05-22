@@ -457,6 +457,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	model_2 = oneCNN_two(args.CNN_one, args.CNN_two, args.CNN_three, inter_media_two, inter_media_six)
 	#model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
 	'''
+
+	'''
 	model_2 = ResNet(num_classes=args.num_class)
 	model_2.cuda()
 	#optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
@@ -501,12 +503,13 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	model.cpu()
 	output_file = open('out.txt','w')
-
+	'''
 
 
 
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
+	model_2 = torch.load('cifar_initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
@@ -797,8 +800,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			target = target.cuda()
 
 			# compute output
-			#output = model(images, if_student=False)
-			output = model(images)
+			output = model(images, if_student=False)
+			#output = model(images)
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
