@@ -377,7 +377,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -407,7 +407,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 				model.cpu()
-				torch.save(model, 'CIFAR_teacher_model_resnet18')
+				torch.save(model, 'ImageNet_teacher_model_resnet18')
 				model.cuda()
 			
 
@@ -429,12 +429,12 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
-
-
 	'''
+
+
+	
 	#if have teacher model, no need to run step one
-	model = torch.load('SVHN_teacher_model_resnet18')
+	model = torch.load('teacher_model_resnet18')
 	_, new_predict = validate(train_loader, model, criterion, args, True)
 	new_predict = torch.cat(new_predict)
 	predict_dataset = torch.utils.data.TensorDataset(new_predict)
@@ -442,7 +442,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	'''
+	
 
 
 	'''
@@ -455,6 +455,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	inter_media_six = maxpool_fun(inter_media_5, 2,1)
 	model_2 = oneCNN_two(args.CNN_one, args.CNN_two, args.CNN_three, inter_media_two, inter_media_six)
 	#model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
+	'''
+	model_2 = ResNet(num_classes=args.num_class)
 	model_2.cuda()
 	#optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
 	optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
@@ -484,7 +486,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		if top1.avg > acc2:
 			acc2 = top1.avg
 			model_2.cpu()
-			torch.save(model_2, 'SVHN_initial_model_'+ args.model_save)
+			torch.save(model_2, 'cifar_initial_model_'+ args.model_save)
 			model_2.cuda()
 		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg)+'\n')
 	print('oneCNN optimization done')
@@ -494,7 +496,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	'''
+	
 
 	model.cpu()
 	output_file = open('out.txt','w')
@@ -511,7 +513,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = MobileNet_V2()
 	#model_2_1 = oneCNN_two(CNN_one, CNN_two, CNN_three, inter_media_two, inter_media_six)
 
-	model_list = [copy.deepcopy(model)]
+	model_list = [copy.deepcopy(model_2)]
 	model_3 = GBM(args.num_boost_iter,args.num_class, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
