@@ -797,8 +797,8 @@ def validate(val_loader, model, criterion, args, Flag = False):
 			target = target.cuda()
 
 			# compute output
-			output = model(images, if_student=False)
-			#output = model(images)
+			#output = model(images, if_student=False)
+			output = model(images)
 			#output = output/args.temperature
 			if Flag:
 				new_label.append(output.data.cpu())
