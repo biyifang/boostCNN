@@ -432,7 +432,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 
 
-	
+	'''
 	#if have teacher model, no need to run step one
 	#model = torch.load('CIFAR_teacher_model_resnet18')
 	model = torch.load('teacher_model_')
@@ -443,7 +443,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	
+	'''
 
 
 	'''
