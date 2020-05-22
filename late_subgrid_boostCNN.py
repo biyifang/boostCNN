@@ -521,6 +521,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 			grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp[x_axis_opt,:][:,y_axis_opt]
 
+			model_3.weight_fun(train_dataset,weight_dataset, k, g)
+
 			#acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			#print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 		
