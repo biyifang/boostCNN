@@ -323,7 +323,8 @@ class GBM(nn.Module):
                 lower = temp1
             error = np.abs(loss_temp1 - loss_temp2)
         #self.alpha.append((temp1 + temp2)/2) plane
-        return (temp1 + temp2)/(2*gamma)
+        #return (temp1 + temp2)/(2*gamma)
+        return (temp1 + temp2)/2
     def predict(self, x, k):
         pred = next(self.weak_learners.parameters())
         pred = pred.new_zeros(x.size(0), self.num_classes).cuda()
