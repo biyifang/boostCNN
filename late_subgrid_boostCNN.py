@@ -600,7 +600,7 @@ def main_worker(gpu, ngpus_per_node, args):
 							#print(x_start_opt)
 			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
 			print('gradient_opt: ' + str(grad_opt) + '\t' + 'gradient_mean: ' + str(sum(grad_pre)/len(grad_pre)))
-			print(grad_pre)
+			#print(grad_pre)
 
 			print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
 			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
