@@ -176,11 +176,11 @@ def main_worker(gpu, ngpus_per_node, args):
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
 		#model = models.resnet18(num_classes=args.num_class)
-		model = ResNet(num_classes=args.num_class)
+		#model = ResNet(num_classes=args.num_class)
 		#model = mobilenet_v2()
 		#model = MobileNet_V2()
 		#model = oneCNN()
-		model.cuda()
+		#model.cuda()
 
 	"""
 	if args.distributed:
@@ -501,7 +501,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	model_2.cpu()
 	'''
 
-	model.cpu()
+	#model.cpu()
 	output_file = open('out.txt','w')
 	
 
