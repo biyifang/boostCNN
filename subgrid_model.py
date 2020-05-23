@@ -554,7 +554,8 @@ class GBM(nn.Module):
         if loss:
             return self.mse(g, w)
         else:
-            return g
+            #return g
+            return nn.functional.softmax(g,-1)
             #return self.weak_learners[iteration](x)
         #data already with correct w/label
     #def line_search(self, f, g, data): plane
