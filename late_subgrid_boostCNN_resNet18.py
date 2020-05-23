@@ -508,8 +508,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 	#Create module for GBM
-	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
-	model_2 = torch.load('cifar_initial_model_' + args.model_save)
+	model_2 = torch.load('initial_model_' + args.model_save)
+	#model_2 = torch.load('cifar_initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
@@ -592,7 +592,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 		if k > 0:
-			#model_3.weight_fun(train_dataset,weight_dataset, k, g)
+			model_3.weight_fun(train_dataset,weight_dataset, k, g)
 			#set_grad_to_false(model_3.weak_learners[k].features_1)
 			#set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
