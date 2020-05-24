@@ -378,7 +378,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -430,13 +430,13 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
-
-
 	'''
+
+
+	
 	#if have teacher model, no need to run step one
 	#model = torch.load('CIFAR_teacher_model_resnet18')
-	model = torch.load('teacher_model_')
+	model = torch.load('SVHN_teacher_model_resnet18')
 	_, new_predict = validate(train_loader, model, criterion, args, True)
 	new_predict = torch.cat(new_predict)
 	predict_dataset = torch.utils.data.TensorDataset(new_predict)
@@ -444,7 +444,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	'''
+	
 
 
 	'''
