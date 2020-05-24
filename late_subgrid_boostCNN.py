@@ -255,7 +255,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#Normalization for MNIST
 	#normalize = transforms.Normalize(mean=[0.485], std=[0.229])
 
-
+	'''
 	train_dataset = datasets.SVHN(args.data, split='train', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
@@ -263,13 +263,14 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform=None, download=True)
 	'''
+	
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
-	'''
+	
 	'''
 	train_dataset = datasets.MNIST(args.data, train=True, transform=transforms.Compose([
 		transforms.RandomResizedCrop(224),
@@ -296,13 +297,14 @@ def main_worker(gpu, ngpus_per_node, args):
 	weight_loader = torch.utils.data.DataLoader(
 		 weight_dataset, batch_size=args.batch_size, sampler=weight_sampler)
 
-
+	'''
 	val_dataset = datasets.SVHN(args.data, split='test', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224, scale=(1.0, 1.0)),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
 	'''
+	
 	val_dataset = datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
 			#transforms.RandomResizedCrop(224),
 			transforms.RandomResizedCrop(224, scale=(1.0, 1.0)),
@@ -310,7 +312,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=False)
-	'''
+	
 	val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False,
 		num_workers=args.workers, pin_memory=True)
 	probability = torch.zeros(len(val_dataset), args.num_class)
