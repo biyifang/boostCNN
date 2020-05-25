@@ -253,16 +253,16 @@ def main_worker(gpu, ngpus_per_node, args):
 	#Normalization for MNIST
 	#normalize = transforms.Normalize(mean=[0.485], std=[0.229])
 
-	
+	'''
 	train_dataset = datasets.SVHN(args.data, split='train', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
-	
-
 	'''
+
+	
 	train_dataset = SubImageNet(traindir, split='train', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
@@ -273,7 +273,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	train_data_index = list(range(len(train_dataset)))
 	random.shuffle(train_data_index)
 	train_dataset = torch.utils.data.Subset(train_dataset, train_data_index)
-	'''
+	
 
 
 	'''
@@ -319,15 +319,15 @@ def main_worker(gpu, ngpus_per_node, args):
 	weight_loader = torch.utils.data.DataLoader(
 		 weight_dataset, batch_size=args.batch_size, sampler=weight_sampler)
 
-	
+	'''
 	val_dataset = datasets.SVHN(args.data, split='test', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224, scale=(1.0, 1.0)),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
-	
-
 	'''
+
+	
 	val_dataset = SubImageNet(valdir, split='val', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
@@ -343,7 +343,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				index_list.append(i)
 		torch.save(index_list, valdir+'/imagenet_100_val_index')
 	val_dataset = torch.utils.data.Subset(val_dataset, index_list)
-	'''
+	
 
 	'''
 	val_dataset = datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
@@ -408,7 +408,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 				model.cpu()
-				torch.save(model, 'SVHN_teacher_model_resnet18')
+				torch.save(model, 'image_teacher_model_resnet18')
 				model.cuda()
 			
 
@@ -436,7 +436,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	
 	#if have teacher model, no need to run step one
 	#model = torch.load('CIFAR_teacher_model_resnet18')
-	model = torch.load('SVHN_teacher_model_resnet18')
+	model = torch.load('ImageNet_teacher_model_resnet18')
 	model.cuda()
 	_, new_predict = validate(train_loader, model, criterion, args, True)
 	new_predict = torch.cat(new_predict)
@@ -491,7 +491,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		if top1.avg > acc2:
 			acc2 = top1.avg
 			model_2.cpu()
-			torch.save(model_2, 'SVHN_initial_model_'+ args.model_save)
+			torch.save(model_2, 'image_initial_model_'+ args.model_save)
 			model_2.cuda()
 		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg)+'\n')
 	print('oneCNN optimization done')
@@ -511,7 +511,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
-	model_2 = torch.load('SVHN_initial_model_' + args.model_save)
+	model_2 = torch.load('image_initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
