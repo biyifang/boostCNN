@@ -594,7 +594,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 		if k > 0:
-			#model_3.weight_fun(train_dataset,weight_dataset, k, g)
+			model_3.weight_fun(train_dataset,weight_dataset, k, g)
 			#set_grad_to_false(model_3.weak_learners[k].features_1)
 			#set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
