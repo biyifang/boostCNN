@@ -391,7 +391,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	
 	#if have teacher model, no need to run step one
-	model = torch.load('ImageNet_teacher_model_resnet18')
+	model = torch.load('teacher_model_resnet18')
 	model.cuda()
 	_, new_predict = validate(train_loader, model, criterion, args, True)
 	new_predict = torch.cat(new_predict)
@@ -442,7 +442,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		if top1.avg > acc2:
 			acc2 = top1.avg
 			model_2.cpu()
-			torch.save(model_2, 'ImageNet_initial_model_'+ args.model_save)
+			torch.save(model_2, 'initial_model_'+ args.model_save)
 			model_2.cuda()
 		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg)+'\n')
 	print('oneCNN optimization done')
@@ -462,7 +462,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
-	model_2 = torch.load('ImageNet_initial_model_' + args.model_save)
+	model_2 = torch.load('initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
