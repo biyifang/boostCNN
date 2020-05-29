@@ -397,7 +397,7 @@ class oneCNN_two(nn.Module):
         x_1 = torch.flatten(x_1, 1)
         #print(x_1.size())
         x_1 = self.classifier(x_1 + x_res)
-        print(x_1)
+        print(x_1.size())
         #x_1 = self.classifier(x_1)
         if not if_student:
             return x_1
