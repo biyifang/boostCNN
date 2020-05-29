@@ -392,6 +392,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	
 	#if have teacher model, no need to run step one
 	model = torch.load('ImageNet_teacher_model_resnet18')
+	model.cuda()
 	_, new_predict = validate(train_loader, model, criterion, args, True)
 	new_predict = torch.cat(new_predict)
 	predict_dataset = torch.utils.data.TensorDataset(new_predict)
