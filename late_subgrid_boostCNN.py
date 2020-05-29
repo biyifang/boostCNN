@@ -389,9 +389,9 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 	
 
-	'''
+	
 	#if have teacher model, no need to run step one
-	model = torch.load('SVHN_teacher_model_resnet18')
+	model = torch.load('ImageNet_teacher_model_resnet18')
 	_, new_predict = validate(train_loader, model, criterion, args, True)
 	new_predict = torch.cat(new_predict)
 	predict_dataset = torch.utils.data.TensorDataset(new_predict)
@@ -399,10 +399,10 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	'''
+	
 
 
-	'''
+	
 	# one-layer CNN training
 	inter_media_1 = kernel_fun(224, args.CNN_one, 4, 2)
 	inter_media_two = maxpool_fun(inter_media_1, 3, 2)
@@ -441,7 +441,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		if top1.avg > acc2:
 			acc2 = top1.avg
 			model_2.cpu()
-			torch.save(model_2, 'SVHN_initial_model_'+ args.model_save)
+			torch.save(model_2, 'ImageNet_initial_model_'+ args.model_save)
 			model_2.cuda()
 		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg)+'\n')
 	print('oneCNN optimization done')
@@ -451,7 +451,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	'''
+	
 
 	model.cpu()
 	output_file = open('out.txt','w')
@@ -461,7 +461,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
-	model_2 = torch.load('initial_model_' + args.model_save)
+	model_2 = torch.load('ImageNet_initial_model_' + args.model_save)
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
@@ -524,7 +524,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 			grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp[x_axis_opt,:][:,y_axis_opt]
 
-			model_3.weight_fun(train_dataset,weight_dataset, k, g)
+			#model_3.weight_fun(train_dataset,weight_dataset, k, g)
 
 			#acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			#print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
