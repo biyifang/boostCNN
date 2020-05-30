@@ -433,7 +433,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 
 
-	
+	'''
 	#if have teacher model, no need to run step one
 	#model = torch.load('CIFAR_teacher_model_resnet18')
 	model = torch.load('ImageNet_teacher_model_resnet18')
@@ -445,7 +445,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	
+	'''
 
 
 	'''
@@ -460,7 +460,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
 	'''
 
-	
+	'''
 	model_2 = ResNet(num_classes=args.num_class)
 	model_2.cuda()
 	#optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
@@ -501,7 +501,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	
+	'''
 
 	model.cpu()
 	output_file = open('out.txt','w')
@@ -511,7 +511,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
-	model_2 = torch.load('image_initial_model_' + args.model_save)
+	#model_2 = torch.load('image_initial_model_' + args.model_save)
+	model_2 = torch.load('ImageNet_teacher_model_resnet18')
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
