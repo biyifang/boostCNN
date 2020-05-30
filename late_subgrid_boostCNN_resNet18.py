@@ -561,7 +561,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			x_axis_opt = temp
 			y_axis_opt = temp
-			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
+			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)
 			#(a,b,x)
 		else:
 			#train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
@@ -678,8 +678,8 @@ def main_worker(gpu, ngpus_per_node, args):
 					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
-			validate_boost(train_loader_seq, model_3, criterion, args, k)
-			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
+			validate_boost_fast(train_loader_seq, model_3, criterion, args, k)
+			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)
 
 			'''
 			#update gradient

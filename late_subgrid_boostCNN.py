@@ -511,7 +511,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			x_axis_opt = temp
 			y_axis_opt = temp
-			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
+			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
 			#train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
