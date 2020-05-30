@@ -353,4 +353,19 @@ class GBM(nn.Module):
         self.weak_learners[k].cpu()
         return previous_prob.cpu()
         '''
+    def predict_fast(self, x, i):
+        net = self.weak_learners[i]
+        if i == 0:
+            #x_start, y_start, x_end, y_end, stepsize = self.subgrid[i]
+            #pred += net.forward(x[:,:,x_start:x_end+1:stepsize, y_start:y_end+1:stepsize], if_student=False)
+                
+            x_axis, y_axis = self.subgrid[i]
+            pred = net.forward(x[:,:, x_axis,:][:,:,:,y_axis], if_student=False)
+        else:
+            #x_start, y_start, x_end, y_end, stepsize = self.subgrid[i]
+            #pred += net.forward(x[:,:,x_start:x_end+1:stepsize, y_start:y_end+1:stepsize], if_student=False) * self.alpha[i]*self.gamma
+
+            x_axis, y_axis = self.subgrid[i]
+            pred = net.forward(x[:,:, x_axis,:][:,:,:,y_axis], if_student=False) * self.alpha[i]*self.gamma
+        return pred
 

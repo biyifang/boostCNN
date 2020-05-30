@@ -1036,6 +1036,58 @@ def validate_boost(val_loader, model, criterion, args, k):
 	return top1.avg
 
 
+	def validate_boost_fast(val_loader, model, criterion, args, k):
+	#batch_time = AverageMeter('Time', ':6.3f')
+	losses = AverageMeter('Loss', ':.4e')
+	top1 = AverageMeter('Acc@1', ':6.2f')
+	top5 = AverageMeter('Acc@5', ':6.2f')
+	progress = ProgressMeter(
+		len(val_loader),
+		[losses, top1, top5],
+		prefix='Test: ')
+
+	# switch to evaluate mode
+	model.eval()
+
+	with torch.no_grad():
+		output_list = []
+		for j in range(k+1):
+			model.weak_learners[j].cuda()
+			if j == 0:
+				for i, (images, _) in enumerate(val_loader):
+					images = images.cuda()
+					output = model.predict_fast(images, j)
+					output_list.append(output.cpu())
+			else:
+				for i, ((images, _), pre_output )in enumerate(zip(val_loader,output_list)):
+					images = images.cuda()
+					output_list[i] = pre_output + model.predict_fast(images,j).cpu()
+			model.weak_learners[j].cpu()
+
+		for i, (_, target) in enumerate(val_loader):
+
+			target = target.cuda()
+
+			# compute output
+			output = output_list[i].cuda()
+			#output = output/args.temperature
+			loss = criterion(output, target)
+
+			# measure accuracy and record loss
+			acc1, acc5 = accuracy(output, target, topk=(1, 5))
+			losses.update(loss.item(), images.size(0))
+			top1.update(acc1[0], target.size(0))
+			top5.update(acc5[0], target.size(0))
+
+			
+
+		# TODO: this should also be done with the ProgressMeter
+		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
+			  .format(top1=top1, top5=top5))
+
+	return top1.avg
+
+
 def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
 	torch.save(state, filename)
 	if is_best:

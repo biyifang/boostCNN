@@ -511,7 +511,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			x_axis_opt = temp
 			y_axis_opt = temp
-			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
+			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
 			#train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
@@ -621,8 +621,8 @@ def main_worker(gpu, ngpus_per_node, args):
 					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
-			validate_boost(train_loader_seq, model_3, criterion, args, k)
-			acc1 = validate_boost(val_loader, model_3, criterion, args, k)
+			validate_boost_fast(train_loader_seq, model_3, criterion, args, k)
+			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)
 
 			'''
 			#update gradient
@@ -969,6 +969,57 @@ def validate_boost(val_loader, model, criterion, args, k):
 
 			if i % args.print_freq == 0:
 				progress.display(i)
+
+		# TODO: this should also be done with the ProgressMeter
+		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
+			  .format(top1=top1, top5=top5))
+
+	return top1.avg
+
+def validate_boost_fast(val_loader, model, criterion, args, k):
+	#batch_time = AverageMeter('Time', ':6.3f')
+	losses = AverageMeter('Loss', ':.4e')
+	top1 = AverageMeter('Acc@1', ':6.2f')
+	top5 = AverageMeter('Acc@5', ':6.2f')
+	progress = ProgressMeter(
+		len(val_loader),
+		[losses, top1, top5],
+		prefix='Test: ')
+
+	# switch to evaluate mode
+	model.eval()
+
+	with torch.no_grad():
+		output_list = []
+		for j in range(k+1):
+			model.weak_learners[j].cuda()
+			if j == 0:
+				for i, (images, _) in enumerate(val_loader):
+					images = images.cuda()
+					output = model.predict_fast(images, j)
+					output_list.append(output.cpu())
+			else:
+				for i, ((images, _), pre_output )in enumerate(zip(val_loader,output_list)):
+					images = images.cuda()
+					output_list[i] = pre_output + model.predict_fast(images,j).cpu()
+			model.weak_learners[j].cpu()
+
+		for i, (_, target) in enumerate(val_loader):
+
+			target = target.cuda()
+
+			# compute output
+			output = output_list[i].cuda()
+			#output = output/args.temperature
+			loss = criterion(output, target)
+
+			# measure accuracy and record loss
+			acc1, acc5 = accuracy(output, target, topk=(1, 5))
+			losses.update(loss.item(), images.size(0))
+			top1.update(acc1[0], target.size(0))
+			top5.update(acc5[0], target.size(0))
+
+			
 
 		# TODO: this should also be done with the ProgressMeter
 		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
