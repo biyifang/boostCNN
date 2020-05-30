@@ -1036,7 +1036,7 @@ def validate_boost(val_loader, model, criterion, args, k):
 	return top1.avg
 
 
-	def validate_boost_fast(val_loader, model, criterion, args, k):
+def validate_boost_fast(val_loader, model, criterion, args, k):
 	#batch_time = AverageMeter('Time', ':6.3f')
 	losses = AverageMeter('Loss', ':.4e')
 	top1 = AverageMeter('Acc@1', ':6.2f')
