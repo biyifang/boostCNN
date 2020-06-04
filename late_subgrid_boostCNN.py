@@ -389,7 +389,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 	
 
-	'''
+	
 	#if have teacher model, no need to run step one
 	model = torch.load('teacher_model_resnet18')
 	model.cuda()
@@ -400,10 +400,10 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	'''
+	
 
 
-	'''
+	
 	# one-layer CNN training
 	inter_media_1 = kernel_fun(224, args.CNN_one, 4, 2)
 	inter_media_two = maxpool_fun(inter_media_1, 3, 2)
@@ -452,7 +452,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	'''
+	
 
 	model.cpu()
 	output_file = open('out.txt','w')
