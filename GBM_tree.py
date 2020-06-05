@@ -7,10 +7,10 @@ seed = 1111
 np.random.seed(seed)
 random.seed(seed)
 
-train_embedding = np.load('train_embedding')
-train_label = np.load('train_label')
-val_embedding = np.load('val_embedding')
-val_label = np.load('val_label')
+train_embedding = np.load('train_embedding.npy')
+train_label = np.load('train_label.npy')
+val_embedding = np.load('val_embedding.npy')
+val_label = np.load('val_label.npy')
 
 dtrain = xgb.DMatrix(train_embedding, label = train_label)
 dval = xgb.DMatrix(val_embedding, label = val_label)
