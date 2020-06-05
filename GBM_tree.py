@@ -15,7 +15,7 @@ val_label = np.load('val_label.npy')
 dtrain = xgb.DMatrix(train_embedding, label = train_label)
 dval = xgb.DMatrix(val_embedding, label = val_label)
 
-param = {'max_depth': 4, 'eta': 1, 'objective': 'multi:softprob', 'num_class': 10}
+param = {'max_depth': 2, 'eta': 1, 'objective': 'multi:softprob', 'num_class': 10}
 
 watchlist = [(dval, 'eval'), (dtrain, 'train')]
 num_round = 10
