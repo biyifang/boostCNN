@@ -255,11 +255,12 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	image_list = []
 	label_list = []
-	for i, (image, label) in enumerate(train_loader_seq):
-		image = image.cuda()
-		image_embedding = model(image, if_student=False)
-		image_list.append(image_embedding.cpu())
-		label_list.append(label)
+	with torch.no_grad():
+		for i, (image, label) in enumerate(train_loader_seq):
+			image = image.cuda()
+			image_embedding = model(image, if_student=False)
+			image_list.append(image_embedding.cpu())
+			label_list.append(label)
 	train_embedding = torch.cat(image_list).numpy()
 	train_label = torch.cat(label_list).numpy()
 
@@ -268,11 +269,12 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	image_list = []
 	label_list = []
-	for i, (image, label) in enumerate(val_loader):
-		image = image.cuda()
-		image_embedding = model(image, if_student=False)
-		image_list.append(image_embedding.cpu())
-		label_list.append(label)
+	with torch.no_grad():
+		for i, (image, label) in enumerate(val_loader):
+			image = image.cuda()
+			image_embedding = model(image, if_student=False)
+			image_list.append(image_embedding.cpu())
+			label_list.append(label)
 	val_embedding = torch.cat(image_list).numpy()
 	val_label = torch.cat(label_list).numpy()
 	np.save('val_embedding', val_embedding)
