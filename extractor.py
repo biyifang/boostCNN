@@ -279,6 +279,9 @@ def main_worker(gpu, ngpus_per_node, args):
 	np.save('val_label', val_label)
 
 
+if __name__ == '__main__':
+	main()
+
 
 
 	
