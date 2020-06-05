@@ -22,6 +22,6 @@ num_round = 10
 bst = xgb.train(param, dtrain, num_round, watchlist)
 preds = bst.predict(dval)
 labels = dval.get_label()
-print('error=%f' %(np.sum(np.argmax(preds,1) == labels)))
+print('error=%f' %(np.sum(np.argmax(preds,1) == labels)/float(len(labels))))
 
 
