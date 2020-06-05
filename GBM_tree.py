@@ -8,9 +8,9 @@ np.random.seed(seed)
 random.seed(seed)
 
 train_embedding = np.load('train_embedding.npy')
-train_label = np.load('train_label.npy')
+train_label = np.load('train_label.npy') + 1
 val_embedding = np.load('val_embedding.npy')
-val_label = np.load('val_label.npy')
+val_label = np.load('val_label.npy') + 1
 
 dtrain = xgb.DMatrix(train_embedding, label = train_label)
 dval = xgb.DMatrix(val_embedding, label = val_label)
