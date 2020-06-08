@@ -180,7 +180,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		print("=> creating model '{}'".format(args.arch))
 		model = models.__dict__[args.arch]()
 		#model = models.resnet18(num_classes=10)
-		model = torch.load('initial_model_' + args.model_save)
+		#model = torch.load('initial_model_' + args.model_save)
+		model = torch.load('teacher_model_resnet18')
 		model.cuda()
 
 
