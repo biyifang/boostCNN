@@ -541,7 +541,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			train_data_index = list(range(int(len(train_dataset)*args.sample_prob)))
 			random.shuffle(train_data_index)
 			train_dataset_temp = torch.utils.data.Subset(train_dataset, train_data_index)
-			train_sampler_temp = torch.utils.data.distributed.DistributedSampler(train_dataset_temp)
+			train_sampler_temp = torch.utils.data.SequentialSampler(train_dataset_temp)
 			train_loader_seq = torch.utils.data.DataLoader(
 				train_dataset_temp, batch_size=args.batch_size, sampler=train_sampler_temp)
 		'''
