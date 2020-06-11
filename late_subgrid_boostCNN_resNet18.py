@@ -68,6 +68,8 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
 						 'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 					metavar='LR', help='initial learning rate', dest='lr')#default:0.1
+parser.add_argument('--sample_prob', '--sample-selection', default=1.0, type=float,
+					metavar='sp', help='sample selection probability', dest='sp')
 parser.add_argument('-gradient_acc', default=256, type=int,
                     metavar='N',
                     help='mini-batch size (default: 256), this is the total '
@@ -301,7 +303,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		normalize,
 	]), target_transform=None, download=True)
 	'''
-	weight = torch.zeros(len(train_dataset), args.num_class)
+	weight = torch.zeros(int(len(train_dataset)*args.sample_prob), args.num_class)
 	weight_dataset = torch.utils.data.TensorDataset(weight)
 
 
@@ -536,7 +538,13 @@ def main_worker(gpu, ngpus_per_node, args):
 	for k in trange(0,args.num_boost_iter):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
-
+		if args.sample_prob != 1.0:
+			train_data_index = list(range(int(len(train_dataset)*args.sample_prob)))
+			random.shuffle(train_data_index)
+			train_dataset_temp = torch.utils.data.Subset(train_dataset, train_data_index)
+			train_sampler_temp = torch.utils.data.distributed.DistributedSampler(train_dataset_temp)
+			train_loader_seq = torch.utils.data.DataLoader(
+				train_dataset_temp, batch_size=args.batch_size, sampler=train_sampler_temp)
 		'''
 		if k >= 1:
 			model_list = model_list + [copy.deepcopy(model_3.weak_learners[k-1])]
