@@ -68,7 +68,7 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
 						 'using Data Parallel or Distributed Data Parallel')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 					metavar='LR', help='initial learning rate', dest='lr')#default:0.1
-parser.add_argument('--sample_prob', default=1.0, type=float, help='sample selection probability')
+parser.add_argument('--sample_prob', '--sample_prob', default=1.0, type=float, metavar='sample_prob',help='sample selection probability',  dest='sample_prob')
 parser.add_argument('-gradient_acc', default=256, type=int,
                     metavar='N',
                     help='mini-batch size (default: 256), this is the total '
