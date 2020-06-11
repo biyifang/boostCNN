@@ -262,7 +262,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		]), target_transform=None, download=True)
 	'''
 
-	
+	'''
 	train_dataset = SubImageNet(traindir, split='train', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
@@ -273,7 +273,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	train_data_index = list(range(len(train_dataset)))
 	random.shuffle(train_data_index)
 	train_dataset = torch.utils.data.Subset(train_dataset, train_data_index)
-	
+	'''
 
 
 	'''
@@ -284,14 +284,14 @@ def main_worker(gpu, ngpus_per_node, args):
 	train_dataset = torch.utils.data.Subset(train_dataset, index_list)
 	'''
 
-	'''
+	
 	train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=True)
-	'''
+	
 
 	'''
 	train_dataset = datasets.MNIST(args.data, train=True, transform=transforms.Compose([
@@ -327,7 +327,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		]), target_transform=None, download=True)
 	'''
 
-	
+	'''
 	val_dataset = SubImageNet(valdir, split='val', transform=transforms.Compose([
 			transforms.RandomResizedCrop(224),
 			transforms.RandomHorizontalFlip(),
@@ -343,9 +343,9 @@ def main_worker(gpu, ngpus_per_node, args):
 				index_list.append(i)
 		torch.save(index_list, valdir+'/imagenet_100_val_index')
 	val_dataset = torch.utils.data.Subset(val_dataset, index_list)
-	
-
 	'''
+
+	
 	val_dataset = datasets.CIFAR10(args.data, train=False, transform=transforms.Compose([
 			#transforms.RandomResizedCrop(224),
 			transforms.RandomResizedCrop(224, scale=(1.0, 1.0)),
@@ -353,7 +353,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			transforms.ToTensor(),
 			normalize,
 		]), target_transform=None, download=False)
-	'''
+	
 
 	val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False,
 		num_workers=args.workers, pin_memory=True)
@@ -512,7 +512,8 @@ def main_worker(gpu, ngpus_per_node, args):
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
 	#model_2 = torch.load('image_initial_model_' + args.model_save)
-	model_2 = torch.load('ImageNet_teacher_model_resnet18')
+	#model_2 = torch.load('ImageNet_teacher_model_resnet18')
+	model_2 = torch.load('CIFAR_teacher_model_resnet18 ')
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
@@ -627,7 +628,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
 			'''
 
-			for x in range(180, 202):
+			#for x in range(180, 202):
+			for x in range(224, 225):
 			#134, 180,202
 				'''
 				index = [i for i in range(224)]
@@ -635,8 +637,10 @@ def main_worker(gpu, ngpus_per_node, args):
 				images = images[:,:,index,:]
 				images = images[:,:,:,index]
 				'''
-				for a in range(10):
-					for b in range(10):
+				#for a in range(10):
+					#for b in range(10):
+				for a in range(1):
+					for b in range(1):
 						x_axis = sorted(random.sample(range(a,224), x))
 						y_axis = sorted(random.sample(range(b,224), x))
 
