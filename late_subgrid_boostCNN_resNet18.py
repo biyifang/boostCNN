@@ -505,7 +505,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 
 	model.cpu()
-	output_file = open('out.txt'+str(args.sample_prob),'w')
+	output_file = open('Subgrid_out.txt'+str(args.sample_prob),'w')
 	
 
 
