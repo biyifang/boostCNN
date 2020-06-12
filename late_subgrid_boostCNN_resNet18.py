@@ -538,12 +538,14 @@ def main_worker(gpu, ngpus_per_node, args):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
 		if args.sample_prob != 1.0:
-			train_data_index = list(range(int(len(train_dataset)*args.sample_prob)))
+			if k == 0:
+				train_dataset_orig = train_dataset
+			train_data_index = list(range(int(len(train_dataset_orig)*args.sample_prob)))
 			random.shuffle(train_data_index)
-			train_dataset_temp = torch.utils.data.Subset(train_dataset, train_data_index)
-			train_sampler_temp = torch.utils.data.SequentialSampler(train_dataset_temp)
+			train_dataset = torch.utils.data.Subset(train_dataset_orig, train_data_index)
+			train_sampler_temp = torch.utils.data.SequentialSampler(train_dataset)
 			train_loader_seq = torch.utils.data.DataLoader(
-				train_dataset_temp, batch_size=args.batch_size, sampler=train_sampler_temp)
+				train_dataset, batch_size=args.batch_size, sampler=train_sampler_temp)
 		'''
 		if k >= 1:
 			model_list = model_list + [copy.deepcopy(model_3.weak_learners[k-1])]
