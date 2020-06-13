@@ -715,7 +715,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		model_3 = GBM(args.num_boost_iter,args.num_class, args.boost_shrink, model_list)
 		model_3.alpha = alpha
 		model_3.subgrid = subgrid_map
-		model_3.weak_learners[k+1].fc = model_3.weak_learners[0].fc
+		if args.subgrid == 'T':
+			model_3.weak_learners[k+1].fc = model_3.weak_learners[0].fc
 		model_3.cpu()
 		model_3.train()
 		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
