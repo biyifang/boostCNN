@@ -920,8 +920,8 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 			g.append(model(images, weight, k, False).detach())
 	g = torch.cat(g, 0).cpu()
 	# model.line_search(f, g, train_dataset) plane
-	model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
-	#model.alpha[k] = 1.0
+	#model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
+	model.alpha[k] = 1.0
 	f = f + model.gamma*model.alpha[k] * g
 	print(model.alpha)
 	model.weak_learners[k].cpu()
