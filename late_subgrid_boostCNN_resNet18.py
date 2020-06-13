@@ -70,6 +70,7 @@ parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 					metavar='LR', help='initial learning rate', dest='lr')#default:0.1
 parser.add_argument('--sample_prob', '--sample_prob', default=1.0, type=float, metavar='sample_prob',help='sample selection probability',  dest='sample_prob')
 parser.add_argument('--method', '--method', default='GBM', type=str, metavar='method',help='method',  dest='method')
+parser.add_argument('--line_search', '--line_search', default='T', type=str, metavar='line_search',help='line_search',  dest='line_search')
 parser.add_argument('-gradient_acc', default=256, type=int,
                     metavar='N',
                     help='mini-batch size (default: 256), this is the total '
@@ -920,8 +921,10 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 			g.append(model(images, weight, k, False).detach())
 	g = torch.cat(g, 0).cpu()
 	# model.line_search(f, g, train_dataset) plane
-	#model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
-	model.alpha[k] = 1.0
+	if args.line_search == 'T':
+		model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
+	else:
+		model.alpha[k] = 1.0
 	f = f + model.gamma*model.alpha[k] * g
 	print(model.alpha)
 	model.weak_learners[k].cpu()
