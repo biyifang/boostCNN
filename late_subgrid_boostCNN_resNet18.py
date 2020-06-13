@@ -610,8 +610,9 @@ def main_worker(gpu, ngpus_per_node, args):
 		if k > 0:
 			if args.method == 'GBM':
 				model_3.weight_fun(train_dataset,weight_dataset, k, g)
-			#set_grad_to_false(model_3.weak_learners[k].features_1)
-			#set_grad_to_false(model_3.weak_learners[k].features_2)
+			if args.subgrid == 'T':
+				set_grad_to_false(model_3.weak_learners[k].features_1)
+				set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
 
 			'''
@@ -642,7 +643,6 @@ def main_worker(gpu, ngpus_per_node, args):
 			'''
 			if args.subgrid == 'T':
 				for x in range(180, 202):
-				#for x in range(224, 225):
 				#134, 180,202
 					'''
 					index = [i for i in range(224)]
@@ -652,8 +652,6 @@ def main_worker(gpu, ngpus_per_node, args):
 					'''
 					for a in range(10):
 						for b in range(10):
-					#for a in range(1):
-						#for b in range(1):
 							x_axis = sorted(random.sample(range(a,224), x))
 							y_axis = sorted(random.sample(range(b,224), x))
 
