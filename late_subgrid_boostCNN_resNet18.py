@@ -71,6 +71,7 @@ parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 parser.add_argument('--sample_prob', '--sample_prob', default=1.0, type=float, metavar='sample_prob',help='sample selection probability',  dest='sample_prob')
 parser.add_argument('--method', '--method', default='GBM', type=str, metavar='method',help='method',  dest='method')
 parser.add_argument('--line_search', '--line_search', default='T', type=str, metavar='line_search',help='line_search',  dest='line_search')
+parser.add_argument('--subgrid', '--subgrid', default='T', type=str, metavar='subgrid',help='subgrid',  dest='subgrid')
 parser.add_argument('-gradient_acc', default=256, type=int,
                     metavar='N',
                     help='mini-batch size (default: 256), this is the total '
@@ -639,57 +640,61 @@ def main_worker(gpu, ngpus_per_node, args):
 			print(model_3.subgrid[k])
 			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
 			'''
+			if args.subgrid == 'T':
+				for x in range(180, 202):
+				#for x in range(224, 225):
+				#134, 180,202
+					'''
+					index = [i for i in range(224)]
+					del index[::x]
+					images = images[:,:,index,:]
+					images = images[:,:,:,index]
+					'''
+					for a in range(10):
+						for b in range(10):
+					#for a in range(1):
+						#for b in range(1):
+							x_axis = sorted(random.sample(range(a,224), x))
+							y_axis = sorted(random.sample(range(b,224), x))
 
-			for x in range(180, 202):
-			#for x in range(224, 225):
-			#134, 180,202
+							grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
+							#print(grad_temp)
+							if grad_temp > grad_opt:
+								x_axis_opt = x_axis
+								y_axis_opt = y_axis
+								x_opt = x
+								a_opt = a
+								b_opt = b
+								grad_opt = grad_temp
+								#print(x_start_opt)
+				model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
+
+				print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
+				#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
+
 				'''
-				index = [i for i in range(224)]
-				del index[::x]
-				images = images[:,:,index,:]
-				images = images[:,:,:,index]
+				input_size = x_opt
+				inter_media_1_t = kernel_fun(input_size, args.CNN_one, 4, 2)
+				inter_media_two_t = maxpool_fun(inter_media_1_t, 3, 2)
+				inter_media_3_t = kernel_fun(inter_media_two_t, args.CNN_two, 2, 2)
+				inter_media_4_t = maxpool_fun(inter_media_3_t, 2, 2)
+				inter_media_5_t = kernel_fun(inter_media_4_t, args.CNN_three, 2, 2)
+				inter_media_six_t = maxpool_fun(inter_media_5_t, 2,1)
+				model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, args.num_class)
+				model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
+				optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub,
+						weight_decay=args.weight_decay)
 				'''
-				for a in range(10):
-					for b in range(10):
-				#for a in range(1):
-					#for b in range(1):
-						x_axis = sorted(random.sample(range(a,224), x))
-						y_axis = sorted(random.sample(range(b,224), x))
-
-						grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
-						#print(grad_temp)
-						if grad_temp > grad_opt:
-							x_axis_opt = x_axis
-							y_axis_opt = y_axis
-							x_opt = x
-							a_opt = a
-							b_opt = b
-							grad_opt = grad_temp
-							#print(x_start_opt)
-			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
-
-			print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
-			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
-
-			'''
-			input_size = x_opt
-			inter_media_1_t = kernel_fun(input_size, args.CNN_one, 4, 2)
-			inter_media_two_t = maxpool_fun(inter_media_1_t, 3, 2)
-			inter_media_3_t = kernel_fun(inter_media_two_t, args.CNN_two, 2, 2)
-			inter_media_4_t = maxpool_fun(inter_media_3_t, 2, 2)
-			inter_media_5_t = kernel_fun(inter_media_4_t, args.CNN_three, 2, 2)
-			inter_media_six_t = maxpool_fun(inter_media_5_t, 2,1)
-			model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, args.num_class)
-			model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
-			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub,
-					weight_decay=args.weight_decay)
-			'''
-			with torch.no_grad():
-				for i, (images, target) in enumerate(tqdm(train_loader_seq)):
-					images = images[:,:, x_axis,:][:,:,:,y_axis]
-					new_size = model_3.weak_learners[k].get_size(images)
-					break
-			model_3.weak_learners[k].fc = nn.Linear(new_size, args.num_class)
+				with torch.no_grad():
+					for i, (images, target) in enumerate(tqdm(train_loader_seq)):
+						images = images[:,:, x_axis,:][:,:,:,y_axis]
+						new_size = model_3.weak_learners[k].get_size(images)
+						break
+				model_3.weak_learners[k].fc = nn.Linear(new_size, args.num_class)
+			else:
+				x_axis_opt = [i for i in range(224)]
+				y_axis_opt = [i for i in range(224)]
+				model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub,
 					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
