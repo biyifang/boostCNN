@@ -69,6 +69,7 @@ parser.add_argument('-b', '--batch-size', default=256, type=int,
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
 					metavar='LR', help='initial learning rate', dest='lr')#default:0.1
 parser.add_argument('--sample_prob', '--sample_prob', default=1.0, type=float, metavar='sample_prob',help='sample selection probability',  dest='sample_prob')
+parser.add_argument('--method', '--method', default='GBM', type=str, metavar='method',help='method',  dest='method')
 parser.add_argument('-gradient_acc', default=256, type=int,
                     metavar='N',
                     help='mini-batch size (default: 256), this is the total '
@@ -605,7 +606,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 		if k > 0:
-			model_3.weight_fun(train_dataset,weight_dataset, k, g)
+			if args.method == 'GBM':
+				model_3.weight_fun(train_dataset,weight_dataset, k, g)
 			#set_grad_to_false(model_3.weak_learners[k].features_1)
 			#set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
