@@ -517,8 +517,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
 	#model_2 = torch.load('image_initial_model_' + args.model_save)
 	#model_2 = torch.load('ImageNet_teacher_model_resnet18')
-	#model_2 = torch.load('CIFAR_teacher_model_resnet18')
-	model_2 = torch.load('teacher_model_')
+	model_2 = torch.load('CIFAR_teacher_model_resnet18')
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
