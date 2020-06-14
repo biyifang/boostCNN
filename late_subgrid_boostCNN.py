@@ -578,8 +578,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
 			'''
 			grad_pre = []
-			#for x in range(180, 202):
-			for x in range(224, 225):
+			for x in range(180, 202):
 			#134, 180,202
 				'''
 				index = [i for i in range(224)]
@@ -587,10 +586,8 @@ def main_worker(gpu, ngpus_per_node, args):
 				images = images[:,:,index,:]
 				images = images[:,:,:,index]
 				'''
-				#for a in range(10):
-				for a in range(1):
-					#for b in range(10):
-					for b in range(1):
+				for a in range(10):
+					for b in range(10):
 						x_axis = sorted(random.sample(range(a,224), x))
 						y_axis = sorted(random.sample(range(b,224), x))
 						
