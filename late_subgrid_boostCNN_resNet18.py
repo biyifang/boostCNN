@@ -585,26 +585,12 @@ def main_worker(gpu, ngpus_per_node, args):
 			#grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 
 			#update certain pixels
-			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
+			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k-1, args)
 			grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp[x_axis_opt,:][:,y_axis_opt]
 
 			#acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			#print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 
-		'''
-		# initialize the weight for the next weak learner
-		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
-		alpha = model_3.alpha
-		subgrid_map = model_3.subgrid
-		model_3 = GBM(args.num_boost_iter,args.num_class, args.boost_shrink, model_list)
-		model_3.alpha = alpha
-		model_3.subgrid = subgrid_map
-		model_3.cpu()
-		model_3.train()
-		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
-								momentum=args.momentum,
-								weight_decay=args.weight_decay) for it in model_3.weak_learners]
-		'''
 
 
 		if k > 0:
@@ -615,48 +601,15 @@ def main_worker(gpu, ngpus_per_node, args):
 				set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
 
-			'''
-			for x in range(2, 7):
-			#for x in trange(223,224):
-				for a in range(20):
-					for b in range(20):
-						if a <= b:
-							y_axis = [i for i in range(b, 224, x)]
-							x_axis = [i for i in range(a,224,x)][:len(y_axis)]
-						else:
-							x_axis = [i for i in range(a, 224, x)]
-							y_axis = [i for i in range(b,224,x)][:len(x_axis)]
-
-						grad_temp = torch.mean(grad_value[x_axis, y_axis])
-						#print(grad_temp)
-						if grad_temp > grad_opt:
-							x_start_opt = x_axis[0]
-							x_end_opt = x_axis[-1]
-							y_start_opt = y_axis[0]
-							y_end_opt = y_axis[-1]
-							stepsize_opt = x
-							grad_opt = grad_temp
-							#print(x_start_opt)
-			model_3.subgrid[k] = (x_start_opt,y_start_opt, x_end_opt, y_end_opt, stepsize_opt)
-			print(model_3.subgrid[k])
-			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
-			'''
 			if args.subgrid == 'T':
 				for x in range(180, 202):
-				#134, 180,202
-					'''
-					index = [i for i in range(224)]
-					del index[::x]
-					images = images[:,:,index,:]
-					images = images[:,:,:,index]
-					'''
 					for a in range(10):
 						for b in range(10):
 							x_axis = sorted(random.sample(range(a,224), x))
 							y_axis = sorted(random.sample(range(b,224), x))
 
 							grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
-							#print(grad_temp)
+							
 							if grad_temp > grad_opt:
 								x_axis_opt = x_axis
 								y_axis_opt = y_axis
@@ -664,25 +617,10 @@ def main_worker(gpu, ngpus_per_node, args):
 								a_opt = a
 								b_opt = b
 								grad_opt = grad_temp
-								#print(x_start_opt)
 				model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
 
 				print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
-				#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
 
-				'''
-				input_size = x_opt
-				inter_media_1_t = kernel_fun(input_size, args.CNN_one, 4, 2)
-				inter_media_two_t = maxpool_fun(inter_media_1_t, 3, 2)
-				inter_media_3_t = kernel_fun(inter_media_two_t, args.CNN_two, 2, 2)
-				inter_media_4_t = maxpool_fun(inter_media_3_t, 2, 2)
-				inter_media_5_t = kernel_fun(inter_media_4_t, args.CNN_three, 2, 2)
-				inter_media_six_t = maxpool_fun(inter_media_5_t, 2,1)
-				model_3.weak_learners[k].classifier = nn.Linear(32*inter_media_six_t*inter_media_six_t, args.num_class)
-				model_3.weak_learners[k].res = nn.Linear(128*inter_media_two_t*inter_media_two_t, 32*inter_media_six_t*inter_media_six_t)
-				optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub,
-						weight_decay=args.weight_decay)
-				'''
 				with torch.no_grad():
 					for i, (images, target) in enumerate(tqdm(train_loader_seq)):
 						images = images[:,:, x_axis,:][:,:,:,y_axis]
@@ -700,11 +638,6 @@ def main_worker(gpu, ngpus_per_node, args):
 			validate_boost_fast(train_loader_seq, model_3, criterion, args, k)
 			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)
 
-			'''
-			#update gradient
-			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
-			grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp
-			'''
 
 		# initialize the weight for the next weak learner
 		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
@@ -729,24 +662,12 @@ def main_worker(gpu, ngpus_per_node, args):
 		# train: image[:,:,:168,:168]
 
 		# evaluate on validation set
-		#acc1 = validate_boost(val_loader, model_3, criterion, args, k, probability_loader)
 		output_file.write('Iteration {} * Acc@1 {:5.5f} '.format(k, acc1))
 
 		# remember best acc@1 and save checkpoint
 		is_best = acc1 > best_acc1
 		best_acc1 = max(acc1, best_acc1)
 
-		'''
-		if not args.multiprocessing_distributed or (args.multiprocessing_distributed
-				and args.rank % ngpus_per_node == 0):
-			save_checkpoint({
-				'iteration': k + 1,
-				'arch': args.arch,
-				'state_dict': model_3.state_dict(),
-				'best_acc1': best_acc1,
-				'optimizer' : optimizer.state_dict(),
-			}, is_best)
-		'''
 	output_file.close()
 
 
