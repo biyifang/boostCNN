@@ -921,11 +921,11 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
 		images = images.cuda()
 		weight = weight.cuda()
-		if i == 0:
-			print(weight)
+		#if i == 0:
+			#print(weight)
 		with torch.no_grad():
-			if i == 0:
-				print(model(images, weight, k, False).detach())
+			#if i == 0:
+				#print(model(images, weight, k, False).detach())
 			g.append(model(images, weight, k, False).detach())
 	g = torch.cat(g, 0).cpu()
 	if k == 0:
