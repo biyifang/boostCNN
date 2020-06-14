@@ -878,8 +878,8 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	model.train()
 
 	end = time.time()
-
-	model.weight_fun(train_dataset,weight_dataset, k, g)
+	if args.method == 'GBM':
+		model.weight_fun(train_dataset,weight_dataset, k, g)
 
 	optimizer.zero_grad()
 	if k == 0:
@@ -932,7 +932,10 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 		model.alpha[0] = 1.0
 		f = g
 	else:
-		model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
+		if args.line_search == 'T':
+			model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
+		else:
+			model.alpha[k] = 1.0
 		f = f + model.gamma*model.alpha[k] * g
 	print(model.alpha)
 	model.weak_learners[k].cpu()
