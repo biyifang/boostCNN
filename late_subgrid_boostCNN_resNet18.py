@@ -596,9 +596,9 @@ def main_worker(gpu, ngpus_per_node, args):
 		if k > 0:
 			if args.method == 'GBM':
 				model_3.weight_fun(train_dataset,weight_dataset, k, g)
-			if args.subgrid == 'T':
-				set_grad_to_false(model_3.weak_learners[k].features_1)
-				set_grad_to_false(model_3.weak_learners[k].features_2)
+			#if args.subgrid == 'T':
+				#set_grad_to_false(model_3.weak_learners[k].features_1)
+				#set_grad_to_false(model_3.weak_learners[k].features_2)
 			grad_opt = 0.0
 
 			if args.subgrid == 'T':
