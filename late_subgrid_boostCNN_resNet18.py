@@ -412,7 +412,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				predict_loader = torch.utils.data.DataLoader(
 					predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 				model.cpu()
-				torch.save(model, 'ImageNet_teacher_model_resnet18')
+				torch.save(model, 'cifar_teacher_model_resnet18')
 				model.cuda()
 			
 
@@ -585,8 +585,9 @@ def main_worker(gpu, ngpus_per_node, args):
 			#grad_value = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 
 			#update certain pixels
-			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k-1, args)
-			grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp[x_axis_opt,:][:,y_axis_opt]
+			if args.subgrid == 'T':
+				grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
+				grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp[x_axis_opt,:][:,y_axis_opt]
 
 			#acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			#print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
