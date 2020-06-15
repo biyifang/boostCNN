@@ -596,8 +596,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 		if k > 0:
 			if args.method == 'GBM':
-				if args.subgrid == 'T':
-					model_3.weight_fun(train_dataset,weight_dataset, k, g)
+				model_3.weight_fun(train_dataset,weight_dataset, k, g)
 			#if args.subgrid == 'T':
 				#set_grad_to_false(model_3.weak_learners[k].features_1)
 				#set_grad_to_false(model_3.weak_learners[k].features_2)
@@ -635,10 +634,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub,
 					weight_decay=args.weight_decay)
-			if args.subgrid == 'T':
-				f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
-			else:
-				f, g = train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
+			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
 			validate_boost_fast(train_loader_seq, model_3, criterion, args, k)
 			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)

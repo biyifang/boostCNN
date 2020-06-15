@@ -530,20 +530,6 @@ def main_worker(gpu, ngpus_per_node, args):
 			#acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			#print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
 		
-		'''	
-		# initialize the weight for the next weak learner
-		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
-		alpha = model_3.alpha
-		subgrid_map = model_3.subgrid
-		model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
-		model_3.alpha = alpha
-		model_3.subgrid = subgrid_map
-		model_3.cpu()
-		model_3.train()
-		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
-								momentum=args.momentum,
-								weight_decay=args.weight_decay) for it in model_3.weak_learners]
-		'''
 
 
 		if k > 0:
