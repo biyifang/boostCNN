@@ -468,7 +468,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#model_2_1 = oneCNN_two(CNN_one, CNN_two, CNN_three, inter_media_two, inter_media_six)
 
 	model_list = [copy.deepcopy(model_2)]
-	model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
+	model_3 = GBM(args.num_boost_iter,args.num_class, args.boost_shrink, model_list)
 	model_3.cpu()
 	model_3.train()
 	optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
@@ -614,7 +614,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		model_list = model_list + [copy.deepcopy(model_3.weak_learners[k])]
 		alpha = model_3.alpha
 		subgrid_map = model_3.subgrid
-		model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
+		model_3 = GBM(args.num_boost_iter,args.num_class, args.boost_shrink, model_list)
 		model_3.alpha = alpha
 		model_3.subgrid = subgrid_map
 		model_3.weak_learners[k+1].fc = model_3.weak_learners[0].fc
