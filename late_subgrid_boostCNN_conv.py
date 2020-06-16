@@ -786,7 +786,7 @@ def find_grad(train_dataset, weight_dataset, model, optimizer_list, k, args):
 		else:
 			grad_input += torch.abs(images.grad.data).sum(1) + 0.0
 		model.weak_learners[k].zero_grad()
-
+	model.weak_learners[k].cpu()
 	return grad_input[0]/len(train_dataset)
 
 def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimizer_list, k, f, g,args):
