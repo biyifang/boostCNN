@@ -103,7 +103,7 @@ parser.add_argument('--dist-url', default='tcp://224.66.41.62:23456', type=str,
 					help='url used to set up distributed training')
 parser.add_argument('--dist-backend', default='nccl', type=str,
 					help='distributed backend')
-parser.add_argument('--seed', default=None, type=int,
+parser.add_argument('--seed', default=1111, type=int,
 					help='seed for initializing training. ')
 parser.add_argument('--gpu', default=None, type=int,
 					help='GPU id to use.')
@@ -279,7 +279,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		normalize,
 	]), target_transform=None, download=True)
 	'''
-	weight = torch.zeros(len(train_dataset), args.num_class)
+	weight = torch.zeros(int(len(train_dataset)*args.sample_prob), args.num_class)
 	weight_dataset = torch.utils.data.TensorDataset(weight)
 
 
@@ -480,13 +480,23 @@ def main_worker(gpu, ngpus_per_node, args):
 								weight_decay=args.weight_decay) for it in model_3.weak_learners]
 	
 	g = None
-	f = torch.zeros(len(train_dataset), args.num_class)
+	f = torch.zeros(int(len(train_dataset)*args.sample_prob), args.num_class)
+
+	train_data_index_org = list(range(len(train_dataset)))
 
 	#Train GBM
 	for k in trange(0,args.num_boost_iter):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
 
+		if args.sample_prob != 1.0:
+			if k == 0:
+				train_dataset_orig = train_dataset
+			train_data_index = random.sample(train_data_index_org,int(len(train_dataset_orig)*args.sample_prob))
+			train_dataset = torch.utils.data.Subset(train_dataset_orig, train_data_index)
+			train_sampler_temp = torch.utils.data.SequentialSampler(train_dataset)
+			train_loader_seq = torch.utils.data.DataLoader(
+				train_dataset, batch_size=args.batch_size, sampler=train_sampler_temp)
 
 		# train for one epoch
 		if k == 0:
@@ -579,7 +589,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		model_3 = GBM(args.num_boost_iter,args.num_class, args.boost_shrink, model_list)
 		model_3.alpha = alpha
 		model_3.subgrid = subgrid_map
-		model_3.weak_learners[k+1].fc = model_3.weak_learners[0].fc
+		if args.subgrid == 'T':
+			model_3.weak_learners[k+1].fc = model_3.weak_learners[0].fc
 		model_3.cpu()
 		model_3.train()
 		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
