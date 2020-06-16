@@ -112,6 +112,10 @@ parser.add_argument('--multiprocessing-distributed', action='store_true',
 						 'N processes per node, which has N GPUs. This is the '
 						 'fastest way to use PyTorch for either single node or '
 						 'multi node data parallel training')
+parser.add_argument('--sample_prob', '--sample_prob', default=1.0, type=float, metavar='sample_prob',help='sample selection probability',  dest='sample_prob')
+parser.add_argument('--method', '--method', default='GBM', type=str, metavar='method',help='method',  dest='method')
+parser.add_argument('--line_search', '--line_search', default='T', type=str, metavar='line_search',help='line_search',  dest='line_search')
+parser.add_argument('--subgrid', '--subgrid', default='T', type=str, metavar='subgrid',help='subgrid',  dest='subgrid')
 
 best_acc1 = 0
 
@@ -483,19 +487,6 @@ def main_worker(gpu, ngpus_per_node, args):
 		if args.distributed:
 			train_sampler.set_epoch(epoch)
 
-		'''
-		if k >= 1:
-			model_list = model_list + [copy.deepcopy(model_3.weak_learners[k-1])]
-			alpha = model_3.alpha
-			#model_list = [ copy.deepcopy(model_2_1) for _ in range(args.num_boost_iter)]
-			model_3 = GBM(args.num_boost_iter, args.boost_shrink, model_list)
-			model_3.alpha = alpha
-			model_3.cpu()
-			model_3.train()
-			optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
-								momentum=args.momentum,
-								weight_decay=args.weight_decay) for it in model_3.weak_learners]
-		'''
 
 		# train for one epoch
 		if k == 0:
@@ -522,7 +513,8 @@ def main_worker(gpu, ngpus_per_node, args):
 			grad_value_temp = find_grad(train_dataset, weight_dataset, model_3, optimizer_list, k, args)
 			grad_value[x_axis_opt,:][:,y_axis_opt] = grad_value_temp[x_axis_opt,:][:,y_axis_opt]
 
-			#model_3.weight_fun(train_dataset,weight_dataset, k, g)
+			if args.method == 'GBM':
+				model_3.weight_fun(train_dataset,weight_dataset, k, g)
 
 			#acc_temp = validate_boost(val_loader, model_3, criterion, args, k)
 			#print('iteration: ' + str(k) + '   accuracy :' + str(acc_temp))
@@ -532,71 +524,41 @@ def main_worker(gpu, ngpus_per_node, args):
 		if k > 0:
 			#set_grad_to_false(model_3.weak_learners[k].features_1)
 			#set_grad_to_false(model_3.weak_learners[k].features_2)
-			grad_opt = 0.0
+			if args.subgrid == 'T':
+				grad_opt = 0.0
 
-			'''
-			for x in range(2, 7):
-			#for x in trange(223,224):
-				for a in range(20):
-					for b in range(20):
-						if a <= b:
-							y_axis = [i for i in range(b, 224, x)]
-							x_axis = [i for i in range(a,224,x)][:len(y_axis)]
-						else:
-							x_axis = [i for i in range(a, 224, x)]
-							y_axis = [i for i in range(b,224,x)][:len(x_axis)]
-						
-						grad_temp = torch.mean(grad_value[x_axis, y_axis])
-						#print(grad_temp)
-						if grad_temp > grad_opt:
-							x_start_opt = x_axis[0]
-							x_end_opt = x_axis[-1]
-							y_start_opt = y_axis[0]
-							y_end_opt = y_axis[-1]
-							stepsize_opt = x
-							grad_opt = grad_temp
-							#print(x_start_opt)
-			model_3.subgrid[k] = (x_start_opt,y_start_opt, x_end_opt, y_end_opt, stepsize_opt)
-			print(model_3.subgrid[k])
-			input_size = (x_end_opt - x_start_opt)/stepsize_opt + 1
-			'''
-			grad_pre = []
-			for x in range(180, 202):
-			#134, 180,202
-				'''
-				index = [i for i in range(224)]
-				del index[::x]
-				images = images[:,:,index,:]
-				images = images[:,:,:,index]
-				'''
-				for a in range(10):
-					for b in range(10):
-						x_axis = sorted(random.sample(range(a,224), x))
-						y_axis = sorted(random.sample(range(b,224), x))
-						
-						grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
-						grad_pre.append(grad_temp)
-						#print(grad_temp)
-						if grad_temp > grad_opt:
-							x_axis_opt = x_axis
-							y_axis_opt = y_axis
-							x_opt = x
-							a_opt = a
-							b_opt = b
-							grad_opt = grad_temp
-							#print(x_start_opt)
-			model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
-			print('gradient_opt: ' + str(grad_opt) + '\t' + 'gradient_mean: ' + str(sum(grad_pre)/len(grad_pre)))
-			#print(grad_pre)
+				grad_pre = []
+				for x in range(180, 202):
+					for a in range(10):
+						for b in range(10):
+							x_axis = sorted(random.sample(range(a,224), x))
+							y_axis = sorted(random.sample(range(b,224), x))
+							
+							grad_temp = torch.mean(grad_value[x_axis,:][:, y_axis])
+							grad_pre.append(grad_temp)
+							#print(grad_temp)
+							if grad_temp > grad_opt:
+								x_axis_opt = x_axis
+								y_axis_opt = y_axis
+								x_opt = x
+								a_opt = a
+								b_opt = b
+								grad_opt = grad_temp
+								#print(x_start_opt)
+				model_3.subgrid[k] = (x_axis_opt,y_axis_opt)
+				print('gradient_opt: ' + str(grad_opt) + '\t' + 'gradient_mean: ' + str(sum(grad_pre)/len(grad_pre)))
+				#print(grad_pre)
 
-			print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
-			#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
-			with torch.no_grad():
-				for i, (images, target) in enumerate(tqdm(train_loader_seq)):
-					images = images[:,:, x_axis_opt,:][:,:,:,y_axis_opt]
-					new_size = model_3.weak_learners[k].get_size(images)
-					break
-			model_3.weak_learners[k].fc = nn.Linear(new_size, args.num_class)
+				print('a: ' + str(a_opt) + '\t' + 'b: '+ str(b_opt) + '\t' + 'x: ' + str(x_opt))
+				#input_size = int((223 - max(a_opt, b_opt) + x_opt)/x_opt)
+				with torch.no_grad():
+					for i, (images, target) in enumerate(tqdm(train_loader_seq)):
+						images = images[:,:, x_axis_opt,:][:,:,:,y_axis_opt]
+						new_size = model_3.weak_learners[k].get_size(images)
+						break
+				model_3.weak_learners[k].fc = nn.Linear(new_size, args.num_class)
+			
+
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
 					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
@@ -826,7 +788,10 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 			g.append(model(images, weight, k, False).detach())
 	g = torch.cat(g, 0).cpu()
 	# model.line_search(f, g, train_dataset) plane
-	model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
+	if args.line_search == 'T':
+		model.alpha[k] = model.line_search(f, g, train_dataset, model.gamma)
+	else:
+		model.alpha[k] = 1.0
 	f = f + model.gamma*model.alpha[k] * g
 	print(model.alpha)
 	model.weak_learners[k].cpu()
