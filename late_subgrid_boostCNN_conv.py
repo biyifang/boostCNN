@@ -509,7 +509,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 			x_axis_opt = temp
 			y_axis_opt = temp
-			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)
+			acc1 = validate_boost_single(val_loader, model_3, criterion, args, k)
 			#(a,b,x)	
 		else:
 			#train_boost(train_loader_seq,weight_loader,weight_dataset, train_dataset, model_3, optimizer_list, k, f, g, args)
@@ -573,8 +573,8 @@ def main_worker(gpu, ngpus_per_node, args):
 					weight_decay=args.weight_decay)
 			f, g = subgrid_train(train_loader_seq, train_dataset, weight_loader, model_3, optimizer_list, k, f, g,args)
 			print('end subgrid train')
-			validate_boost_fast(train_loader_seq, model_3, criterion, args, k)
-			acc1 = validate_boost_fast(val_loader, model_3, criterion, args, k)
+			validate_boost_single(train_loader_seq, model_3, criterion, args, k)
+			acc1 = validate_boost_single(val_loader, model_3, criterion, args, k)
 
 			'''
 			#update gradient
@@ -868,11 +868,11 @@ def train_boost( train_loader_seq, weight_loader, weight_dataset, train_dataset,
 	for i, ( (images, _), (weight,)) in enumerate(zip(train_loader_seq , weight_loader) ):
 		images = images.cuda()
 		weight = weight.cuda()
-		if i == 0:
-			print(weight)
+		#if i == 0:
+		#	print(weight)
 		with torch.no_grad():
-			if i == 0:
-				print(model(images, weight, k, False).detach())
+		#	if i == 0:
+		#		print(model(images, weight, k, False).detach())
 			g.append(model(images, weight, k, False).detach())
 	g = torch.cat(g, 0).cpu()
 	if k == 0:
@@ -982,6 +982,98 @@ def validate_boost_fast(val_loader, model, criterion, args, k):
 
 	return top1.avg
 
+def validate_boost_single(val_loader, model, criterion, args, k):
+	batch_time = AverageMeter('Time', ':6.3f')
+	losses = AverageMeter('Loss', ':.4e')
+	top1 = AverageMeter('Acc@1', ':6.2f')
+	top5 = AverageMeter('Acc@5', ':6.2f')
+	progress = ProgressMeter(
+		len(val_loader),
+		[batch_time, losses, top1, top5],
+		prefix='Test: ')
+
+	model.weak_learners[k].cuda()
+	# switch to evaluate mode
+	model.eval()
+
+	with torch.no_grad():
+		end = time.time()
+		for i, (images, target) in enumerate(val_loader):
+
+			images = images.cuda()
+			target = target.cuda()
+
+			# compute output
+			output = model.predict_fast(images, k)
+			output = output.cuda()
+			#output = output/args.temperature
+			loss = criterion(output, target)
+
+			# measure accuracy and record loss
+			acc1, acc5 = accuracy(output, target, topk=(1, 5))
+			losses.update(loss.item(), images.size(0))
+			top1.update(acc1[0], images.size(0))
+			top5.update(acc5[0], images.size(0))
+
+			# measure elapsed time
+			batch_time.update(time.time() - end)
+			end = time.time()
+
+			if i % args.print_freq == 0:
+				progress.display(i)
+
+		# TODO: this should also be done with the ProgressMeter
+		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
+			  .format(top1=top1, top5=top5))
+	model.weak_learners[k].cpu()
+
+	return top1.avg
+
+	'''
+	#batch_time = AverageMeter('Time', ':6.3f')
+	losses = AverageMeter('Loss', ':.4e')
+	top1 = AverageMeter('Acc@1', ':6.2f')
+	top5 = AverageMeter('Acc@5', ':6.2f')
+	progress = ProgressMeter(
+		len(val_loader),
+		[losses, top1, top5],
+		prefix='Test: ')
+
+	# switch to evaluate mode
+	model.eval()
+
+	with torch.no_grad():
+		output_list = []
+		model.weak_learners[k].cuda()
+		for i, (images, _) in enumerate(val_loader):
+			images = images.cuda()
+			output = model.predict_fast(images, k)
+			output_list.append(output.cpu())
+		model.weak_learners[k].cpu()
+
+		for i, (_, target) in enumerate(val_loader):
+
+			target = target.cuda()
+
+			# compute output
+			output = output_list[i].cuda()
+			#output = output/args.temperature
+			loss = criterion(output, target)
+
+			# measure accuracy and record loss
+			acc1, acc5 = accuracy(output, target, topk=(1, 5))
+			losses.update(loss.item(), images.size(0))
+			top1.update(acc1[0], target.size(0))
+			top5.update(acc5[0], target.size(0))
+
+			
+
+		# TODO: this should also be done with the ProgressMeter
+		print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
+			  .format(top1=top1, top5=top5))
+
+	return top1.avg
+	'''
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
 	torch.save(state, filename)

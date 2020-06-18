@@ -624,7 +624,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 				with torch.no_grad():
 					for i, (images, target) in enumerate(tqdm(train_loader_seq)):
-						images = images[:,:, x_axis,:][:,:,:,y_axis]
+						images = images[:,:, x_axis_opt,:][:,:,:,y_axis_opt]
 						new_size = model_3.weak_learners[k].get_size(images)
 						break
 				model_3.weak_learners[k].fc = nn.Linear(new_size, args.num_class)
