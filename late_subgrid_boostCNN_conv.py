@@ -116,6 +116,7 @@ parser.add_argument('--sample_prob', '--sample_prob', default=1.0, type=float, m
 parser.add_argument('--method', '--method', default='GBM', type=str, metavar='method',help='method',  dest='method')
 parser.add_argument('--line_search', '--line_search', default='T', type=str, metavar='line_search',help='line_search',  dest='line_search')
 parser.add_argument('--subgrid', '--subgrid', default='T', type=str, metavar='subgrid',help='subgrid',  dest='subgrid')
+parser.add_argument('--loss_type', '--loss_type', default='mse', type=str, metavar='loss_type',help='loss type',  dest='loss_type')
 
 best_acc1 = 0
 
@@ -778,7 +779,7 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 			#set_grad_to_false(model.weak_learners[k].features_2)
 
 			# compute output
-			loss = model(images, weight, k)      
+			loss = model(images, weight, k, loss=True, loss_type=args.loss_type)      
 
 			# measure accuracy and record loss
 			#losses.update(loss.item(), images.size(0))
@@ -796,7 +797,7 @@ def subgrid_train(train_loader_seq, train_dataset, weight_loader, model, optimiz
 		images = images[:,:, x_axis,:][:,:,:,y_axis].cuda()
 		weight = weight.cuda()
 		with torch.no_grad():
-			g.append(model(images, weight, k, False).detach())
+			g.append(model(images, weight, k, loss=False).detach())
 	g = torch.cat(g, 0).cpu()
 	# model.line_search(f, g, train_dataset) plane
 	if args.line_search == 'T':

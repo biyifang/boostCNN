@@ -252,6 +252,7 @@ class GBM(nn.Module):
             self.weak_learners = nn.ModuleList(model_list)
         self.num_classes = num_class
         self.mse = nn.MSELoss()
+        self.kl = nn.CrossEntropyLoss()
         self.alpha = [0.0 for _ in range(num_iter)]
         self.gamma = shrink_param
         self.subgrid = {}
@@ -276,10 +277,13 @@ class GBM(nn.Module):
                         weight[j] = temp
                         temp_sum += temp
                 weight[label] = - temp_sum
-    def forward(self, x, w, iteration, loss=True):
+    def forward(self, x, w, iteration, loss=True, loss_type='mse'):
         g = self.weak_learners[iteration](x, if_student=False)
         if loss:
-            return self.mse(g, w)
+            if loss_type == 'mse':
+                return self.mse(g, w)
+            else:
+                return self.kl(g, torch.argmax(w, dim=1))
         else:
             #return g
             return nn.functional.softmax(g,-1)
