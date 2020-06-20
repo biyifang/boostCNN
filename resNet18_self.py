@@ -261,9 +261,10 @@ class GBM(nn.Module):
         if iteration == 0:
             for i, ( (_, label),  (weight,)) in enumerate(zip(data,weight_data) ):
                 #print(weight)
-                for j in range(self.num_classes):
-                    if j != label:
-                        weight[j] = - 1.0
+                weight[:] = torch.ones_like(weight)*(-1.0)
+                #for j in range(self.num_classes):
+                #    if j != label:
+                #        weight[j] = - 1.0
                         #weight[j] = 0.0
                 weight[label] = 1.0 * (self.num_classes - 1)
                 #weight[label] = 1.0
@@ -271,12 +272,16 @@ class GBM(nn.Module):
             alpha = self.alpha[iteration-1]
             for i,( (_,label) ,(weight,)) in enumerate( zip(data,weight_data)):
                 temp_sum = 0.0
-                for j in range(self.num_classes):
-                    if j != label:
-                        temp = torch.exp(-1.0/2*self.gamma*alpha*(g[i][label] - g[i][j]))*weight[j]
-                        weight[j] = temp
-                        temp_sum += temp
-                weight[label] = - temp_sum
+                temp = torch.exp(-1.0/2*self.gamma*alpha*(g[i][label] - g[i]))*weight
+                temp[label] = 0.0
+                temp[label] = torch.sum(temp) * (-1)
+                weight[:] = temp
+                #for j in range(self.num_classes):
+                #    if j != label:
+                #        temp = torch.exp(-1.0/2*self.gamma*alpha*(g[i][label] - g[i][j]))*weight[j]
+                #        weight[j] = temp
+                #        temp_sum += temp
+                #weight[label] = - temp_sum
     def forward(self, x, w, iteration, loss=True, loss_type='mse'):
         g = self.weak_learners[iteration](x, if_student=False)
         if loss:
