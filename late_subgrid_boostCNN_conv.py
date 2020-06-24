@@ -307,6 +307,8 @@ def main_worker(gpu, ngpus_per_node, args):
 				normalize,
 			]), target_transform=None, download=True)
 	elif args.data_name == 'imagenet':
+		traindir = os.path.join(args.data)
+		valdir = os.path.join(args.data)
 		train_dataset = SubImageNet(traindir, split='train', transform=transforms.Compose([
 				transforms.RandomResizedCrop(224),
 				transforms.RandomHorizontalFlip(),
