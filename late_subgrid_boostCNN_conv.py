@@ -22,6 +22,7 @@ from tqdm import tqdm,trange
 from resNet18_self import ResNet
 from resNet18_self import GBM
 from torch.utils.data import TensorDataset
+from image_net_loader import SubImageNet
 
 model_names = sorted(name for name in models.__dict__
 	if name.islower() and not name.startswith("__")
