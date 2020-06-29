@@ -397,7 +397,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -447,10 +447,10 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
+	'''
 	
 
-	'''
+	
 	#if have teacher model, no need to run step one
 	model = torch.load('teacher_model_resnet18')
 	model.cuda()
@@ -461,7 +461,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	'''
+	
 
 
 	'''
@@ -473,7 +473,9 @@ def main_worker(gpu, ngpus_per_node, args):
 	inter_media_5 = kernel_fun(inter_media_4, args.CNN_three, 2, 2)
 	inter_media_six = maxpool_fun(inter_media_5, 2,1)
 	model_2 = oneCNN_two(args.CNN_one, args.CNN_two, args.CNN_three, inter_media_two, inter_media_six)
+	'''
 	#model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
+	model_2 = AlexNet(num_classes=args.num_class)
 	model_2.cuda()
 	#optimizer = torch.optim.SGD(model_2.parameters(), args.lr_dis, momentum=args.momentum, weight_decay=args.weight_decay)
 	optimizer = torch.optim.Adam(model_2.parameters(),args.lr_dis)
@@ -503,7 +505,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		if top1.avg > acc2:
 			acc2 = top1.avg
 			model_2.cpu()
-			torch.save(model_2, 'initial_model_'+ args.model_save)
+			torch.save(model_2, str(args.data_name)+'initial_model_alexnet')
 			model_2.cuda()
 		print('iteration ' + str(epoch) + ': ' + str(lo.data) + '\t' + 'accuracy: ' + str(top1.avg)+'\n')
 	print('oneCNN optimization done')
@@ -513,7 +515,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	'''
+	
 
 	model.cpu()
 	output_file = open('out.txt','w')
@@ -524,12 +526,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
 	#model_2 = torch.load('initial_model_' + args.model_save)
-	if args.data_name == 'cifar10':
-		model_2 = torch.load('CIFAR_teacher_model_resnet18')
-	elif args.data_name == 'svhn':
-		model_2 = torch.load('SVHN_teacher_model_resnet18')
-	elif args.data_name == 'imagenet':
-		model_2 = torch.load('ImageNet_teacher_model_resnet18')
+	model_2 = torch.load(str(args.data_name)+'initial_model_alexnet')
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
