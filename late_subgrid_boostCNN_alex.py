@@ -267,7 +267,7 @@ def main_worker(gpu, ngpus_per_node, args):
 			normalize,
 		]), target_transform=None, download=True)
 	'''
-	
+	args.data = '/home/yyv959/data_bfang'
 	if args.data_name == 'cifar10':
 		train_dataset = datasets.CIFAR10(args.data, train=True, transform=transforms.Compose([
 				transforms.RandomResizedCrop(224),
@@ -308,6 +308,7 @@ def main_worker(gpu, ngpus_per_node, args):
 				normalize,
 			]), target_transform=None, download=True)
 	elif args.data_name == 'imagenet':
+		args.data = '/home/yyv959/imagenet_100'
 		traindir = os.path.join(args.data)
 		valdir = os.path.join(args.data)
 		train_dataset = SubImageNet(traindir, split='train', transform=transforms.Compose([
@@ -706,7 +707,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 	model.train()
 
 	end = time.time()
-	for i, (images, target) in enumerate(tqdm(train_loader)):
+	for i, (images, target) in enumerate(train_loader):
 		# measure data loading time
 		data_time.update(time.time() - end)
 
