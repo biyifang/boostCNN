@@ -73,7 +73,7 @@ parser.add_argument('-gradient_acc', default=256, type=int,
                     help='mini-batch size (default: 256), this is the total '
                          'batch size of all GPUs on the current node when '
                          'using Data Parallel or Distributed Data Parallel')
-parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.001, type=float,
+parser.add_argument('--lr_dis', '--learning-rate-dis', default=0.01, type=float,
 					metavar='LRdis', help='learning rate for distillation', dest='lr_dis')
 parser.add_argument('--lr_boost', '--learning-rate-boost', default=0.000001, type=float,
 					metavar='LRboost', help='learning rate for boosting', dest='lr_boost')
@@ -397,7 +397,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		return
 	'''
 
-	
+	'''
 	#step one: find a good teacher model
 	if args.teacher_model_save:
 		model = torch.load('teacher_model_' + args.teacher_model_save)
@@ -447,7 +447,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		print(best_acc1)
 		#l = input('l')
 	model.cpu()
-	
+	'''
 	
 
 	
@@ -629,7 +629,7 @@ def main_worker(gpu, ngpus_per_node, args):
 						images = images[:,:, x_axis_opt,:][:,:,:,y_axis_opt]
 						new_size = model_3.weak_learners[k].get_size(images)
 						break
-				model_3.weak_learners[k].fc = nn.Linear(new_size, args.num_class)
+				model_3.weak_learners[k].classifier[1] = nn.Linear(new_size, 4096)
 			
 
 			optimizer_list[k] = torch.optim.Adam(model_3.weak_learners[k].parameters(), args.lr_sub, 
@@ -653,7 +653,7 @@ def main_worker(gpu, ngpus_per_node, args):
 		model_3.alpha = alpha
 		model_3.subgrid = subgrid_map
 		if args.subgrid == 'T':
-			model_3.weak_learners[k+1].fc = model_3.weak_learners[0].fc
+			model_3.weak_learners[k+1].classifier[1] = model_3.weak_learners[0].classifier[1]
 		model_3.cpu()
 		model_3.train()
 		optimizer_list = [torch.optim.SGD(it.parameters(), args.lr_boost,
