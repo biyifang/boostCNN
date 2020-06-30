@@ -523,7 +523,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
 	#model_2 = torch.load('initial_model_' + args.model_save)
-	model_2 = str(args.data_name)+'_teacher_model_alexNet'
+	model_2 = torch.load(str(args.data_name)+'_teacher_model_alexNet')
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
