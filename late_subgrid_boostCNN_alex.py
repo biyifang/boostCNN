@@ -186,8 +186,8 @@ def main_worker(gpu, ngpus_per_node, args):
 		#model = mobilenet_v2()
 		#model = MobileNet_V2()
 		#model = oneCNN()
-		model = AlexNet(num_classes=args.num_class)
-		model.cuda()
+		#model = AlexNet(num_classes=args.num_class)
+		#model.cuda()
 
 	"""
 	if args.distributed:
@@ -450,7 +450,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	'''
 	
 
-	
+	'''
 	#if have teacher model, no need to run step one
 	model = torch.load('teacher_model_resnet18')
 	model.cuda()
@@ -461,7 +461,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	predict_loader = torch.utils.data.DataLoader(
 		predict_dataset, batch_size=args.batch_size, sampler=predict_sampler)
 	model.cpu()
-	
+	'''
 
 
 	'''
@@ -473,7 +473,6 @@ def main_worker(gpu, ngpus_per_node, args):
 	inter_media_5 = kernel_fun(inter_media_4, args.CNN_three, 2, 2)
 	inter_media_six = maxpool_fun(inter_media_5, 2,1)
 	model_2 = oneCNN_two(args.CNN_one, args.CNN_two, args.CNN_three, inter_media_two, inter_media_six)
-	'''
 	#model_2 = torch.hub.load('pytorch/vision:v0.5.0','mobilenet_v2', pretrained=True)
 	model_2 = AlexNet(num_classes=args.num_class)
 	model_2.cuda()
@@ -515,9 +514,9 @@ def main_worker(gpu, ngpus_per_node, args):
 
 	# boosted CNN
 	model_2.cpu()
-	
+	'''
 
-	model.cpu()
+	#model.cpu()
 	output_file = open('out.txt','w')
 	
 
@@ -526,7 +525,7 @@ def main_worker(gpu, ngpus_per_node, args):
 	#Create module for GBM
 	#model_2 = torch.load('SVHN_initial_model_' + args.model_save)
 	#model_2 = torch.load('initial_model_' + args.model_save)
-	model_2 = torch.load(str(args.data_name)+'initial_model_alexnet')
+	model_2 = str(args.data_name)+'_teacher_model_alexNet'
 	#model_list = [copy.deepcopy(model_2) for _ in range(args.num_boost_iter)]
 	#model_2 = oneCNN()
 	#model_2 = mobilenet_v2()
